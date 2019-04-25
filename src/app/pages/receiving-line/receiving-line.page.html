@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Receiving-Line</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card class="scanCard" color="primary">
+    <ion-card-content>
+      <ion-item lines="none" class="ionItemInput">
+        <ion-input type="number" placeholder="Scan" [(ngModel)]="barcode"></ion-input>
+        <ion-button fill="clear" slots="end" maxlength="16" item-right (click)="barcodeScan()">
+          <ion-icon slot="icon-only" name="barcode"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

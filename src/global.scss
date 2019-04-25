@@ -1,0 +1,96 @@
+// http://ionicframework.com/docs/theming/
+@import '~@ionic/angular/css/core.css';
+@import '~@ionic/angular/css/normalize.css';
+@import '~@ionic/angular/css/structure.css';
+@import '~@ionic/angular/css/typography.css';
+@import '~@ionic/angular/css/display.css';
+@import '~@ionic/angular/css/padding.css';
+@import '~@ionic/angular/css/float-elements.css';
+@import '~@ionic/angular/css/text-alignment.css';
+@import '~@ionic/angular/css/text-transformation.css';
+@import '~@ionic/angular/css/flex-utils.css';
+
+
+.imgSection{
+    height: 25%;
+    
+  }
+  .userImg{
+    height:100px;
+    width:100px;
+    margin-top: 15px;
+    border-radius: 500px;
+  }
+  // .ionItemInputSqr{
+  //   margin-top: 5%;
+  //   --border-width: 2px 2px 2px 2px !important;
+  //   --border-style: solid !important;
+  // }
+  .ionItemInput {
+    margin-top: 10%;
+    --border-width: 2px 2px 2px 2px !important;
+    // --border-radius: 500px !important;
+    --border-style: solid !important;
+  }
+  .textAreaItem{
+    margin-top: 10px;
+    --border-width: 2px 2px 2px 2px !important;
+    --border-radius: 500px !important;
+    --border-style: solid !important;
+  }
+  
+  .twoItems{
+    display: inline-block;
+    width: 49%;
+  }
+  .threeItems{
+    display: inline-block;
+    width: 33.33%;
+  }
+  .threeItems > ion-label,.oneItem > ion-label{
+    flex:none !important;
+  }
+  
+  ion-datetime{
+    --padding-start: 10px;
+  }
+  [name~="checkmark"]{
+    color: white;
+    font-size: 24px;
+  }
+  .loginBtn{
+    margin-top: 50px;
+  }
+ 
+  ion-label > img{
+    height: 80px;
+    width: 80px;
+  }
+  .ionItemInput > ion-label{
+    margin-left: 0px;
+  }
+  
+  .sc-ion-back-button-md-h {
+    --color: currentColor;
+    --margin-top: 1px;
+    --margin-end: 0px !important;
+    --margin-bottom: 0;
+    --margin-start: 0;
+    --padding-top: 0;
+    --padding-end: 0px !important;
+    --padding-bottom: 0;
+    --padding-start: 0px !important;
+    --min-height: 32px;
+    --min-width: 44px;
+    --icon-padding-end: 0px !important;
+    --icon-padding-start: .3em;
+    --icon-margin-top: 0;
+    --icon-margin-end: 0px !important;
+    --icon-margin-bottom: 0;
+    --icon-margin-start: 6px;
+    --icon-font-size: 24px;
+    --icon-font-weight: normal;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }

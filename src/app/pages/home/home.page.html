@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="logoff()">
+        <ion-icon slot="icon-only" name="power"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+
+<ion-content padding>
+  <ion-item lines="none">
+    <ion-label [routerLink]="['/purchase']">
+      <img src="./assets/imgs/purchase.png">
+      <p>Purchase</p>
+    </ion-label>
+    <ion-label [routerLink]="['/sales']">
+      <img src="./assets/imgs/Picking2.jpg">
+      <p>Sales</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-label [routerLink]="['/stock-count']">
+      <img src="./assets/imgs/stockCount.jpg">
+      <p>Stock Count</p>
+    </ion-label>
+    <ion-label [routerLink]="['/transfer']">
+      <img src="./assets/imgs/Receiving-2.jpg">
+      <p text-wrap text-left>Transfer</p>
+    </ion-label>
+  </ion-item>
+
+  <ion-item lines="none">
+    <ion-label [routerLink]="['/inventory']">
+      <img src="./assets/imgs/Print Labels.png">
+      <p>Inventory Adjustment</p>
+    </ion-label>
+  </ion-item>
+
+</ion-content>

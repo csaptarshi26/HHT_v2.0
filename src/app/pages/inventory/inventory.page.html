@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Inventory</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item lines="none">
+    <ion-label [routerLink]="['/receiving']">
+      <img src="./assets/imgs/positive.png">
+      <p text-wrap text-left>+ve Adjustment</p>
+    </ion-label>
+    <ion-label>
+      <img src="./assets/imgs/negetive.png">
+      <p text-wrap text-left>-ve Adjustment</p>
+    </ion-label>
+  </ion-item>
+</ion-content>

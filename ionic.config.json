@@ -1,0 +1,7 @@
+{
+  "name": "hhtMob",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

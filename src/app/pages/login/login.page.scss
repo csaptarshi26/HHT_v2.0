@@ -1,0 +1,61 @@
+
+ion-button{
+    margin-top: 20px !important;
+    // color: #6E5834 !important;
+    // font-size: 1em !important;
+    // text-align: center !important;
+    // text-transform: uppercase !important;
+    // --background: #FFF8DE !important;
+    height: 7vh !important;
+}
+.frgt_pass{
+    color: #806120;
+}
+.reg_txt{
+    color: #848586;
+    text-align: center;
+}
+.form-control:focus{
+    border-color: #cccccc !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+p {
+    margin-bottom: 20px;
+    font-family: "Helvetica Neue", "Arimo", "HelveticaNeueRoman", "HelveticaNeue-Roman", "Helvetica Neue Roman", "Open Sans";
+    font-size: 14px;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+.input-icon {
+    position: absolute !important;
+    padding-left: 15px !important;
+    top: calc(50% - 0.5em) !important;
+    font-size: 20px;
+    /* Keep icon in center of input, regardless of the input height */
+}
+
+input {
+    padding-left: 40px !important;
+    height: 7vh !important;
+}
+
+.input-wrapper {
+    position: relative !important;
+}
+.userInput{
+    border-radius:500px;
+}
+ion-content{
+    --background: #686464b5;
+}
+
+.toast-container{
+    --background:white !important;
+}
+
+.toast-md .toast-message{
+    --color: black !important;
+}
