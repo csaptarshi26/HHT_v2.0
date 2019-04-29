@@ -1,3 +1,4 @@
+import { DataService } from './providers/dataService/data.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -36,6 +37,7 @@ import { IonicSelectableModule } from 'ionic-selectable';
     AxService,
     ParameterService,
     StorageService,
+    DataService,
     HTTP,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

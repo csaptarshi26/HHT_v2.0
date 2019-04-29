@@ -1,16 +1,15 @@
 import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-receiving-line',
+  selector: 'receiving-line',
   templateUrl: './receiving-line.page.html',
   styleUrls: ['./receiving-line.page.scss'],
 })
 export class ReceivingLinePage implements OnInit {
-
   barcode: string;
   subscription: Subscription;
   poLineList: PurchLineModel[] = [];
@@ -20,14 +19,15 @@ export class ReceivingLinePage implements OnInit {
   }
 
   ngOnInit() {
-    this.getDataFromService();
+    this.getPoLineData();
+
   }
 
-  getDataFromService() {
-    this.subscription = this.dataServ.getPOLine().subscribe(data => {
-      this.poLineList = data;
-      console.log(this.poLineList)
-    });
+  getPoLineData() {
+    this.dataServ.getPoLine$.subscribe(res => {
+      this.poLineList = res;
+      console.log(res)
+    })
   }
   barcodeScan() {
     if (this.barcode == null) {

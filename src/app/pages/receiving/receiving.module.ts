@@ -1,3 +1,4 @@
+import { ReceivingLinePageModule } from './../receiving-line/receiving-line.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +9,7 @@ import {DropdownModule} from 'primeng/dropdown';
 
 import { ReceivingPage } from './receiving.page';
 import { IonicSelectableModule } from 'ionic-selectable';
+import { ReceivingLinePage } from '../receiving-line/receiving-line.page';
 const routes: Routes = [
   {
     path: '',

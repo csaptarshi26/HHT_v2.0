@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -8,6 +8,7 @@
 </ion-header>
 
 <ion-content>
+
   <ion-card class="scanCard" color="primary">
     <ion-card-content>
       <ion-item lines="none" class="ionItemInput">
@@ -18,4 +19,11 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
+
+  
+  <div padding>
+    <div *ngFor="let poLine of poLineList">
+      {{poLine}}
+    </div>
+  </div>
 </ion-content>
