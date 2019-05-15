@@ -4,7 +4,7 @@
       <img src="./assets/imgs/steeplelogo.jpg" style="height: 13vh;" />
     </div>
     <div style="margin-top: 60px">
-      <ion-item lines="none" class="ionItemInput">
+      <ion-item lines="none" class="ionItemInput inputMargin">
         <ion-label>
           <ion-icon name="person"></ion-icon>
         </ion-label>
@@ -12,7 +12,7 @@
       </ion-item>
 
 
-      <ion-item lines="none" class="ionItemInput">
+      <ion-item lines="none" class="ionItemInput inputMargin">
         <ion-label>
           <ion-icon name="lock"></ion-icon>
         </ion-label>
@@ -20,7 +20,7 @@
       </ion-item>
 
 
-      <ion-item lines="none" class="ionItemInput">
+      <ion-item lines="none" class="ionItemInput inputMargin">
         <ion-label position="stacked">Legal Entity</ion-label>
         <ion-select interface="action-sheet" [(ngModel)]="selectedInventory" (ionChange)="legalEntitySelected()">
           <ion-select-option *ngFor="let inventLocation of inventList" [value]="inventLocation">
@@ -29,14 +29,14 @@
         </ion-select>
       </ion-item>
 
-      <ion-item lines="none" class="ionItemInput">
+      <ion-item lines="none" class="ionItemInput inputMargin">
         <ion-label position="stacked">Warehouse</ion-label>
         <ionic-selectable [(ngModel)]="selectedWarehouse" [items]="warehouseList" itemValueField="LocationId"
           itemTextField="Name" [canSearch]="true">
         </ionic-selectable>
       </ion-item>
 
-      <!-- <ion-item lines="none" class="ionItemInput">
+      <!-- <ion-item lines="none" class="ionItemInput inputMargin">
         <ion-label position="stacked">Warehouse</ion-label>
         <ion-select interface="action-sheet" [(ngModel)]="selectedWarehouse">
           <ion-select-option *ngFor="let warehouse of warehouseList" [value]="warehouse"> {{warehouse.Name}}

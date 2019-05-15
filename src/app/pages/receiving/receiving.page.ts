@@ -55,7 +55,8 @@ export class ReceivingPage implements OnInit {
 
   navigateToNext() {
     this.poLineList = this.selectedPurchOrder.PurchLines;
-    this.dataServ.setPOLine(this.poLineList);
+    this.dataServ.PO = this.selectedPurchOrder;
+    //this.dataServ.setPO(this.selectedPurchOrder);
     this.router.navigateByUrl('/receiving-line');
 
   }

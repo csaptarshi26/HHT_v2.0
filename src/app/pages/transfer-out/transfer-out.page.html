@@ -3,29 +3,34 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>Stock Count</ion-title>
+    <ion-title>Transfer Out</ion-title>
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content padding>
   <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Journal</ion-label>
-    <ionic-selectable [(ngModel)]="fromWarehouse" [items]="warehouseList" itemValueField="LocationId"
+    <ion-label position="stacked" class="disabledInput">From</ion-label>
+    <ion-input type="text" [(ngModel)]="currentLoc.Name" [disabled]="true"></ion-input>
+  </ion-item>
+
+
+  <ion-item lines="none" class="ionItemInput">
+    <ion-label position="stacked">To</ion-label>
+    <ionic-selectable [(ngModel)]="toWarehouse" [items]="warehouseList" itemValueField="LocationId"
       itemTextField="Name" [canSearch]="true" (onChange)="fromListSelected()">
     </ionic-selectable>
   </ion-item>
 
 
   <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Batch</ion-label>
+    <ion-label position="stacked">Transfer Order Out</ion-label>
     <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
       itemTextField="JournalLine" [canSearch]="true">
     </ionic-selectable>
   </ion-item>
 
   <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Stock Take Date</ion-label>
+    <ion-label position="stacked">Shipment Date</ion-label>
     <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
       itemTextField="JournalLine" [canSearch]="true">
     </ionic-selectable>

@@ -1,5 +1,5 @@
 <ion-header>
-   <ion-toolbar color="primary">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -10,11 +10,11 @@
 
 <ion-content>
   <ion-item lines="none">
-    <ion-label  [routerLink]="['/receiving']">
+    <ion-label [routerLink]="['/receiving']">
       <img src="./assets/imgs/receiving1.png">
       <p text-wrap text-left>Receiving</p>
     </ion-label>
-    <ion-label>
+    <ion-label [routerLink]="['/return']">
       <img src="./assets/imgs/return.png">
       <p text-wrap text-left>Return</p>
     </ion-label>

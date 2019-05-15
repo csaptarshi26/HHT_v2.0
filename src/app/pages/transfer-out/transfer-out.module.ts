@@ -6,12 +6,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { StockCountPage } from './stock-count.page';
+import { TransferOutPage } from './transfer-out.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: StockCountPage
+    component: TransferOutPage
   }
 ];
 
@@ -22,6 +22,6 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [StockCountPage]
+  declarations: [TransferOutPage]
 })
-export class StockCountPageModule {}
+export class TransferOutPageModule {}

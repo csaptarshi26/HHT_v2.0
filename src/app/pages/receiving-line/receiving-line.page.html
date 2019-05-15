@@ -1,7 +1,12 @@
 <ion-header>
-   <ion-toolbar color="primary">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="savePO()">
+        <ion-icon slot="icon-only" name="save"></ion-icon>
+      </ion-button>
     </ion-buttons>
     <ion-title>Receiving-Line</ion-title>
   </ion-toolbar>
@@ -12,18 +17,49 @@
   <ion-card class="scanCard" color="primary">
     <ion-card-content>
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="number" placeholder="Scan" [(ngModel)]="barcode"></ion-input>
-        <ion-button fill="clear" slots="end" maxlength="16" item-right (click)="barcodeScan()">
-          <ion-icon slot="icon-only" name="barcode"></ion-icon>
-        </ion-button>
+        <ion-input type="text" placeholder="Scan" [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()"></ion-input>
       </ion-item>
     </ion-card-content>
   </ion-card>
 
-  
-  <div padding>
-    <div *ngFor="let poLine of poLineList">
-      {{poLine}}
-    </div>
+
+  <div *ngFor="let poLine of poLineList" style="padding-top: 16px;">
+    <ion-card class="lineDetails" *ngIf="poLine.isVisible">
+      <ion-card-header (click)="toggleDetails(poLine)">
+        Line Details of Item <b>{{poLine.ItemId}}</b>
+        <span class="iconPos" *ngIf="poLine.isSaved">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </span>
+      </ion-card-header>
+      <ion-card-content *ngIf="!poLine.toggle">
+
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label position="stacked" class="disabledInput">Item Id</ion-label>
+          <ion-input type="number" [disabled]="true" [(ngModel)]="poLine.ItemId"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label position="stacked" class="disabledInput">Unit Id</ion-label>
+          <ion-input type="text" [disabled]="true" [(ngModel)]="poLine.UnitId"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label position="stacked" class="disabledInput">Ordered Qty</ion-label>
+          <ion-input type="number" [disabled]="true" [(ngModel)]="poLine.Qty"></ion-input>
+          <!-- <ion-label text-right> {{poLine.Qty}} </ion-label> -->
+        </ion-item>
+
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label position="stacked">Qty To Receive</ion-label>
+          <ion-input type="number" [(ngModel)]="poLine.QtyToReceive"></ion-input>
+        </ion-item>
+
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label position="stacked">Qty Received</ion-label>
+          <ion-input type="number" [(ngModel)]="poLine.QtyReceived"></ion-input>
+        </ion-item>
+        <ion-button expand="full" (click)="saveLine(poLine)">Save Line</ion-button>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>

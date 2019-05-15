@@ -4,6 +4,7 @@ import { HTTP } from '@ionic-native/http/ngx';
 import { ParameterService } from '../parameterService/parameter.service';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -42,7 +43,7 @@ export class AxService {
   getVendorList(): Observable<any> {
     let url = this.baseAddress + "readVendors";
     let body = {
-      "LocationId": this.paramService.LocationId,
+      "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId
     };
     let httpOptions = {
@@ -56,9 +57,69 @@ export class AxService {
   getPurchOrders(vendAcc: any): Observable<any> {
     let url = this.baseAddress + "readPurchOrders";
     let body = {
-      "LocationId": this.paramService.LocationId,
+      "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId,
       "VendAccount": vendAcc
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  readTransferOrders(transferId: any): Observable<any> {
+    let url = this.baseAddress + "readTransferOrders";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      //"InventTransferId ": transferId
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  readTOList(locToId): Observable<any> {
+    let url = this.baseAddress + "readTOList";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "LocationToId":locToId
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  readPOReturnList(vendAcc: any) {
+    let url = this.baseAddress + "readPOReturnList";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "VendAccount": vendAcc
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  updateStagingTable(dataTable: STPLogSyncDetailsModel[]) {
+    let url = this.baseAddress + "updateStagingTableList";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "ContractList": dataTable
     };
     let httpOptions = {
       headers: new HttpHeaders({

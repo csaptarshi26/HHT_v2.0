@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
+import { LoadingController } from '@ionic/angular';
+declare var $: any;
 @Component({
   selector: 'app-transfer',
   templateUrl: './transfer.page.html',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TransferPage implements OnInit {
 
-  constructor() { }
+  constructor(public loadingController: LoadingController) { }
 
   ngOnInit() {
+    
   }
 
 }

@@ -5,12 +5,15 @@ import { BehaviorSubject} from 'rxjs';
   providedIn: 'root'
 })
 export class DataService {
-
-  private poLineSub = new BehaviorSubject<any>(0);
-  getPoLine$ = this.poLineSub.asObservable();
+  
+  public userId:any;
+  private purchaseSub = new BehaviorSubject<any>(0);
+  getPO$ = this.purchaseSub.asObservable();
+  public PO:any;
   constructor() { }
 
-  setPOLine(data) {
-    this.poLineSub.next(data)
+  setPO(data) {
+    this.purchaseSub.next(data);
   }
+  
 }

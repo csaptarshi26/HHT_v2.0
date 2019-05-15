@@ -12,7 +12,10 @@ const routes: Routes = [
   { path: 'inventory', loadChildren: './pages/inventory/inventory.module#InventoryPageModule' },
   { path: 'login', loadChildren: './pages/login/login.module#LoginPageModule' },
   { path: 'receiving', loadChildren: './pages/receiving/receiving.module#ReceivingPageModule' },
-  { path: 'receiving-line', loadChildren: './pages/receiving-line/receiving-line.module#ReceivingLinePageModule' }
+  { path: 'receiving-line', loadChildren: './pages/receiving-line/receiving-line.module#ReceivingLinePageModule' },
+  { path: 'transfer-in', loadChildren: './pages/transfer-in/transfer-in.module#TransferInPageModule' },
+  { path: 'transfer-out', loadChildren: './pages/transfer-out/transfer-out.module#TransferOutPageModule' },
+  { path: 'return', loadChildren: './pages/return/return.module#ReturnPageModule' }
 ];
 
 @NgModule({

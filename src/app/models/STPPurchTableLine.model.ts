@@ -1,12 +1,17 @@
 export class PurchLineModel {
-    itemId:any;
-    lineNum:any
-    purchQty:any;
-    unitId:any;
-    variantId:any;
-    qtyToReceive:any;
-    qtyReceived:any;
+    BarCode:any;
+    ItemId:any;
+    LineNo:any
+    Qty:any;
+    QtyReceived:any;
+    QtyToReceive:any;
+    UnitId:any;
+    
+    isVisible:boolean;
+    isSaved:boolean;
 
+    dataSavedToList:boolean;
+    toggle:boolean=true;
     constructor(){
 
     }

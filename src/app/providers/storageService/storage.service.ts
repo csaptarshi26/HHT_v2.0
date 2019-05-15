@@ -25,8 +25,8 @@ export class StorageService {
       }
     });
 
-    this.storage.get('LocationId').then((data) => {
-      this.parameterservice.LocationId = data;
+    this.storage.get('Location').then((data) => {
+      this.parameterservice.Location = data;
       observer.next(data);
       variables++;
       if (variables == this.parameterservice.totalStorageVariables) {
@@ -42,26 +42,52 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    this.storage.get('warehouseList').then((data) => {
+      this.parameterservice.wareHouseList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
+
+    this.storage.get('deviceId').then((data) => {
+      this.parameterservice.deviceID = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
 
   setAuthenticated(authenticated: any) {
     this.storage.set('authenticated', authenticated);
     this.parameterservice.authenticated = authenticated;
   }
-  setLocationId(LocationId:any){
-    this.storage.set('LocationId', LocationId);
-    this.parameterservice.LocationId = LocationId;
+  setLocation(LocationId: any) {
+    this.storage.set('Location', LocationId);
+    this.parameterservice.Location = LocationId;
   }
 
-  setDataAreaId(dataAreaId:any){
+  setDataAreaId(dataAreaId: any) {
     this.storage.set('dataAreaId', dataAreaId);
     this.parameterservice.dataAreaId = dataAreaId;
   }
-  setInventLocationList(inventLocationList){
+  setInventLocationList(inventLocationList) {
     this.storage.set('inventLocationList', inventLocationList);
     this.parameterservice.inventLocationList = inventLocationList;
   }
 
+  setWarehouseForLegalEntity(wareHouseList) {
+    this.storage.set('warehouseList', wareHouseList);
+    this.parameterservice.wareHouseList = wareHouseList;
+  }
+  setDeviceID(deviceId) {
+    this.storage.set('deviceId', deviceId);
+    this.parameterservice.deviceID = deviceId;
+  }
   clearStorageValues() {
     this.storage.clear();
   }

@@ -3,9 +3,9 @@ import { PurchLineModel } from './STPPurchTableLine.model';
 
 export class PurchTableModel {
     PurchLines: PurchLineModel[];
-    purchId: any;
+    PurchId: any;
     vendAccount: any;
-    orderDate: any;
+    OrderDate: any;
 
     constructor(){
         

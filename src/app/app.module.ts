@@ -16,7 +16,9 @@ import { ParameterService } from './providers/parameterService/parameter.service
 import { StorageService } from './providers/storageService/storage.service';
 import { HTTP } from '@ionic-native/http/ngx';
 import { Storage, IonicStorageModule } from '@ionic/storage';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { IonicSelectableModule } from 'ionic-selectable';
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -32,6 +34,8 @@ import { IonicSelectableModule } from 'ionic-selectable';
   ],
   providers: [
     StatusBar,
+    Keyboard,
+    UniqueDeviceID,
     BarcodeScanner,
     SplashScreen,
     AxService,

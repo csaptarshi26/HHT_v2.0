@@ -1,5 +1,5 @@
 <ion-header>
-   <ion-toolbar color="primary">
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
@@ -9,11 +9,11 @@
 
 <ion-content>
   <ion-item lines="none">
-    <ion-label>
-      <img src="./assets/imgs/Purchase Order.png">
+    <ion-label [routerLink]="['/transfer-in']">
+      <img src="./assets/imgs/transfer-in.png">
       <p text-wrap text-left>Transfer In</p>
     </ion-label>
-    <ion-label>
+    <ion-label [routerLink]="['/transfer-out']">
       <img src="./assets/imgs/Transfer Order.jpg">
       <p text-wrap text-left>Transfer Out</p>
     </ion-label>

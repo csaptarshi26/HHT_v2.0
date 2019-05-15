@@ -2,4 +2,18 @@
     margin: 0px;
     padding: 0px;
     height: 20vh;
+    border-radius: 0x;
+}
+.ionItemInputSqr > ion-label{
+    margin-left: 0px;
+}
+
+.lineDetails{
+    border-left: 5px solid #3880ff;
+    margin-top:0px;
+}
+.iconPos{
+    float: right;
+    font-size: 24px;
+    color:#3880ff; 
 }

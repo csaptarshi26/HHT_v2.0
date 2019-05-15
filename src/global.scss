@@ -21,16 +21,14 @@
     margin-top: 15px;
     border-radius: 500px;
   }
-  // .ionItemInputSqr{
-  //   margin-top: 5%;
-  //   --border-width: 2px 2px 2px 2px !important;
-  //   --border-style: solid !important;
-  // }
   .ionItemInput {
-    margin-top: 10%;
+    margin-top: 2%;
     --border-width: 2px 2px 2px 2px !important;
     // --border-radius: 500px !important;
     --border-style: solid !important;
+  }
+  .inputMargin{
+    margin-top: 10%;
   }
   .textAreaItem{
     margin-top: 10px;
@@ -94,3 +92,6 @@
     font-weight: 500;
     text-transform: uppercase;
   }
+  .disabledInput{
+    opacity: 1 !important;
+}

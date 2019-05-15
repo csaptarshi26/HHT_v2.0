@@ -1,3 +1,4 @@
+import { DataService } from './../../providers/dataService/data.service';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { InventLocationModel } from './../../models/STPInventLocation.model';
 import { ParameterService } from './../../providers/parameterService/parameter.service';
@@ -8,6 +9,7 @@ import { Router } from '@angular/router';
 import { MenuController, Events } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -18,21 +20,23 @@ export class LoginPage implements OnInit {
   userId: string = "Admin";
   password: string = "1234";
   selectedInventory: InventLocationModel;
-  selectedWarehouse:InventLocationLineModel;
+  selectedWarehouse: InventLocationLineModel;
 
-  warehouseList:InventLocationLineModel[]=[];
+  warehouseList: InventLocationLineModel[] = [];
 
-  inventList: InventLocationModel [] =[];
+  inventList: InventLocationModel[] = [];
 
 
   constructor(public router: Router, public menuCtrl: MenuController, public events: Events,
-    public toastController: ToastController, public axService: AxService,
-    public storageService: StorageService, public paramService: ParameterService) {
+    public toastController: ToastController, public axService: AxService, private uniqueDeviceID: UniqueDeviceID,
+    public storageService: StorageService, public paramService: ParameterService,
+    public dataService: DataService) {
 
 
   }
 
   ngOnInit() {
+
     this.getStorageData();
     this.getInventoryLocation();
     this.menuCtrl.enable(false);
@@ -57,7 +61,8 @@ export class LoginPage implements OnInit {
         if (res) {
           this.storageService.setAuthenticated(res);
           this.storageService.setDataAreaId(this.selectedInventory.DataAreaId);
-          this.storageService.setLocationId(this.selectedWarehouse.LocationId);
+          this.storageService.setLocation(this.selectedWarehouse);
+          this.storageService.setWarehouseForLegalEntity(this.warehouseList);
           this.router.navigateByUrl('/home');
         } else {
           this.presentToast("Invalid credentials");
@@ -68,16 +73,17 @@ export class LoginPage implements OnInit {
       })
     }
   }
-  legalEntitySelected(){
+  legalEntitySelected() {
     this.warehouseList = this.selectedInventory.InventLocations;
+    this.paramService.wareHouseList = this.warehouseList;
   }
- 
+
   getInventoryLocation() {
     if (this.paramService.inventLocationList == null || this.paramService.inventLocationList.length == 0) {
       this.axService.getInventoryLocation().subscribe(res => {
         this.inventList = res;
         this.storageService.setInventLocationList(res);
-        
+
       }, error => {
         console.log(error);
       })
@@ -98,10 +104,20 @@ export class LoginPage implements OnInit {
       } else {
         this.events.publish('loggedOut');
       }
+      if (this.paramService.deviceID == null) {
+        this.uniqueDeviceID.get().then((uuid: any) => {
+          this.paramService.deviceID = uuid;
+          this.storageService.setDeviceID(uuid);
+          console.log(uuid)
+        }).catch((error: any) => {
+          console.log(error)
+        });
+      }
     });
   }
 
   navigatingToHome() {
+    this.dataService.userId = this.userId;
     this.router.navigateByUrl('/home');
   }
   async presentToast(msg: any) {
