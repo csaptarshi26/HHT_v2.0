@@ -4,41 +4,42 @@ import { AxService } from 'src/app/providers/axService/ax.service';
 import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
 import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, ViewChild, Pipe, PipeTransform } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { ToastController, IonInput, AlertController } from '@ionic/angular';
 declare var $: any;
 @Component({
-  selector: 'receiving-line',
-  templateUrl: './receiving-line.page.html',
-  styleUrls: ['./receiving-line.page.scss'],
+  selector: 'app-return-line',
+  templateUrl: './return-line.page.html',
+  styleUrls: ['./return-line.page.scss'],
 })
-export class ReceivingLinePage implements OnInit {
+export class ReturnLinePage implements OnInit {
+
   barcode: string;
   poHeader: PurchTableModel;
   poLineList: PurchLineModel[] = [];
   user: any;
 
-
-
-  itemBarcode: any = "";
   updateDataTableList: STPLogSyncDetailsModel[] = [];
 
   @ViewChild('input') inputElement: IonInput;
   @ViewChild('input1') inputElement1: IonInput;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
-  constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
+  constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService,public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService) {
   }
 
   ngOnInit() {
 
+    setTimeout(() => {
+      this.keyboard.hide();
+    }, 200);
     this.user = this.dataServ.userId
     this.getPoLineData();
-
+    // document.getElementById("barcodeInput").focus();
     setTimeout(() => {
       this.inputElement.setFocus();
       this.keyboard.hide();
@@ -49,7 +50,7 @@ export class ReceivingLinePage implements OnInit {
     this.keyboard.hide();
   }
   getPoLineData() {
-    this.dataServ.getPO$.subscribe(res => {
+    this.dataServ.getReturnPO$.subscribe(res => {
       this.poHeader = res;
       this.poLineList = this.poHeader.PurchLines;
       console.log(this.poHeader)
@@ -81,25 +82,31 @@ export class ReceivingLinePage implements OnInit {
 
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
-        var counter = 0;
+        var c = 0;
         this.poLineList.forEach(el => {
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
-
             el.isVisible = true;
             el.toggle = false;
             el.QtyToReceive = 0;
-            flag = true;
             el.updatableQty = [];
+            flag = true;
+            el.Qty = -el.Qty;
+            el.QtyReceived = -el.QtyReceived;
+            el.QtyToReceive = -el.QtyToReceive;
             el.balance = el.Qty - el.QtyReceived;
             el.BarCode = res.BarCode;
-            counter++;
+            // this.itemBarcode = res.BarCode;
+            // document.getElementById("barcodeInput").focus();
+            // let id = "po" + c;
+            // document.getElementById(id).focus();
             setTimeout(() => {
               this.inputElement1.setFocus();
             }, 150);
+            c++;
           }
         });
-        if (counter > 1) {
-          this.presentAlert("This Item has " + counter + "Line");
+        if (c > 1) {
+          this.presentAlert("This Item has " + c + "Lines");
         }
         if (!flag) {
           this.presentToast("Barcode not found");
@@ -129,7 +136,6 @@ export class ReceivingLinePage implements OnInit {
     poLine.isSaved = true;
     poLine.toggle = true;
 
-
     poLine.updatableQty.push(poLine.QtyToReceive);
     poLine.QtyReceived = poLine.QtyReceived + poLine.QtyToReceive;
     poLine.QtyToReceive = 0;
@@ -154,7 +160,7 @@ export class ReceivingLinePage implements OnInit {
           sum = sum + data;
         })
 
-        this.dataTable.Quantity = sum;
+        this.dataTable.Quantity = -sum;
         this.dataTable.TransactionType = 2;
         this.dataTable.UnitId = el.UnitId;
         this.dataTable.User = this.user;
@@ -168,6 +174,7 @@ export class ReceivingLinePage implements OnInit {
     this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
       if (res) {
         this.presentToast("Line Updated successfully");
+        this.poHeader.PurchLines = this.poLineList;
       } else {
         this.presentToast("Error Updating Line");
       }

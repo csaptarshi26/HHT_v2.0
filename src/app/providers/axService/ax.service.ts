@@ -10,7 +10,7 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 })
 export class AxService {
 
-  public baseAddress: string = "http://192.168.0.124:1060/hhtservice/api/ax/";
+  public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
   }
@@ -69,12 +69,13 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  readTransferOrders(transferId: any): Observable<any> {
-    let url = this.baseAddress + "readTransferOrders";
+  readTransferOrders(toLocaion: any): Observable<any> {
+    let url = this.baseAddress + "readTransOrders";
     let body = {
-      "LocationId": this.paramService.Location.LocationId,
+      
       "DataAreaId": this.paramService.dataAreaId,
-      //"InventTransferId ": transferId
+      "toLocationId": toLocaion,
+      "fromLocationId ": this.paramService.Location.LocationId
     };
     let httpOptions = {
       headers: new HttpHeaders({
@@ -84,22 +85,8 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  readTOList(locToId): Observable<any> {
-    let url = this.baseAddress + "readTOList";
-    let body = {
-      "LocationId": this.paramService.Location.LocationId,
-      "DataAreaId": this.paramService.dataAreaId,
-      "LocationToId":locToId
-    };
-    let httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      })
-    };
-    return this.http.post(url, body, httpOptions);
-  }
 
-  readPOReturnList(vendAcc: any) {
+  readPOReturnList(vendAcc: any): Observable<any> {
     let url = this.baseAddress + "readPOReturnList";
     let body = {
       "LocationId": this.paramService.Location.LocationId,
@@ -120,6 +107,20 @@ export class AxService {
       "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId,
       "ContractList": dataTable
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  getItemFromBarcode(barcode): Observable<any>{
+    let url = this.baseAddress + "getItemFromBarcode";
+    let body = {
+      "DataAreaId": this.paramService.dataAreaId,
+      "ItemBarcode": barcode
     };
     let httpOptions = {
       headers: new HttpHeaders({

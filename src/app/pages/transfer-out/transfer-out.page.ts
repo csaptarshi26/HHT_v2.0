@@ -23,7 +23,7 @@ export class TransferOutPage implements OnInit {
   }
   fromListSelected() {
     console.log(this.toWarehouse)
-    this.axService.readTOList(this.toWarehouse.LocationId).subscribe(res => {
+    this.axService.readTransferOrders(this.toWarehouse.LocationId).subscribe(res => {
       console.log(res);
     }, error => {
       console.log(error)

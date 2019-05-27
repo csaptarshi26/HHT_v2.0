@@ -17,7 +17,7 @@ export class ReturnPage implements OnInit {
 
   vendorList: VendorsModel[] = [];
   selectedVendor: VendorsModel;
-
+  
   purchaseList: PurchTableModel[] = [];
   selectedPurchOrder: PurchTableModel = {} as PurchTableModel;
 
@@ -41,16 +41,26 @@ export class ReturnPage implements OnInit {
   getVendorList() {
     this.axService.getVendorList().subscribe(res => {
       this.vendorList = res;
-      console.log(res);
+      this.vendorList.forEach(el=>{
+        el.displayText = el.VendAccount + " - " + el.Name;
+      })
     }, error => {
-
+      console.log(error);
     })
   }
   getPurchaseOrderReturn() {
     this.axService.readPOReturnList(this.selectedVendor.VendAccount).subscribe(res => {
+      this.purchaseList = res;
       console.log(res);
     }, error => {
       console.log(error);
     })
+  }
+
+  navigateToNext() {
+    this.poLineList = this.selectedPurchOrder.PurchLines;
+    this.dataServ.setPOReturn(this.selectedPurchOrder);
+    this.router.navigateByUrl('/return-line');
+
   }
 }

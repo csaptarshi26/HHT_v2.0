@@ -15,7 +15,8 @@ const routes: Routes = [
   { path: 'receiving-line', loadChildren: './pages/receiving-line/receiving-line.module#ReceivingLinePageModule' },
   { path: 'transfer-in', loadChildren: './pages/transfer-in/transfer-in.module#TransferInPageModule' },
   { path: 'transfer-out', loadChildren: './pages/transfer-out/transfer-out.module#TransferOutPageModule' },
-  { path: 'return', loadChildren: './pages/return/return.module#ReturnPageModule' }
+  { path: 'return', loadChildren: './pages/return/return.module#ReturnPageModule' },
+  { path: 'return-line', loadChildren: './pages/return-line/return-line.module#ReturnLinePageModule' }
 ];
 
 @NgModule({

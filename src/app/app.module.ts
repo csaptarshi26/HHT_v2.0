@@ -19,6 +19,8 @@ import { Storage, IonicStorageModule } from '@ionic/storage';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { IonicSelectableModule } from 'ionic-selectable';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
+
+import { HideKeyboardModule } from 'hide-keyboard';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -29,8 +31,8 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
     IonicStorageModule.forRoot(),    
     AppRoutingModule,
     HttpClientModule,
-    IonicSelectableModule
-    
+    IonicSelectableModule,
+    HideKeyboardModule
   ],
   providers: [
     StatusBar,

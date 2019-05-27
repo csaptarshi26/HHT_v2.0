@@ -2,14 +2,15 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { ReceivingLinePage } from './receiving-line.page';
 
-import { HideKeyboardModule } from 'hide-keyboard';
+import { IonicModule } from '@ionic/angular';
+
+import { ReturnLinePage } from './return-line.page';
+
 const routes: Routes = [
   {
     path: '',
-    component: ReceivingLinePage
+    component: ReturnLinePage
   }
 ];
 
@@ -18,9 +19,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    HideKeyboardModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ReceivingLinePage]
+  declarations: [ReturnLinePage]
 })
-export class ReceivingLinePageModule {}
+export class ReturnLinePageModule {}

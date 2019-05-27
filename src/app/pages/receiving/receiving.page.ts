@@ -41,13 +41,17 @@ export class ReceivingPage implements OnInit {
   getVendorList() {
     this.axService.getVendorList().subscribe(res => {
       this.vendorList = res;
+      this.vendorList.forEach(el=>{
+        el.displayText = el.VendAccount + " - " + el.Name;
+      })
     }, error => {
-
+      console.log(error);
     })
   }
   getPurchaseOrder() {
     this.axService.getPurchOrders(this.selectedVendor.VendAccount).subscribe(res => {
       this.purchaseList = res;
+      console.log(res);
     }, error => {
       console.log(error);
     })
@@ -55,8 +59,7 @@ export class ReceivingPage implements OnInit {
 
   navigateToNext() {
     this.poLineList = this.selectedPurchOrder.PurchLines;
-    this.dataServ.PO = this.selectedPurchOrder;
-    //this.dataServ.setPO(this.selectedPurchOrder);
+    this.dataServ.setPO(this.selectedPurchOrder);
     this.router.navigateByUrl('/receiving-line');
 
   }

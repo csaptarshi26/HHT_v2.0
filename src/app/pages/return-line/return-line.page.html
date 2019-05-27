@@ -8,7 +8,7 @@
         <ion-icon slot="icon-only" name="save"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Receiving-Line</ion-title>
+    <ion-title>Return-Line</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
   <ion-card class="scanCard" color="primary">
     <ion-card-content>
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" autofocus="true"
+        <ion-input type="text" #input hideKeyboard id="barcodeInput" placeholder="Scan" autofocus="true"
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 
@@ -29,12 +29,10 @@
   </ion-card>
 
 
-  <div *ngFor="let poLine of poLineList" style="padding-top: 5px;">
-
+  <div *ngFor="let poLine of poLineList,let i=index" style="padding-top: 5px;">
     <!-- <div class="alert alert-warning" *ngIf="poLine.multiLine">
-     This Item Has Multiple Line
+      This Item Has Multiple Line
     </div> -->
-
     <ion-card class="lineDetails" *ngIf="poLine.isVisible">
       <ion-card-header (click)="toggleDetails(poLine)">
         Item Id <b>{{poLine.ItemId}}</b> UOM : {{poLine.UnitId}}
@@ -50,21 +48,20 @@
         </ion-item>
 
         <ion-item lines="none" class="ionItemInput twoItems">
-          <ion-label position="stacked" class="disabledInput">Ordered Qty</ion-label>
+          <ion-label position="stacked" class="disabledInput">Returned Qty</ion-label>
           <ion-input type="number" [disabled]="true" [(ngModel)]="poLine.Qty"></ion-input>
-          <!-- <ion-label text-right> {{poLine.Qty}} </ion-label> -->
         </ion-item>
 
         <ion-item lines="none" class="ionItemInput twoItems">
-          <ion-label position="stacked">Qty To Receive</ion-label>
-          <ion-input type="number" [(ngModel)]="poLine.QtyToReceive" #input1 (ionChange)="qtyRecCheck(poLine)"
-            [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" [min]="0"></ion-input>
+          <ion-label position="stacked">Qty To Return</ion-label>
+          <ion-input type="number" [(ngModel)]="poLine.QtyToReceive" #input1 id="po{{i}}"
+            (ionChange)="qtyRecCheck(poLine)" (keyup.enter)="onEnter(poLine)" [max]="poLine.Qty" [min]="0"></ion-input>
         </ion-item>
 
 
 
         <ion-item lines="none" class="ionItemInput twoItems">
-          <ion-label position="stacked" class="disabledInput">Qty Received</ion-label>
+          <ion-label position="stacked" class="disabledInput">Qty Returned</ion-label>
           <ion-input type="number" [(ngModel)]="poLine.QtyReceived" [disabled]="true" [max]="poLine.Qty" [min]="0">
           </ion-input>
         </ion-item>

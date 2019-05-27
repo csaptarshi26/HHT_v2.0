@@ -12,7 +12,7 @@
   <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">Vendor Name</ion-label>
     <ionic-selectable [(ngModel)]="selectedVendor" [items]="vendorList" itemValueField="VendAccount"
-      itemTextField="Name" [canSearch]="true" (onChange)="vendorSelected($event)">
+      itemTextField="displayText" [canSearch]="true" (onChange)="vendorSelected($event)">
     </ionic-selectable>
   </ion-item>
 

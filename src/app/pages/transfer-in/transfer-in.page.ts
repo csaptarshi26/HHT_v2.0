@@ -28,7 +28,7 @@ export class TransferInPage implements OnInit {
   }
   fromListSelected() {
     console.log(this.fromWarehouse.LocationId);
-    this.axService.readTOList(this.fromWarehouse.LocationId).subscribe(res => {
+    this.axService.readTransferOrders(this.fromWarehouse.LocationId).subscribe(res => {
       console.log(res);
       this.transferInList = res;
     }, error => {
