@@ -14,6 +14,9 @@ export class DataService {
   private purchaseReturnSub = new BehaviorSubject<any>(0);
   getReturnPO$ = this.purchaseReturnSub.asObservable();
 
+  private transferOrderSub = new BehaviorSubject<any>(0);
+  getTO$ = this.transferOrderSub.asObservable();
+
   constructor() { }
 
   setPO(data) {
@@ -22,6 +25,10 @@ export class DataService {
 
   setPOReturn(data) {
     this.purchaseReturnSub.next(data);
+  }
+
+  setTO(data){
+    this.transferOrderSub.next(data);
   }
   
 }

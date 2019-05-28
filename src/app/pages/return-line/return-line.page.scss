@@ -1,5 +1,6 @@
 .scanCard{
     margin: 0px;
+    margin-bottom: 10px;
     padding: 0px;
     height: 16vh;
     border-radius: 0x;
@@ -21,5 +22,8 @@ ion-input{
     height: 48px;
 }
 ion-input:read-only{
-    opacity: .4;
+    opacity: 1;
+}
+ion-input:disabled{
+    opacity: 1;
 }

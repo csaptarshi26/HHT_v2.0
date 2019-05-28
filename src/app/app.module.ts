@@ -21,6 +21,7 @@ import { IonicSelectableModule } from 'ionic-selectable';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { HideKeyboardModule } from 'hide-keyboard';
+import { ModPipe } from './pipes/mod.pipe';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],

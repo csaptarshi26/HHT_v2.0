@@ -72,11 +72,11 @@ export class AxService {
   readTransferOrders(toLocaion: any): Observable<any> {
     let url = this.baseAddress + "readTransOrders";
     let body = {
-      
       "DataAreaId": this.paramService.dataAreaId,
-      "toLocationId": toLocaion,
-      "fromLocationId ": this.paramService.Location.LocationId
+      "ToLocationId": toLocaion,
+      "FromLocationId": this.paramService.Location.LocationId
     };
+    console.log(body);
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

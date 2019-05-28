@@ -16,23 +16,26 @@
 
   <ion-item lines="none" class="ionItemInput">
     <ion-label position="stacked">To</ion-label>
-    <ionic-selectable [(ngModel)]="toWarehouse" [items]="warehouseList" itemValueField="LocationId"
-      itemTextField="Name" [canSearch]="true" (onChange)="fromListSelected()">
+    <ionic-selectable [(ngModel)]="toWarehouse" [items]="warehouseList" itemValueField="LocationId" itemTextField="Name"
+      [canSearch]="true" (onChange)="ToListSelected()">
     </ionic-selectable>
   </ion-item>
 
 
   <ion-item lines="none" class="ionItemInput">
     <ion-label position="stacked">Transfer Order Out</ion-label>
-    <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
-      itemTextField="JournalLine" [canSearch]="true">
+    <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
+      itemTextField="JournalId" [canSearch]="true">
     </ionic-selectable>
   </ion-item>
 
   <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Shipment Date</ion-label>
-    <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
-      itemTextField="JournalLine" [canSearch]="true">
-    </ionic-selectable>
+    <ion-label>Shipment Date</ion-label>
+    <ion-label> {{selectedTrans.ReceiveDate | date: 'mediumDate'}} </ion-label>
   </ion-item>
 </ion-content>
+
+<ion-footer>
+  <!-- [disabled]="selectedPurchOrder.PurchId==null" -->
+  <ion-button expand="block" (click)="navigateToNext()">Scan</ion-button>
+</ion-footer>

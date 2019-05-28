@@ -1,7 +1,10 @@
+import { DataService } from './../../providers/dataService/data.service';
+import { TransferOrderModel } from './../../models/STPTransferOrder.model';
 import { AxService } from './../../providers/axService/ax.service';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { Component, OnInit } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-transfer-out',
@@ -12,23 +15,20 @@ export class TransferOutPage implements OnInit {
 
   warehouseList: InventLocationLineModel[] = [];
   currentLoc: InventLocationLineModel = {} as InventLocationLineModel;
-
   toWarehouse: InventLocationLineModel = {} as InventLocationLineModel;
-  constructor(public paramService: ParameterService, public axService: AxService) { }
+
+  transOrderList: TransferOrderModel[] = [];
+  selectedTrans: TransferOrderModel = {} as TransferOrderModel;
+
+  constructor(public paramService: ParameterService, public axService: AxService,
+    public dataServ:DataService,public router:Router) { }
 
   ngOnInit() {
     this.currentLoc = this.paramService.Location;
     this.getWarehouse();
 
   }
-  fromListSelected() {
-    console.log(this.toWarehouse)
-    this.axService.readTransferOrders(this.toWarehouse.LocationId).subscribe(res => {
-      console.log(res);
-    }, error => {
-      console.log(error)
-    })
-  }
+
   getWarehouse() {
     this.warehouseList = this.paramService.wareHouseList;
     this.warehouseList.forEach(el => {
@@ -40,6 +40,20 @@ export class TransferOutPage implements OnInit {
       }
     })
   }
+  ToListSelected() {
+    console.log(this.toWarehouse.LocationId)
+    this.axService.readTransferOrders(this.toWarehouse.LocationId).subscribe(res => {
+      console.log(res);
+      this.transOrderList = res;
+    }, error => {
+      console.log(error)
+    })
+  }
 
+  navigateToNext() {
+    this.dataServ.setTO(this.selectedTrans);
+    this.router.navigateByUrl('/transfer-line');
+
+  }
 
 }

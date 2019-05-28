@@ -1,4 +1,3 @@
-import { TransferInModel } from './../../models/STPTransferIN.model';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { InventLocationModel } from './../../models/STPInventLocation.model';
 import { ParameterService } from './../../providers/parameterService/parameter.service';
@@ -17,8 +16,6 @@ export class TransferInPage implements OnInit {
   currentLoc: InventLocationLineModel = {} as InventLocationLineModel;
 
   fromWarehouse: InventLocationLineModel = {} as InventLocationLineModel;
-  transferInList: TransferInModel[] = [];
-  selectedTO: TransferInModel = {} as TransferInModel;
   constructor(public paramService: ParameterService, public axService: AxService) { }
 
   ngOnInit() {
@@ -30,7 +27,7 @@ export class TransferInPage implements OnInit {
     console.log(this.fromWarehouse.LocationId);
     this.axService.readTransferOrders(this.fromWarehouse.LocationId).subscribe(res => {
       console.log(res);
-      this.transferInList = res;
+      
     }, error => {
       console.log(error)
     })

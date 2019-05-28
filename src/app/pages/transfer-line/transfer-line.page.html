@@ -8,7 +8,7 @@
         <ion-icon slot="icon-only" name="document"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Receiving-Line</ion-title>
+    <ion-title>Transfer-Line</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -32,9 +32,9 @@
   <div *ngFor="let poLine of poLineList,let i=index">
 
     <!-- <div class="alert alert-warning" *ngIf="poLine.multiLine">
-     This Item Has Multiple Line *ngIf="poLine.isVisible" *ngIf="poLine.isSaved"
-    </div> -->
-    <div *ngIf="poLine.isVisible">
+       This Item Has Multiple Line *ngIf="poLine.isVisible" *ngIf="poLine.isSaved"
+      </div> -->
+    <div>
       <ion-card class="lineDetails">
         <ion-card-header>
           <span class="iconPos">
@@ -51,6 +51,8 @@
 
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left>Barcode</ion-label>
+            <!-- <ion-input type="text" style="text-align: left" [disabled]="true" [(ngModel)]="poLine.BarCode">
+              </ion-input> -->
             <ion-label text-left> {{poLine.BarCode}} </ion-label>
           </ion-item>
 
@@ -81,14 +83,14 @@
           </ion-item>
 
           <!-- <ion-item lines="none" class="ionItemInput twoItems">
-            <ion-label position="stacked" class="disabledInput">Unit Amount</ion-label>
-            <ion-input type="text" [disabled]="true" [(ngModel)]="poLine.UnitAmt"></ion-input>
-          </ion-item>
-
-          <ion-item lines="none" class="ionItemInput twoItems">
-            <ion-label position="stacked" class="disabledInput">Net Amount</ion-label>
-            <ion-input type="text" [disabled]="true" [(ngModel)]="poLine.NetAmt"></ion-input>
-          </ion-item> -->
+              <ion-label position="stacked" class="disabledInput">Unit Amount</ion-label>
+              <ion-input type="text" [disabled]="true" [(ngModel)]="poLine.UnitAmt"></ion-input>
+            </ion-item>
+  
+            <ion-item lines="none" class="ionItemInput twoItems">
+              <ion-label position="stacked" class="disabledInput">Net Amount</ion-label>
+              <ion-input type="text" [disabled]="true" [(ngModel)]="poLine.NetAmt"></ion-input>
+            </ion-item> -->
           <div style="margin-top:10px">
             <ion-button expand="block" class="twoBtn" (click)="saveLine(poLine)" [disabled]="poLine.btnDisable">Save
             </ion-button>

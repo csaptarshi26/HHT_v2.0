@@ -98,9 +98,19 @@
   .itemLineContent{
     --line-height: .8 !important;
   }
+  .card-content-md {
+    padding-left: unset;
+    padding-right: unset;
+    --padding-inline-start: 0px !important;
+    --padding-inline-end: 16px !important;
+  }
   .label-stacked.sc-ion-label-md-h {
     margin-left: 0;
     margin-right: 0;
     --margin-top: -5px !important;
     margin-bottom: 0;
+}
+.twoBtn{
+  display: inline-block;
+  width: 47%;
 }

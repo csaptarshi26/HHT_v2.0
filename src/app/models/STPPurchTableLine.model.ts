@@ -9,6 +9,7 @@ export class PurchLineModel {
     updatableQty: any[];
     UnitAmt: any;
     NetAmt: any;
+    qtyDesc: any;
 
     balance: any;
 
@@ -17,7 +18,7 @@ export class PurchLineModel {
 
     dataSavedToList: boolean;
     toggle: boolean = true;
-    
+
 
     btnDisable: boolean = true;
     constructor() {

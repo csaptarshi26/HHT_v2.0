@@ -26,7 +26,6 @@ export class ReceivingLinePage implements OnInit {
   updateDataTableList: STPLogSyncDetailsModel[] = [];
 
   @ViewChild('input') inputElement: IonInput;
-  @ViewChild('input1') inputElement1: IonInput;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
@@ -73,33 +72,46 @@ export class ReceivingLinePage implements OnInit {
     document.getElementById("barcodeInput").focus();
     this.keyboard.hide();
   }
-  toggleDetails(poLine: PurchLineModel) {
+  toggleDetails(poLine: PurchLineModel,i) {
     poLine.toggle = !poLine.toggle;
+    let id = "#Recinput" + i;
+    $(document).ready(function () {
+      $(id).focus();
+    });
   }
   searchBarcode() {
-    if (this.barcode != null && this.barcode.length > 3) {
+    var visibleLine = [];
 
+    if (this.barcode != null && this.barcode.length > 3) {
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
+        var multiLine = 0;
         this.poLineList.forEach(el => {
+          counter++;
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
 
             el.isVisible = true;
             el.toggle = false;
-            el.QtyToReceive = 0;
+            el.QtyToReceive = null;
             flag = true;
             el.updatableQty = [];
             el.balance = el.Qty - el.QtyReceived;
+            el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
-            counter++;
-            setTimeout(() => {
-              this.inputElement1.setFocus();
-            }, 150);
+
+            visibleLine.push(counter);
+            multiLine++;
           }
         });
-        if (counter > 1) {
-          this.presentAlert("This Item has " + counter + "Line");
+
+        let id = "#Recinput" + visibleLine[0];
+        $(document).ready(function () {
+          $(id).focus();
+        });
+
+        if (multiLine > 1) {
+          this.presentAlert("This Item has " + multiLine + " Lines");
         }
         if (!flag) {
           this.presentToast("Barcode not found");
@@ -132,35 +144,35 @@ export class ReceivingLinePage implements OnInit {
 
     poLine.updatableQty.push(poLine.QtyToReceive);
     poLine.QtyReceived = poLine.QtyReceived + poLine.QtyToReceive;
-    poLine.QtyToReceive = 0;
+    poLine.QtyToReceive = null;
   }
 
   savePO() {
     this.poLineList.forEach(el => {
+      var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
-        this.dataTable.BarCode = el.BarCode;
-        this.dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
-        /*"52545f17-74ca-e75e-3518-990821491968"; this.paramService.deviceID;*/
-        this.dataTable.DocumentDate = this.poHeader.OrderDate;
-        this.dataTable.ItemId = el.ItemId;
-        this.dataTable.DocumentNum = this.poHeader.PurchId;
-        this.dataTable.DocumentType = 1;
-        this.dataTable.ItemLocation = this.paramService.Location.LocationId;
-        this.dataTable.UserLocation = this.paramService.Location.LocationId;
-        this.dataTable.LineNum = el.LineNo;
+        dataTable.BarCode = el.BarCode;
+        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
+        dataTable.DocumentDate = this.poHeader.OrderDate;
+        dataTable.ItemId = el.ItemId;
+        dataTable.DocumentNum = this.poHeader.PurchId;
+        dataTable.DocumentType = 1;
+        dataTable.ItemLocation = this.paramService.Location.LocationId;
+        dataTable.UserLocation = this.paramService.Location.LocationId;
+        dataTable.LineNum = el.LineNo;
 
         var sum = 0;
         el.updatableQty.forEach(data => {
           sum = sum + data;
         })
 
-        this.dataTable.Quantity = sum;
-        this.dataTable.TransactionType = 2;
-        this.dataTable.UnitId = el.UnitId;
-        this.dataTable.User = this.user;
+        dataTable.Quantity = sum;
+        dataTable.TransactionType = 2;
+        dataTable.UnitId = el.UnitId;
+        dataTable.User = this.user;
 
         el.dataSavedToList = true;
-        this.updateDataTableList.push(this.dataTable)
+        this.updateDataTableList.push(dataTable)
       }
     })
 
@@ -175,7 +187,9 @@ export class ReceivingLinePage implements OnInit {
       console.log(error.message);
     })
   }
-
+  clearQtyToRec(poLine:PurchLineModel){
+    poLine.QtyToReceive = null;
+  }
   qtyRecCheck(poLine: PurchLineModel) {
     if ((poLine.QtyReceived + poLine.QtyToReceive) > poLine.Qty) {
       this.presentToast("Rec item cannot be greater than Qty");
@@ -197,4 +211,10 @@ export class ReceivingLinePage implements OnInit {
 
     await alert.present();
   }
+  cancelBtn(poLine: PurchLineModel) {
+    poLine.QtyReceived = 0;
+    poLine.QtyToReceive = 0;
+    poLine.balance = poLine.Qty;
+  }
+
 }

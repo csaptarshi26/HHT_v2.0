@@ -1,4 +1,3 @@
-import { PipesModule } from './../../pipes/mod.pipe.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,22 +5,22 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ReturnLinePage } from './return-line.page';
+import { TransferLinePage } from './transfer-line.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ReturnLinePage
+    component: TransferLinePage
   }
 ];
 
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,PipesModule,
+    FormsModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ReturnLinePage]
+  declarations: [TransferLinePage]
 })
-export class ReturnLinePageModule {}
+export class TransferLinePageModule {}
