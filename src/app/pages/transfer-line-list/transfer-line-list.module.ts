@@ -1,4 +1,3 @@
-import { HideKeyboardModule } from 'hide-keyboard';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,12 +5,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TransferLinePage } from './transfer-line.page';
+import { TransferLineListPage } from './transfer-line-list.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: TransferLinePage
+    component: TransferLineListPage
   }
 ];
 
@@ -20,9 +19,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    HideKeyboardModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [TransferLinePage]
+  declarations: [TransferLineListPage]
 })
-export class TransferLinePageModule {}
+export class TransferLineListPageModule {}

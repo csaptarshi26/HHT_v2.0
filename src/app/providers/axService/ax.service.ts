@@ -69,14 +69,13 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  readTransferOrders(toLocaion: any): Observable<any> {
+  readTransferOrders(toLocaion: any,fromLocation:any): Observable<any> {
     let url = this.baseAddress + "readTransOrders";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
       "ToLocationId": toLocaion,
-      "FromLocationId": this.paramService.Location.LocationId
+      "FromLocationId":  fromLocation
     };
-    console.log(body);
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

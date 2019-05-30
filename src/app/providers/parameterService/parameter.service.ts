@@ -2,6 +2,7 @@ import { InventLocationLineModel } from './../../models/STPInventLocationLine.mo
 import { InventLocationModel } from './../../models/STPInventLocation.model';
 import { CommonModel } from './../../models/STPCommon.model';
 import { Injectable } from '@angular/core';
+import { ItemModel } from 'src/app/models/STPItem.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +14,10 @@ export class ParameterService {
 
   public inventLocationList: InventLocationModel[] = [];
   public wareHouseList: InventLocationLineModel[] = [];
+  public ItemList: ItemModel[] = [];
 
-  public deviceID:any;
+  public deviceID: any;
 
-  public totalStorageVariables: Number = 5;
+  public totalStorageVariables: Number = 6;
   constructor() { }
 }

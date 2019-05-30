@@ -8,26 +8,65 @@
 </ion-header>
 
 
-<ion-content padding>
-  <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Journal</ion-label>
-    <ionic-selectable [(ngModel)]="fromWarehouse" [items]="warehouseList" itemValueField="LocationId"
-      itemTextField="Name" [canSearch]="true" (onChange)="fromListSelected()">
-    </ionic-selectable>
-  </ion-item>
+<ion-content>
+  <ion-card class="scanCard">
+    <ion-card-content class="padding">
+      <!-- 
+      <ion-item lines="none" class="ionItemInput">
+        <ion-label>Location</ion-label>
+        <ionic-selectable [(ngModel)]="selectedWarehouse" [items]="warehouseList" itemValueField="LocationId"
+          itemTextField="Name" [canSearch]="true">
+        </ionic-selectable>
+      </ion-item> -->
+      <ion-item lines="none" class="ionItemInput">
+        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" autofocus="true"
+          [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
+        </ion-input>
+
+        <ion-button fill="clear" slots="end" item-right (click)="clearBarcode()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label>Edit Field</ion-label>
+        <ion-toggle [(ngModel)]="editField" (ionChange)="notify()"></ion-toggle>
+      </ion-item>
+
+      Total Scan Qty: {{scannedQty}}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card class="lineDetails">
+    <div *ngIf="item.visible">
+      <ion-card-header>
+        <b>Desc : {{item.Description}}</b>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label text-left>Barcode</ion-label>
+          <ion-label text-left> {{item.BarCode}} </ion-label>
+        </ion-item>
+
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label text-left>UOM</ion-label>
+          <ion-label text-left> {{item.Unit}} </ion-label>
+        </ion-item>
 
 
-  <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Batch</ion-label>
-    <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
-      itemTextField="JournalLine" [canSearch]="true">
-    </ionic-selectable>
-  </ion-item>
-
-  <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Stock Take Date</ion-label>
-    <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
-      itemTextField="JournalLine" [canSearch]="true">
-    </ionic-selectable>
-  </ion-item>
+        <ion-item lines="none" class="ionItemInput">
+          <ion-label text-left style="margin-right: 20%;" class="ion-text-wrap">Quantity</ion-label>
+          <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput"
+            (keyup.enter)="onEnter()" [min]="0" [readonly]="!item.isEditable">
+          </ion-input>
+        </ion-item>
+      </ion-card-content>
+    </div>
+  </ion-card>
 </ion-content>
+
+<ion-footer>
+  <ion-button expand="block" class="twoBtn" (click)="update()">Update</ion-button>
+  <ion-button expand="block" class="twoBtn" (click)="showList()">Show List</ion-button>
+</ion-footer>

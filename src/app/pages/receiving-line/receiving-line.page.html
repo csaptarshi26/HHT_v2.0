@@ -15,7 +15,7 @@
 <ion-content>
 
   <ion-card class="scanCard" color="primary">
-    <ion-card-content>
+    <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
         <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" autofocus="true"
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
@@ -25,6 +25,9 @@
           <ion-icon name="close"></ion-icon>
         </ion-button>
       </ion-item>
+      <div class="alert alert-warning">
+        Total Scan Qty: {{scannedQty}}
+      </div>
     </ion-card-content>
   </ion-card>
 
@@ -55,7 +58,7 @@
           </ion-item>
 
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left style="margin-right: 11%;" class="ion-text-wrap">Qty To Receive</ion-label>
+            <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Receive</ion-label>
             <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.QtyToReceive" id="Recinput{{i}}"
               (ionChange)="qtyRecCheck(poLine)" [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)"
               (click)="clearQtyToRec(poLine)" [min]="0">

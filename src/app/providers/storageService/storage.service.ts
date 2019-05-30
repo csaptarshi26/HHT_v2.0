@@ -60,6 +60,15 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    this.storage.get('ItemList').then((data) => {
+      this.parameterservice.ItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
 
   setAuthenticated(authenticated: any) {
@@ -88,7 +97,14 @@ export class StorageService {
     this.storage.set('deviceId', deviceId);
     this.parameterservice.deviceID = deviceId;
   }
+  setItemList(itemList) {
+    this.storage.set('ItemList', itemList);
+    this.parameterservice.ItemList = itemList;
+  }
   clearStorageValues() {
     this.storage.clear();
+  }
+  clearItemList(){
+    this.storage.remove('ItemList');
   }
 }

@@ -1,3 +1,4 @@
+import { HideKeyboardModule } from 'hide-keyboard';
 import { IonicSelectableModule } from 'ionic-selectable';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -20,6 +21,7 @@ const routes: Routes = [
     CommonModule,IonicSelectableModule,
     FormsModule,
     IonicModule,
+    HideKeyboardModule,
     RouterModule.forChild(routes)
   ],
   declarations: [StockCountPage]

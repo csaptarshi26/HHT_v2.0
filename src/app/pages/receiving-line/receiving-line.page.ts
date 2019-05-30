@@ -7,7 +7,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { ToastController, IonInput, AlertController } from '@ionic/angular';
+import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
 declare var $: any;
 @Component({
   selector: 'receiving-line',
@@ -19,7 +19,7 @@ export class ReceivingLinePage implements OnInit {
   poHeader: PurchTableModel;
   poLineList: PurchLineModel[] = [];
   user: any;
-
+  scannedQty: any = 0;
 
 
   itemBarcode: any = "";
@@ -30,7 +30,7 @@ export class ReceivingLinePage implements OnInit {
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService) {
+    public paramService: ParameterService,public loadingController: LoadingController) {
   }
 
   ngOnInit() {
@@ -50,6 +50,11 @@ export class ReceivingLinePage implements OnInit {
   getPoLineData() {
     this.dataServ.getPO$.subscribe(res => {
       this.poHeader = res;
+      if (this.poHeader.scannedQty) {
+        this.scannedQty = this.poHeader.scannedQty;
+      } else {
+        this.scannedQty = 0;
+      }
       this.poLineList = this.poHeader.PurchLines;
       console.log(this.poHeader)
     })
@@ -72,12 +77,15 @@ export class ReceivingLinePage implements OnInit {
     document.getElementById("barcodeInput").focus();
     this.keyboard.hide();
   }
-  toggleDetails(poLine: PurchLineModel,i) {
+  toggleDetails(poLine: PurchLineModel, i) {
     poLine.toggle = !poLine.toggle;
     let id = "#Recinput" + i;
     $(document).ready(function () {
       $(id).focus();
     });
+  }
+  ngOnDestroy() {
+    this.poHeader.scannedQty = this.scannedQty;
   }
   searchBarcode() {
     var visibleLine = [];
@@ -90,7 +98,9 @@ export class ReceivingLinePage implements OnInit {
         this.poLineList.forEach(el => {
           counter++;
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
-
+            if (!el.isVisible) {
+              this.scannedQty++;
+            }
             el.isVisible = true;
             el.toggle = false;
             el.QtyToReceive = null;
@@ -99,7 +109,6 @@ export class ReceivingLinePage implements OnInit {
             el.balance = el.Qty - el.QtyReceived;
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
-
             visibleLine.push(counter);
             multiLine++;
           }
@@ -147,7 +156,7 @@ export class ReceivingLinePage implements OnInit {
     poLine.QtyToReceive = null;
   }
 
-  savePO() {
+  async savePO() {
     this.poLineList.forEach(el => {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
@@ -176,18 +185,28 @@ export class ReceivingLinePage implements OnInit {
       }
     })
 
-    console.log(this.updateDataTableList)
-    this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
-      if (res) {
-        this.presentToast("Line Updated successfully");
-      } else {
-        this.presentToast("Error Updating Line");
-      }
-    }, error => {
-      console.log(error.message);
-    })
+    if (this.updateDataTableList.length > 0) {
+      const loading = await this.loadingController.create({
+        message: 'Please Wait'
+      });
+      await loading.present();
+      this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
+        if (res) {
+          this.presentToast("Line Updated successfully");
+          this.updateDataTableList = [];
+        } else {
+          this.presentToast("Error Updating Line");
+        }
+        loading.dismiss();
+      }, error => {
+        loading.dismiss();
+        console.log(error.message);
+      })
+    } else {
+      this.presentToast("Line Already Saved");
+    }
   }
-  clearQtyToRec(poLine:PurchLineModel){
+  clearQtyToRec(poLine: PurchLineModel) {
     poLine.QtyToReceive = null;
   }
   qtyRecCheck(poLine: PurchLineModel) {

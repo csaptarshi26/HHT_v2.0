@@ -10,15 +10,20 @@ import { ParameterService } from 'src/app/providers/parameterService/parameter.s
   styleUrls: ['./home.page.scss'],
 })
 export class HomePage implements OnInit {
-  
-  constructor(public router:Router,public menuCtrl:MenuController,public paramService:ParameterService,
-    public alertCtrl: AlertController,public sotrageService:StorageService) { }
+  dataAreadId: any;
+  location: any;
+
+  constructor(public router: Router, public menuCtrl: MenuController, public paramService: ParameterService,
+    public alertCtrl: AlertController, public sotrageService: StorageService) { }
 
   ngOnInit() {
+    this.dataAreadId = this.paramService.dataAreaId;
+    this.location = this.paramService.Location;
+    
     this.menuCtrl.enable(true);
   }
 
-  logoff(){
+  logoff() {
     this.confirmAlert();
   }
   async confirmAlert() {
@@ -34,6 +39,7 @@ export class HomePage implements OnInit {
         {
           text: 'Agree',
           handler: () => {
+            this.paramService.wareHouseList = [];
             this.sotrageService.clearStorageValues();
             this.router.navigateByUrl("/")
           }

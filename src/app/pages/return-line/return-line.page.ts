@@ -7,7 +7,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Component, OnInit, Input, SimpleChanges, ViewChild, Pipe, PipeTransform } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { ToastController, IonInput, AlertController } from '@ionic/angular';
+import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
 declare var $: any;
 @Component({
   selector: 'app-return-line',
@@ -20,14 +20,14 @@ export class ReturnLinePage implements OnInit {
   poHeader: PurchTableModel;
   poLineList: PurchLineModel[] = [];
   user: any;
-
+  scannedQty: any = 0;
   updateDataTableList: STPLogSyncDetailsModel[] = [];
 
   @ViewChild('input') inputElement: IonInput;
 
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService) {
+    public paramService: ParameterService, public loadingController: LoadingController) {
   }
 
   ngOnInit() {
@@ -50,9 +50,17 @@ export class ReturnLinePage implements OnInit {
   getPoLineData() {
     this.dataServ.getReturnPO$.subscribe(res => {
       this.poHeader = res;
+      if (this.poHeader.scannedQty) {
+        this.scannedQty = this.poHeader.scannedQty;
+      } else {
+        this.scannedQty = 0;
+      }
       this.poLineList = this.poHeader.PurchLines;
       console.log(this.poHeader)
     })
+  }
+  ngOnDestroy() {
+    this.poHeader.scannedQty = this.scannedQty;
   }
   barcodeScan() {
     if (this.barcode == null) {
@@ -83,9 +91,13 @@ export class ReturnLinePage implements OnInit {
         var flag = false;
         var c = 0;
         var multiLine = 0;
+
         this.poLineList.forEach(el => {
           c++;
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
+            if (!el.isVisible) {
+              this.scannedQty++;
+            }
             el.isVisible = true;
             el.toggle = false;
             el.QtyToReceive = 0;
@@ -139,7 +151,7 @@ export class ReturnLinePage implements OnInit {
     poLine.QtyToReceive = 0;
   }
 
-  savePO() {
+  async savePO() {
     this.poLineList.forEach(el => {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
@@ -169,15 +181,27 @@ export class ReturnLinePage implements OnInit {
     })
 
     console.log(this.updateDataTableList)
-    this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
-      if (res) {
-        this.presentToast("Line Updated successfully");
-      } else {
-        this.presentToast("Error Updating Line");
-      }
-    }, error => {
-      console.log(error.message);
-    })
+    if (this.updateDataTableList.length > 0) {
+      const loading = await this.loadingController.create({
+        message: 'Please Wait'
+      });
+      await loading.present();
+      this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
+        if (res) {
+          this.presentToast("Line Updated successfully");
+          this.updateDataTableList = [];
+        } else {
+          this.presentToast("Error Updating Line");
+        }
+        loading.dismiss();
+      }, error => {
+        loading.dismiss();
+        console.log(error.message);
+      })
+    } else {
+      this.presentToast("Line Already Saved");
+    }
+
   }
 
   qtyRecCheck(poLine: PurchLineModel) {

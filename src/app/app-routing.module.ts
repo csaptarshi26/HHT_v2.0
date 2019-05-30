@@ -17,7 +17,9 @@ const routes: Routes = [
   { path: 'transfer-out', loadChildren: './pages/transfer-out/transfer-out.module#TransferOutPageModule' },
   { path: 'return', loadChildren: './pages/return/return.module#ReturnPageModule' },
   { path: 'return-line', loadChildren: './pages/return-line/return-line.module#ReturnLinePageModule' },
-  { path: 'transfer-line', loadChildren: './pages/transfer-line/transfer-line.module#TransferLinePageModule' }
+  { path: 'transfer-line/:pageName', loadChildren: './pages/transfer-line/transfer-line.module#TransferLinePageModule' },
+  { path: 'stock-count-list', loadChildren: './pages/stock-count-list/stock-count-list.module#StockCountListPageModule' },
+  { path: 'transfer-line-list', loadChildren: './pages/transfer-line-list/transfer-line-list.module#TransferLineListPageModule' }
 ];
 
 @NgModule({

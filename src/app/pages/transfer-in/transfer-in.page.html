@@ -22,17 +22,19 @@
 
 
   <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Transfer Order No.</ion-label>
-    <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
-      itemTextField="JournalLine" [canSearch]="true">
+    <ion-label position="stacked">Transfer Order In</ion-label>
+    <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
+      itemTextField="JournalId" [canSearch]="true">
     </ionic-selectable>
   </ion-item>
 
   <ion-item lines="none" class="ionItemInput">
-    <ion-label position="stacked">Receipt Date</ion-label>
-    <ionic-selectable [(ngModel)]="selectedTO" [items]="transferInList" itemValueField="JournalLine"
-      itemTextField="JournalLine" [canSearch]="true">
-    </ionic-selectable>
+    <ion-label>Shipment Date</ion-label>
+    <ion-label> {{selectedTrans.ReceiveDate | date: 'mediumDate'}} </ion-label>
   </ion-item>
-
 </ion-content>
+
+<ion-footer>
+  <!-- [disabled]="selectedPurchOrder.PurchId==null" -->
+  <ion-button expand="block" (click)="navigateToNext()">Scan</ion-button>
+</ion-footer>

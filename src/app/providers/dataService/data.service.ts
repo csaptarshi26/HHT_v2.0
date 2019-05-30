@@ -17,6 +17,12 @@ export class DataService {
   private transferOrderSub = new BehaviorSubject<any>(0);
   getTO$ = this.transferOrderSub.asObservable();
 
+  private transferOrderInSub = new BehaviorSubject<any>(0);
+  getTOIn$ = this.transferOrderInSub.asObservable();
+
+  private itemListSub = new BehaviorSubject<any>(0);
+  getItemList$ = this.itemListSub.asObservable();
+
   constructor() { }
 
   setPO(data) {
@@ -29,6 +35,14 @@ export class DataService {
 
   setTO(data){
     this.transferOrderSub.next(data);
+  }
+  
+  setToIn(data){
+    this.transferOrderInSub.next(data);
+  }
+
+  setItemList(data){
+    this.itemListSub.next(data);
   }
   
 }

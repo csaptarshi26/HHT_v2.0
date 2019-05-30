@@ -6,7 +6,7 @@ export class PurchTableModel {
     PurchId: any;
     vendAccount: any;
     OrderDate: any;
-
+    scannedQty:any;
     constructor(){
         
     }

@@ -9,4 +9,18 @@ export class TransferOrderLine {
     Quantity: any;
     UnitOfMeasure: any;
     VariantCode: any;
+    updatableQty: any[];
+    qtyDesc: any;
+    BarCode: any;
+
+    balance: any;
+
+    isVisible: boolean;
+    isSaved: boolean;
+
+    dataSavedToList: boolean;
+    toggle: boolean = true;
+
+
+    btnDisable: boolean = true;
 }
