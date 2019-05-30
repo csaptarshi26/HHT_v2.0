@@ -99,7 +99,7 @@ export class ReceivingLinePage implements OnInit {
           counter++;
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
             if (!el.isVisible) {
-              this.scannedQty++;
+              //this.scannedQty++;
             }
             el.isVisible = true;
             el.toggle = false;
@@ -154,6 +154,7 @@ export class ReceivingLinePage implements OnInit {
     poLine.updatableQty.push(poLine.QtyToReceive);
     poLine.QtyReceived = poLine.QtyReceived + poLine.QtyToReceive;
     poLine.QtyToReceive = null;
+    this.scannedQty = this.scannedQty + poLine.QtyReceived
   }
 
   async savePO() {

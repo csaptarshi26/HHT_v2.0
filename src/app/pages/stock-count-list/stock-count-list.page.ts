@@ -3,7 +3,7 @@ import { AxService } from './../../providers/axService/ax.service';
 import { AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { ItemModel } from 'src/app/models/STPItem.model';
 import { Observable } from 'rxjs';
@@ -22,9 +22,11 @@ export class StockCountListPage implements OnInit {
   itemList: ItemModel[] = [];
   updateDataTableList: STPLogSyncDetailsModel[] = [];
   user: any;
+  valueUpdated: boolean = false;
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController) {
+    public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
+    public router: Router) {
   }
 
   ngOnInit() {
@@ -75,6 +77,7 @@ export class StockCountListPage implements OnInit {
         dataTable.User = this.user;
 
         el.dataSavedToList = true;
+        el.visible = false;
         this.updateDataTableList.push(dataTable)
       }
     })
@@ -88,7 +91,11 @@ export class StockCountListPage implements OnInit {
         if (res) {
           this.presentToast("Line Updated successfully");
           this.updateDataTableList = [];
+          this.itemList = [];
+          this.valueUpdated = true;
           this.storageService.clearItemList();
+          console.log(this.itemList)
+
         } else {
           this.presentToast("Error Updating Line");
         }
@@ -109,5 +116,13 @@ export class StockCountListPage implements OnInit {
       duration: 2000
     });
     toast.present();
+  }
+
+  backBtn() {
+    if (this.valueUpdated) {
+      this.paramService.itemUpdated = true;
+    } else {
+      this.paramService.itemUpdated = false;
+    }
   }
 }

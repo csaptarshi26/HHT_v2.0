@@ -52,7 +52,7 @@ export class TransferLinePage implements OnInit {
   }
 
   keyboardHide() {
-    this.keyboard.hide(); 
+    this.keyboard.hide();
   }
   getToLineData() {
     if (this.pageType == 'transferOut') {
@@ -114,11 +114,6 @@ export class TransferLinePage implements OnInit {
         this.toLineList.forEach(el => {
           counter++;
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
-
-
-            if (!el.isVisible) {
-              this.scannedQty++;
-            }
             el.isVisible = true;
             el.toggle = false;
             if (this.pageType == "transferOut") {
@@ -176,15 +171,25 @@ export class TransferLinePage implements OnInit {
     toLine.toggle = true;
 
     if (this.pageType == "transferOut") {
+      let sum = 0;
       toLine.updatableQty.push(toLine.QtyToShip);
       toLine.QtyShipped = toLine.QtyShipped + toLine.QtyToShip;
       toLine.QtyToShip = 0;
+
+      this.toLineList.forEach(el => {
+        sum = sum + el.QtyShipped;
+      })
+      this.scannedQty = sum;
     } else {
+      let sum = 0;
       toLine.updatableQty.push(toLine.QtyToReceive);
       toLine.QtyReceived = toLine.QtyReceived + toLine.QtyToReceive;
       toLine.QtyToReceive = 0;
+      this.toLineList.forEach(el => {
+        sum = sum + el.QtyShipped;
+      })
+      this.scannedQty = sum;
     }
-
   }
 
   async savePO() {

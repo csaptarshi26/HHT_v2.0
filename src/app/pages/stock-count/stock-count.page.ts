@@ -31,13 +31,16 @@ export class StockCountPage implements OnInit {
   scannedQty: any = 0;
   user: any;
 
-  editField: boolean = false;
+  qtyList: any[] = [];
 
+  editField: boolean = false;
+  count: any = -1;
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private router: Router,
     public loadingController: LoadingController, public storageServ: StorageService) {
   }
+
   ngOnInit() {
     this.user = this.dataServ.userId
     setTimeout(() => {
@@ -46,6 +49,15 @@ export class StockCountPage implements OnInit {
     this.keyboard.hide();
     this.currentLoc = this.paramService.Location;
     this.getWarehouse();
+  }
+
+  ionViewWillEnter() {
+    console.log(this.paramService.itemUpdated)
+    if (this.paramService.itemUpdated) {
+      this.item = {} as ItemModel;
+      this.itemList = [];
+      this.scannedQty = 0;
+    }
   }
   keyboardHide() {
     this.keyboard.hide();
@@ -74,8 +86,24 @@ export class StockCountPage implements OnInit {
       this.item.isEditable = false;
     }
   }
+
+  confirm() {
+    this.qtyList[this.count] = this.item.quantity;
+    this.scannedQty =  this.calculateSum();
+  }
+
+  calculateSum() {
+    var sum = 0;
+    this.qtyList.forEach(el => {
+      sum = sum + el;
+    })
+
+    return sum;
+  }
   async barcodeScan() {
+
     if (this.barcode != null && this.barcode.length > 3) {
+      this.count++;
       var flag = false;
       const loading = await this.loadingController.create({
         message: 'Please Wait',
@@ -89,14 +117,15 @@ export class StockCountPage implements OnInit {
           flag = true;
           this.presentToast("Barcode Not Found");
         } else {
-          this.scannedQty++;
           if (this.editField) {
+            this.item.quantity = 0
             this.item.isEditable = true;
             $(document).ready(function () {
               $("#qtyInput").focus();
             });
           } else {
             this.item.quantity = 1;
+            this.scannedQty = this.scannedQty + 1;
             this.item.isEditable = false;
           }
           this.item.isSaved = true;
@@ -122,11 +151,7 @@ export class StockCountPage implements OnInit {
     });
     toast.present();
   }
-  onEnter() {
-    $(document).ready(function () {
-      $("#barcodeInput").focus();
-    });
-  }
+
 
 
   showList() {
@@ -135,51 +160,5 @@ export class StockCountPage implements OnInit {
     this.router.navigateByUrl('/stock-count-list');
   }
 
-  async update() {
-    var lineNum = 1;
-    
-    this.itemList.forEach(el => {
-      var dataTable = {} as STPLogSyncDetailsModel;
-      if (el.isSaved && !el.dataSavedToList) {
-        dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
-        dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
-        dataTable.ItemId = el.ItemId;
-        dataTable.DocumentType = 7;
-        dataTable.ItemLocation = this.paramService.Location.LocationId;
-        dataTable.UserLocation = this.paramService.Location.LocationId;
-        dataTable.LineNum = lineNum;
 
-        dataTable.Quantity = el.quantity;
-        dataTable.TransactionType = 5;
-        dataTable.UnitId = el.Unit;
-        dataTable.User = this.user;
-
-        el.dataSavedToList = true;
-        this.updateDataTableList.push(dataTable)
-      }
-    })
-
-    if (this.updateDataTableList.length > 0) {
-      const loading = await this.loadingController.create({
-        message: 'Please Wait'
-      });
-      await loading.present();
-      this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
-        if (res) {
-          this.presentToast("Line Updated successfully");
-          this.updateDataTableList = [];
-          this.storageServ.clearItemList();
-        } else {
-          this.presentToast("Error Updating Line");
-        }
-        loading.dismiss();
-      }, error => {
-        loading.dismiss();
-        console.log(error.message);
-      })
-    } else {
-      this.presentToast("Line Already Saved");
-    }
-  }
 }

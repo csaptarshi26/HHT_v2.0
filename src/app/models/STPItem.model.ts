@@ -5,10 +5,11 @@ export class ItemModel {
     Unit: any;
     UnitFactor: any;
 
-    quantity:any;
-    visible:boolean;
-    toggle:boolean;
-    isSaved:boolean;
-    isEditable:boolean;
-    dataSavedToList:boolean;
+    quantity: any;
+    visible: boolean;
+    toggle: boolean;
+    isSaved: boolean;
+    isEditable: boolean;
+    dataSavedToList: boolean;
+    confirmed: boolean;
 }

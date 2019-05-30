@@ -14,7 +14,7 @@
 
 <ion-content>
 
-  <ion-card class="scanCard" color="primary">
+  <ion-card class="scanCard">
     <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
         <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" autofocus="true"
@@ -25,9 +25,7 @@
           <ion-icon name="close"></ion-icon>
         </ion-button>
       </ion-item>
-      <div class="alert alert-warning">
         Total Scan Qty: {{scannedQty}}
-      </div>
     </ion-card-content>
   </ion-card>
 
