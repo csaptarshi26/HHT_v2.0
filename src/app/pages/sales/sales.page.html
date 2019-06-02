@@ -1,12 +1,23 @@
 <ion-header>
-   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>Sales</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-
-</ion-content>
+    <ion-toolbar color="primary">
+      <ion-buttons slot="start">
+        <ion-back-button></ion-back-button>
+      </ion-buttons>
+      <ion-title>Sales</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  
+  <ion-content>
+    <ion-item lines="none">
+      <ion-label [routerLink]="['/sales-order/Sales-Order']">
+        <img src="./assets/imgs/receiving1.png">
+        <p text-wrap text-left>Sales Order</p>
+      </ion-label>
+      <ion-label [routerLink]="['/sales-order/Sales-Return']">
+        <img src="./assets/imgs/return.png">
+        <p text-wrap text-left>Sales Return</p>
+      </ion-label>
+    </ion-item>
+  
+  </ion-content>

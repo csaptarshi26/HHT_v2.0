@@ -1,25 +1,23 @@
+import { DataService } from './../../providers/dataService/data.service';
+import { ItemModel } from './../../models/STPItem.model';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
-import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
-import { TransferOrderModel } from './../../models/STPTransferOrder.model';
-import { ParameterService } from './../../providers/parameterService/parameter.service';
-import { STPLogSyncDetailsModel } from './../../models/STPLogSyncData.model';
-import { AxService } from 'src/app/providers/axService/ax.service';
-import { DataService } from 'src/app/providers/dataService/data.service';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
-import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
-import { ItemModel } from 'src/app/models/STPItem.model';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AxService } from './../../providers/axService/ax.service';
+import { Component, OnInit } from '@angular/core';
+import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
+import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 declare var $: any;
 @Component({
-  selector: 'app-stock-count',
-  templateUrl: './stock-count.page.html',
-  styleUrls: ['./stock-count.page.scss'],
+  selector: 'app-inventory-header',
+  templateUrl: './inventory-header.page.html',
+  styleUrls: ['./inventory-header.page.scss'],
 })
-export class StockCountPage implements OnInit {
+export class InventoryHeaderPage implements OnInit {
 
+  pageType:any;
   barcode: string;
   warehouseList: InventLocationLineModel[] = [];
   currentLoc: InventLocationLineModel = {} as InventLocationLineModel;
@@ -35,21 +33,23 @@ export class StockCountPage implements OnInit {
 
   editField: boolean = false;
   count: any = -1;
-  constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
-    public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService, private router: Router,
-    public loadingController: LoadingController, public storageServ: StorageService) {
+  constructor(public axService: AxService,public paramService: ParameterService, 
+    public alertController: AlertController,private activateRoute: ActivatedRoute,
+    public toastController: ToastController, private keyboard: Keyboard,
+    private router: Router, public storageServ: StorageService,
+    public loadingController: LoadingController,public dataServ:DataService) {
+
+    this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
+    console.log(this.pageType)
   }
 
   ngOnInit() {
-    this.getStorageData();
     this.user = this.dataServ.userId
     setTimeout(() => {
       this.keyboard.hide();
     }, 200);
-    this.keyboard.hide();
     this.currentLoc = this.paramService.Location;
-  }
+  } 
 
   ionViewWillEnter() {
     console.log(this.paramService.itemUpdated)
@@ -58,9 +58,6 @@ export class StockCountPage implements OnInit {
       this.itemList = [];
       this.scannedQty = 0;
     }
-    // }else{
-    //   this.itemList = this.paramService.ItemList;
-    // }
   }
   keyboardHide() {
     this.keyboard.hide();
@@ -71,7 +68,7 @@ export class StockCountPage implements OnInit {
     this.keyboard.hide();
   }
 
-
+ 
   notify() {
     if (this.editField) {
       this.item.isEditable = true;
@@ -82,29 +79,9 @@ export class StockCountPage implements OnInit {
 
   confirm() {
     this.qtyList[this.count] = this.item.quantity;
-    this.scannedQty = this.calculateSum();
-    this.storageServ.setItemList(this.itemList);
+    this.scannedQty =  this.calculateSum();
   }
-  getStorageData() {
-    this.storageServ.getAllValuesFromStorage.subscribe((res) => {
 
-    }, (error) => {
-
-    }, () => {
-      if (this.paramService.ItemList == null || this.paramService.ItemList.length == 0) {
-        this.itemList = [];
-      } else {
-        this.itemList = this.paramService.ItemList;
-        var sum = 0;
-        this.itemList.forEach(el => {
-          sum = sum + el.quantity;
-        })
-
-        this.scannedQty = sum;
-        this.item.visible = true;
-      }
-    });
-  }
   calculateSum() {
     var sum = 0;
     this.qtyList.forEach(el => {
@@ -114,7 +91,7 @@ export class StockCountPage implements OnInit {
     return sum;
   }
   async barcodeScan() {
-    this.storageServ.setItemList(this.itemList);
+
     if (this.barcode != null && this.barcode.length > 3) {
       this.count++;
       var flag = false;
@@ -168,8 +145,9 @@ export class StockCountPage implements OnInit {
 
 
   showList() {
+    this.storageServ.setItemList(this.itemList);
     this.dataServ.setItemList(this.itemList);
-    this.router.navigateByUrl('/stock-count-list');
+    this.router.navigateByUrl('/inventory-line/'+this.pageType);
   }
 
 

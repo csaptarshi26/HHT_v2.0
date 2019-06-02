@@ -30,6 +30,9 @@ export class TransferLinePage implements OnInit {
   updateDataTableList: STPLogSyncDetailsModel[] = [];
 
   @ViewChild('input') inputElement: IonInput;
+  qtyList: any[] = [];
+
+  count: any = -1;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
@@ -116,10 +119,14 @@ export class TransferLinePage implements OnInit {
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
             el.toggle = false;
+            this.count++
             if (this.pageType == "transferOut") {
               el.QtyToShip = 0;
+              el.qtyReceivedFromServer = el.QtyShipped;
+
               el.balance = el.Quantity - el.QtyShipped;
             } else {
+              el.qtyReceivedFromServer = el.QtyReceived;
               el.QtyToReceive = 0;
               el.balance = el.Quantity - el.QtyReceived;
             }
@@ -176,22 +183,35 @@ export class TransferLinePage implements OnInit {
       toLine.QtyShipped = toLine.QtyShipped + toLine.QtyToShip;
       toLine.QtyToShip = 0;
 
-      this.toLineList.forEach(el => {
-        sum = sum + el.QtyShipped;
-      })
-      this.scannedQty = sum;
+      this.qtyList[this.count] = toLine.QtyShipped;
+      this.scannedQty =  this.calculateSum();
+      
+      // this.toLineList.forEach(el => {
+      //   sum = sum + el.QtyShipped;
+      // })
+      // this.scannedQty = sum;
     } else {
       let sum = 0;
       toLine.updatableQty.push(toLine.QtyToReceive);
       toLine.QtyReceived = toLine.QtyReceived + toLine.QtyToReceive;
       toLine.QtyToReceive = 0;
-      this.toLineList.forEach(el => {
-        sum = sum + el.QtyShipped;
-      })
-      this.scannedQty = sum;
+      // this.toLineList.forEach(el => {
+      //   sum = sum + el.QtyShipped;
+      // })
+      // this.scannedQty = sum;
+
+      this.qtyList[this.count] = toLine.QtyReceived;
+      this.scannedQty =  this.calculateSum();
     }
   }
+  calculateSum() {
+    var sum = 0;
+    this.qtyList.forEach(el => {
+      sum = sum + el;
+    })
 
+    return sum;
+  }
   async savePO() {
     this.toLineList.forEach(el => {
       var dataTable = {} as STPLogSyncDetailsModel;
@@ -290,13 +310,13 @@ export class TransferLinePage implements OnInit {
   }
   cancelBtn(toLine: TransferOrderLine) {
     if (this.pageType == "transferOut") {
-      toLine.QtyShipped = 0;
+      toLine.QtyShipped = toLine.qtyReceivedFromServer;
       toLine.QtyToShip = 0;
-      toLine.balance = toLine.Quantity;
+      toLine.balance = toLine.Quantity - toLine.qtyReceivedFromServer;
     } else {
-      toLine.QtyReceived = 0;
+      toLine.QtyReceived = toLine.qtyReceivedFromServer;
       toLine.QtyToReceive = 0;
-      toLine.balance = toLine.Quantity;
+      toLine.balance = toLine.Quantity - toLine.qtyReceivedFromServer;
     }
 
   }

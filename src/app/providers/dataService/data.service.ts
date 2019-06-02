@@ -23,6 +23,15 @@ export class DataService {
   private itemListSub = new BehaviorSubject<any>(0);
   getItemList$ = this.itemListSub.asObservable();
 
+  private salesOrderSub = new BehaviorSubject<any>(0);
+  getSO$ = this.salesOrderSub.asObservable();
+
+  private salesOrderReturnSub = new BehaviorSubject<any>(0);
+  getSOReturn$ = this.salesOrderReturnSub.asObservable();
+
+  private salesOrderListSub = new BehaviorSubject<any>(0);
+  getSOList$ = this.salesOrderListSub.asObservable();
+
   constructor() { }
 
   setPO(data) {
@@ -43,6 +52,18 @@ export class DataService {
 
   setItemList(data){
     this.itemListSub.next(data);
+  }
+
+  setSO(data){
+    this.salesOrderSub.next(data);
+  }
+
+  setSOReturn(data){
+    this.salesOrderReturnSub.next(data);
+  }
+
+  setSOList(data){
+    this.salesOrderListSub.next(data);
   }
   
 }

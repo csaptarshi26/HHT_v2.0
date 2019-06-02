@@ -98,6 +98,7 @@ export class ReturnLinePage implements OnInit {
             if (!el.isVisible) {
               //this.scannedQty++;
             }
+            el.qtyReceivedFromServer = el.QtyReceived;
             el.isVisible = true;
             el.toggle = false;
             el.QtyToReceive = 0;
@@ -228,7 +229,7 @@ export class ReturnLinePage implements OnInit {
     await alert.present();
   }
   cancelBtn(poLine: PurchLineModel) {
-    poLine.QtyReceived = 0;
-    poLine.balance = poLine.Qty;
+    poLine.QtyReceived = poLine.qtyReceivedFromServer;
+    poLine.balance = poLine.Qty - poLine.qtyReceivedFromServer;
   }
 }

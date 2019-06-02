@@ -1,0 +1,29 @@
+.scanCard{
+    margin: 0px;
+    margin-bottom: 10px;
+    padding: 0px;
+    // height: 16vh;
+    border-radius: 0x;
+}
+.ionItemInputSqr > ion-label{
+    margin-left: 0px;
+}
+
+.lineDetails{
+    border-left: 5px solid #3880ff;
+    margin-top:0px;
+}
+.iconPos{
+    float: right;
+    font-size: 24px;
+    color:#3880ff; 
+}
+ion-input{
+    height: 48px;
+}
+ion-input:read-only{
+    opacity: 1;
+}
+ion-input:disabled{
+    opacity: 1;
+}

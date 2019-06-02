@@ -69,6 +69,15 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    this.storage.get('InventoryItemList').then((data) => {
+      this.parameterservice.inventoryItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
 
   setAuthenticated(authenticated: any) {
@@ -100,6 +109,11 @@ export class StorageService {
   setItemList(itemList) {
     this.storage.set('ItemList', itemList);
     this.parameterservice.ItemList = itemList;
+  }
+
+  setInventoryItemList(itemList) {
+    this.storage.set('InventoryItemList', itemList);
+    this.parameterservice.inventoryItemList = itemList;
   }
   clearStorageValues() {
     this.storage.clear();

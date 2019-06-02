@@ -12,6 +12,7 @@ export class TransferOrderLine {
     updatableQty: any[];
     qtyDesc: any;
     BarCode: any;
+    qtyReceivedFromServer:any;
 
     balance: any;
 

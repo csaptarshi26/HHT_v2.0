@@ -51,9 +51,6 @@ export class StockCountListPage implements OnInit {
     }, error => {
 
     })
-    if (this.itemList.length == 0) {
-      this.itemList = this.paramService.ItemList;
-    }
   }
 
   async saveItem() {
@@ -117,7 +114,9 @@ export class StockCountListPage implements OnInit {
     });
     toast.present();
   }
-
+  ngOnDestroy() {
+    this.backBtn();
+  }
   backBtn() {
     if (this.valueUpdated) {
       this.paramService.itemUpdated = true;

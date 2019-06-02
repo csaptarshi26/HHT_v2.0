@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title> {{pageType}} </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-item class="ionItemInputSqr">
+    <ion-label position="stacked">Customer Name</ion-label>
+    <ionic-selectable [(ngModel)]="selectedCustomer" [items]="customerList" itemValueField="CustAccount"
+      itemTextField="displayText" [canSearch]="true" (onChange)="customerSelected()">
+    </ionic-selectable>
+  </ion-item>
+
+  <ion-item class="ionItemInputSqr">
+    <ion-label position="stacked">SO No.</ion-label>
+    <ionic-selectable [(ngModel)]="selectedSalesTable" [items]="salesList" itemValueField="DocumentNo"
+      itemTextField="DocumentNo" [canSearch]="true">
+    </ionic-selectable>
+  </ion-item>
+
+  <ion-card *ngIf="selectedSalesTable.DocumentNo!=null">
+    <ion-card-header>Sales Order Details</ion-card-header>
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-label text-left>Order Date</ion-label>
+        <ion-label text-right> {{selectedSalesTable.DocumentDate | date: 'mediumDate'}} </ion-label>
+      </ion-item>
+    </ion-card-content> 
+  </ion-card>
+
+</ion-content>
+<ion-footer>
+  <!-- [disabled]="selectedPurchOrder.PurchId==null" -->
+  <ion-button expand="block" (click)="navigateToNext()">Sales</ion-button>
+</ion-footer>

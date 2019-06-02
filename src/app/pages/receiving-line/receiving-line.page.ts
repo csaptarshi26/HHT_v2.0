@@ -27,10 +27,14 @@ export class ReceivingLinePage implements OnInit {
 
   @ViewChild('input') inputElement: IonInput;
 
+  qtyList: any[] = [];
+
+  count: any = -1;
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
+
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService,public loadingController: LoadingController) {
+    public paramService: ParameterService, public loadingController: LoadingController) {
   }
 
   ngOnInit() {
@@ -87,10 +91,19 @@ export class ReceivingLinePage implements OnInit {
   ngOnDestroy() {
     this.poHeader.scannedQty = this.scannedQty;
   }
+  calculateSum() {
+    var sum = 0;
+    this.qtyList.forEach(el => {
+      sum = sum + el;
+    })
+
+    return sum;
+  }
   searchBarcode() {
     var visibleLine = [];
 
     if (this.barcode != null && this.barcode.length > 3) {
+
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
@@ -98,12 +111,15 @@ export class ReceivingLinePage implements OnInit {
         this.poLineList.forEach(el => {
           counter++;
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
+            this.count++
             if (!el.isVisible) {
               //this.scannedQty++;
             }
+
+            el.qtyReceivedFromServer = el.QtyReceived;
             el.isVisible = true;
             el.toggle = false;
-            el.QtyToReceive = null;
+            el.QtyToReceive = 0;
             flag = true;
             el.updatableQty = [];
             el.balance = el.Qty - el.QtyReceived;
@@ -154,7 +170,10 @@ export class ReceivingLinePage implements OnInit {
     poLine.updatableQty.push(poLine.QtyToReceive);
     poLine.QtyReceived = poLine.QtyReceived + poLine.QtyToReceive;
     poLine.QtyToReceive = null;
-    this.scannedQty = this.scannedQty + poLine.QtyReceived
+    this.scannedQty = this.scannedQty + poLine.QtyReceived;
+
+    this.qtyList[this.count] = poLine.QtyReceived;
+    this.scannedQty = this.calculateSum();
   }
 
   async savePO() {
@@ -208,7 +227,7 @@ export class ReceivingLinePage implements OnInit {
     }
   }
   clearQtyToRec(poLine: PurchLineModel) {
-    poLine.QtyToReceive = null;
+    poLine.QtyToReceive = 0;
   }
   qtyRecCheck(poLine: PurchLineModel) {
     if ((poLine.QtyReceived + poLine.QtyToReceive) > poLine.Qty) {
@@ -232,9 +251,9 @@ export class ReceivingLinePage implements OnInit {
     await alert.present();
   }
   cancelBtn(poLine: PurchLineModel) {
-    poLine.QtyReceived = 0;
+    poLine.QtyReceived = poLine.qtyReceivedFromServer;
     poLine.QtyToReceive = 0;
-    poLine.balance = poLine.Qty;
+    poLine.balance = poLine.Qty - poLine.qtyReceivedFromServer;
   }
 
 }

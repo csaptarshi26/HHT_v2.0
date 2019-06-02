@@ -19,7 +19,12 @@ const routes: Routes = [
   { path: 'return-line', loadChildren: './pages/return-line/return-line.module#ReturnLinePageModule' },
   { path: 'transfer-line/:pageName', loadChildren: './pages/transfer-line/transfer-line.module#TransferLinePageModule' },
   { path: 'stock-count-list', loadChildren: './pages/stock-count-list/stock-count-list.module#StockCountListPageModule' },
-  { path: 'transfer-line-list', loadChildren: './pages/transfer-line-list/transfer-line-list.module#TransferLineListPageModule' }
+  { path: 'transfer-line-list', loadChildren: './pages/transfer-line-list/transfer-line-list.module#TransferLineListPageModule' },
+  { path: 'sales-order/:pageName', loadChildren: './pages/sales-order/sales-order.module#SalesOrderPageModule' },
+  { path: 'sales-line/:pageName', loadChildren: './pages/sales-line/sales-line.module#SalesLinePageModule' },
+  { path: 'inventory-header/:pageName', loadChildren: './pages/inventory-header/inventory-header.module#InventoryHeaderPageModule' },
+  { path: 'inventory-line/:pageName', loadChildren: './pages/inventory-line/inventory-line.module#InventoryLinePageModule' },
+  { path: 'sales-list/:pageName', loadChildren: './pages/sales-list/sales-list.module#SalesListPageModule' }
 ];
 
 @NgModule({

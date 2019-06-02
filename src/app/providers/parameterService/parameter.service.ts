@@ -18,7 +18,9 @@ export class ParameterService {
 
   public deviceID: any;
 
+  public inventoryItemList: ItemModel[] = [];
+
   public itemUpdated: boolean = false;
-  public totalStorageVariables: Number = 6;
+  public totalStorageVariables: Number = 7;
   constructor() { }
 }
