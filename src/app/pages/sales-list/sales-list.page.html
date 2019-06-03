@@ -14,7 +14,7 @@
 
 <ion-content>
   <div *ngIf="salesLineList.length; else noItem">
-    <ion-card *ngFor="let salesDetail of salesLineList">
+    <ion-card *ngFor="let salesDetails of salesLineList">
       <ion-card-header>
         <span style="width: 50%">
           <b><span>Id : {{salesDetails.ItemNumber}}</span>
@@ -66,15 +66,6 @@
 
         </ion-item>
 
-        <!-- <ion-item lines="none" class="ionItemInput twoItems">
-                    <ion-label position="stacked" class="disabledInput">Unit Amount</ion-label>
-                    <ion-input type="text" [disabled]="true" [(ngModel)]="salesDetails.UnitAmt"></ion-input>
-                  </ion-item>
-        
-                  <ion-item lines="none" class="ionItemInput twoItems">
-                    <ion-label position="stacked" class="disabledInput">Net Amount</ion-label>
-                    <ion-input type="text" [disabled]="true" [(ngModel)]="salesDetails.NetAmt"></ion-input>
-                  </ion-item> -->
         <!-- <div style="margin-top:10px">
           <ion-button expand="block" class="twoBtn" (click)="saveLine(salesDetails)"
             [disabled]="salesDetails.btnDisable">Save

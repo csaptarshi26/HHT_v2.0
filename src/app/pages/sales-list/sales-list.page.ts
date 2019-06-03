@@ -127,9 +127,9 @@ export class SalesListPage implements OnInit {
   }
   backBtn() {
     if (this.valueUpdated) {
-      this.paramService.itemUpdated = true;
+      this.paramService.soLineUpdated = true;
     } else {
-      this.paramService.itemUpdated = false;
+      this.paramService.soLineUpdated = false;
     }
   }
 

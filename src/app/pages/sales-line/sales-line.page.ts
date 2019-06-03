@@ -45,6 +45,14 @@ export class SalesLinePage implements OnInit {
     this.getSoLineData();
   }
 
+  ionViewWillEnter() {
+    if (this.paramService.soLineUpdated) {
+      this.salesDetails = {} as SalesLineModel;
+      this.salesLineList = [];
+      this.scannedQty = 0;
+    }
+  }
+
   getSoLineData() {
     if (this.pageType == 'Sales-Order') {
       this.dataServ.getSO$.subscribe(res => {
@@ -159,7 +167,7 @@ export class SalesLinePage implements OnInit {
       this.scannedQty = this.calculateSum();
     } else {
       let sum = 0;
-      soLine.updatableQty[this.count]= soLine.QtyToReceive;
+      soLine.updatableQty[this.count] = soLine.QtyToReceive;
       soLine.QtyReceived = soLine.QtyReceived + soLine.QtyToReceive;
       soLine.QtyToReceive = 0;
 
@@ -167,7 +175,7 @@ export class SalesLinePage implements OnInit {
       this.scannedQty = this.calculateSum();
     }
 
-    this.salesLineList.push(soLine);
+    this.salesLineList[this.count] = soLine;
   }
   calculateSum() {
     var sum = 0;

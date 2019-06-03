@@ -19,6 +19,7 @@ export class ParameterService {
   public deviceID: any;
 
   public inventoryItemList: ItemModel[] = [];
+  public soLineUpdated: boolean;
 
   public itemUpdated: boolean = false;
   public totalStorageVariables: Number = 7;

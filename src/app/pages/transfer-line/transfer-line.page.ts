@@ -179,29 +179,22 @@ export class TransferLinePage implements OnInit {
 
     if (this.pageType == "transferOut") {
       let sum = 0;
-      toLine.updatableQty.push(toLine.QtyToShip);
+      toLine.updatableQty[this.count] = toLine.QtyToShip;
       toLine.QtyShipped = toLine.QtyShipped + toLine.QtyToShip;
       toLine.QtyToShip = 0;
 
       this.qtyList[this.count] = toLine.QtyShipped;
-      this.scannedQty =  this.calculateSum();
-      
-      // this.toLineList.forEach(el => {
-      //   sum = sum + el.QtyShipped;
-      // })
-      // this.scannedQty = sum;
+      this.scannedQty = this.calculateSum();
+
     } else {
       let sum = 0;
-      toLine.updatableQty.push(toLine.QtyToReceive);
+      toLine.updatableQty[this.count] = toLine.QtyToReceive;
       toLine.QtyReceived = toLine.QtyReceived + toLine.QtyToReceive;
       toLine.QtyToReceive = 0;
-      // this.toLineList.forEach(el => {
-      //   sum = sum + el.QtyShipped;
-      // })
-      // this.scannedQty = sum;
+
 
       this.qtyList[this.count] = toLine.QtyReceived;
-      this.scannedQty =  this.calculateSum();
+      this.scannedQty = this.calculateSum();
     }
   }
   calculateSum() {
