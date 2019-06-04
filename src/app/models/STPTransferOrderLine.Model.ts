@@ -2,19 +2,19 @@ export class TransferOrderLine {
     DocumentNo: any;
     ItemNo: any;
     LineNo: any;
-    QtyReceived: any;
-    QtyShipped: any;
-    QtyToReceive: any;
-    QtyToShip: any;
-    Quantity: any;
+    QtyReceived: number;
+    QtyShipped: number;
+    QtyToReceive: number;
+    QtyToShip: number;
+    Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
-    updatableQty: any[];
+    updatableQty: number;
     qtyDesc: any;
     BarCode: any;
-    qtyReceivedFromServer:any;
+    //qtyReceivedFromServer:any;
 
-    balance: any;
+    inputQty:number;
 
     isVisible: boolean;
     isSaved: boolean;

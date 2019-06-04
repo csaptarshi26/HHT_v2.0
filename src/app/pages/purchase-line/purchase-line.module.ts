@@ -1,26 +1,28 @@
+import { PipesModule } from './../../pipes/mod.pipe.module';
+import { HideKeyboardModule } from 'hide-keyboard';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { ReceivingLinePage } from './receiving-line.page';
 
-import { HideKeyboardModule } from 'hide-keyboard';
+import { IonicModule } from '@ionic/angular';
+
+import { PurchaseLinePage } from './purchase-line.page';
+
 const routes: Routes = [
   {
     path: '',
-    component: ReceivingLinePage
+    component: PurchaseLinePage
   }
 ];
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
+    CommonModule,HideKeyboardModule,
+    FormsModule,PipesModule,
     IonicModule,
-    HideKeyboardModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ReceivingLinePage]
+  declarations: [PurchaseLinePage]
 })
-export class ReceivingLinePageModule {}
+export class PurchaseLinePageModule {}

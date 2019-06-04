@@ -45,13 +45,13 @@ export class SalesLinePage implements OnInit {
     this.getSoLineData();
   }
 
-  ionViewWillEnter() {
-    if (this.paramService.soLineUpdated) {
-      this.salesDetails = {} as SalesLineModel;
-      this.salesLineList = [];
-      this.scannedQty = 0;
-    }
-  }
+  // ionViewWillEnter() {
+  //   if (this.paramService.soLineUpdated) {
+  //     this.salesDetails = {} as SalesLineModel;
+  //     this.salesLineList = [];
+  //     this.scannedQty = 0;
+  //   }
+  // }
 
   getSoLineData() {
     if (this.pageType == 'Sales-Order') {
@@ -89,19 +89,10 @@ export class SalesLinePage implements OnInit {
             el.isVisible = true;
             // el.toggle = false;
             this.count++
-            if (this.pageType == "Sales-Order") {
-              el.QtyToShip = 0;
-              el.qtyReceivedFromServer = el.QtyShipped;
-
-              el.balance = el.Quantity - el.QtyShipped;
-            } else {
-              el.qtyReceivedFromServer = el.QtyReceived;
-              el.QtyToReceive = 0;
-              el.balance = el.Quantity - el.QtyReceived;
-            }
+            el.updatableQty = 0;
+            el.inputQty = 0;
 
             flag = true;
-            el.updatableQty = [];
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
 
@@ -150,86 +141,59 @@ export class SalesLinePage implements OnInit {
   }
 
   onEnter(soLine: SalesLineModel) {
-    if (this.qtyRecCheck(soLine)) {
-      this.saveLine(soLine);
-    }
+    this.saveLine(soLine);
   }
   saveLine(soLine: SalesLineModel) {
-    soLine.isSaved = true;
-
-    if (this.pageType == "Sales-Order") {
-      let sum = 0;
-      soLine.updatableQty[this.count] = soLine.QtyToShip;
-      soLine.QtyShipped = soLine.QtyShipped + soLine.QtyToShip;
-      soLine.QtyToShip = 0;
-
-      this.qtyList[this.count] = soLine.QtyShipped;
-      this.scannedQty = this.calculateSum();
+    if (this.qtyRecCheck(soLine)) {
+      soLine.isSaved = true;
     } else {
-      let sum = 0;
-      soLine.updatableQty[this.count] = soLine.QtyToReceive;
-      soLine.QtyReceived = soLine.QtyReceived + soLine.QtyToReceive;
-      soLine.QtyToReceive = 0;
-
-      this.qtyList[this.count] = soLine.QtyReceived;
-      this.scannedQty = this.calculateSum();
+      soLine.isSaved = false;
     }
-
-    this.salesLineList[this.count] = soLine;
-  }
-  calculateSum() {
+    console.log(this.soLineList);
+    console.log(this.qtyList)
     var sum = 0;
-    this.qtyList.forEach(el => {
-      sum = sum + el;
+    this.qtyList.forEach(data => {
+      sum += data;
     })
-
-    return sum;
+    this.scannedQty = sum;
   }
   clearQtyToRec(soLine: SalesLineModel) {
-    if (this.pageType == "Sales-Order") {
-      soLine.QtyToShip = 0;
-    } else {
-      soLine.QtyToReceive = 0;
-    }
+    soLine.inputQty = 0;
   }
   qtyRecCheck(soLine: SalesLineModel) {
     if (this.pageType == "Sales-Order") {
-      if ((soLine.QtyShipped + soLine.QtyToShip) > soLine.Quantity) {
+      if ((soLine.QtyShipped + soLine.inputQty) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
-        soLine.btnDisable = true;
         return false;
       } else {
-        soLine.balance = soLine.Quantity - (soLine.QtyToShip + soLine.QtyShipped);
-        soLine.btnDisable = false;
+        soLine.QtyToShip -= soLine.inputQty;
+        soLine.QtyShipped += soLine.inputQty;
+        soLine.updatableQty += soLine.inputQty;
+        this.qtyList[this.count] = soLine.updatableQty;
+        soLine.inputQty = 0;
         return true;
       }
     } else {
       if ((soLine.QtyReceived + soLine.QtyToReceive) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
-        soLine.btnDisable = true;
         return false;
       } else {
-        soLine.balance = soLine.Quantity - (soLine.QtyToReceive + soLine.QtyReceived);
-        soLine.btnDisable = false;
+        soLine.QtyToReceive -= soLine.inputQty;
+        soLine.QtyReceived += soLine.inputQty;
+        soLine.updatableQty += soLine.inputQty;
+        this.qtyList[this.count] = soLine.updatableQty;
+        soLine.inputQty = 0;
         return true;
       }
     }
   }
-
   cancelBtn(soLine: SalesLineModel) {
-    if (this.pageType == "Sales-Order") {
-      soLine.QtyShipped = soLine.qtyReceivedFromServer;
-      soLine.QtyToShip = 0;
-      soLine.balance = soLine.Quantity - soLine.qtyReceivedFromServer;
-    } else {
-      soLine.QtyReceived = soLine.qtyReceivedFromServer;
-      soLine.QtyToReceive = 0;
-      soLine.balance = soLine.Quantity - soLine.qtyReceivedFromServer;
-    }
+    soLine.QtyShipped -= soLine.updatableQty;
+    soLine.QtyToShip += soLine.updatableQty;
+    soLine.updatableQty = 0;
   }
-
   showList() {
-    this.dataServ.setSOList(this.salesLineList);
+    this.dataServ.setSOList(this.soLineList);
     this.router.navigateByUrl('/sales-list/' + this.pageType);
   }
 }

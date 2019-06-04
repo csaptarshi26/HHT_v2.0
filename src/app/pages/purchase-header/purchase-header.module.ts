@@ -1,4 +1,4 @@
-import { PipesModule } from './../../pipes/mod.pipe.module';
+import { IonicSelectableModule } from 'ionic-selectable';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,22 +6,22 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ReturnLinePage } from './return-line.page';
+import { PurchaseHeaderPage } from './purchase-header.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ReturnLinePage
+    component: PurchaseHeaderPage
   }
 ];
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,PipesModule,
+    CommonModule,IonicSelectableModule,
+    FormsModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ReturnLinePage]
+  declarations: [PurchaseHeaderPage]
 })
-export class ReturnLinePageModule {}
+export class PurchaseHeaderPageModule {}

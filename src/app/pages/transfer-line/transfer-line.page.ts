@@ -119,20 +119,23 @@ export class TransferLinePage implements OnInit {
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
             el.toggle = false;
+            el.updatableQty = 0;
+            el.inputQty = 0;
             this.count++
-            if (this.pageType == "transferOut") {
-              el.QtyToShip = 0;
-              el.qtyReceivedFromServer = el.QtyShipped;
+            // if (this.pageType == "transferOut") {
+            //   el.Quantity = el.QtyToShip;
+            //   el.qtyReceivedFromServer = el.QtyShipped;
 
-              el.balance = el.Quantity - el.QtyShipped;
-            } else {
-              el.qtyReceivedFromServer = el.QtyReceived;
-              el.QtyToReceive = 0;
-              el.balance = el.Quantity - el.QtyReceived;
-            }
+
+            //   el.balance = el.Quantity - el.QtyShipped;
+            // } else {
+            //   el.Quantity = el.QtyToReceive;
+            //   el.qtyReceivedFromServer = el.QtyReceived;
+
+            //   el.balance = el.Quantity - el.QtyReceived;
+            // }
 
             flag = true;
-            el.updatableQty = [];
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
 
@@ -169,41 +172,23 @@ export class TransferLinePage implements OnInit {
     toast.present();
   }
   onEnter(toLine: TransferOrderLine) {
-    if (this.qtyRecCheck(toLine)) {
-      this.saveLine(toLine);
-    }
+    this.saveLine(toLine);
   }
   saveLine(toLine: TransferOrderLine) {
-    toLine.isSaved = true;
-    toLine.toggle = true;
-
-    if (this.pageType == "transferOut") {
-      let sum = 0;
-      toLine.updatableQty[this.count] = toLine.QtyToShip;
-      toLine.QtyShipped = toLine.QtyShipped + toLine.QtyToShip;
-      toLine.QtyToShip = 0;
-
-      this.qtyList[this.count] = toLine.QtyShipped;
-      this.scannedQty = this.calculateSum();
-
+    if (this.qtyRecCheck(toLine)) {
+      toLine.isSaved = true;
+      toLine.toggle = true;
     } else {
-      let sum = 0;
-      toLine.updatableQty[this.count] = toLine.QtyToReceive;
-      toLine.QtyReceived = toLine.QtyReceived + toLine.QtyToReceive;
-      toLine.QtyToReceive = 0;
-
-
-      this.qtyList[this.count] = toLine.QtyReceived;
-      this.scannedQty = this.calculateSum();
+      toLine.isSaved = false;
+      toLine.toggle = false;
     }
-  }
-  calculateSum() {
+    console.log(toLine);
+    console.log(this.qtyList)
     var sum = 0;
-    this.qtyList.forEach(el => {
-      sum = sum + el;
+    this.qtyList.forEach(data => {
+      sum += data;
     })
-
-    return sum;
+    this.scannedQty = sum;
   }
   async savePO() {
     this.toLineList.forEach(el => {
@@ -223,12 +208,7 @@ export class TransferLinePage implements OnInit {
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = el.LineNo;
 
-        var sum = 0;
-        el.updatableQty.forEach(data => {
-          sum = sum + data;
-        })
-
-        dataTable.Quantity = sum;
+        dataTable.Quantity = el.updatableQty;
         dataTable.TransactionType = 3;
         dataTable.UnitId = el.UnitOfMeasure;
         dataTable.User = this.user;
@@ -260,35 +240,37 @@ export class TransferLinePage implements OnInit {
     }
   }
   clearQtyToRec(toLine: TransferOrderLine) {
-    if (this.pageType == "transferOut") {
-      toLine.QtyToShip = 0;
-    } else {
-      toLine.QtyToReceive = 0;
-    }
+    toLine.inputQty = 0;
+  }
+  recQtyChanged(toLine: TransferOrderLine) {
+    toLine.isSaved = false;
   }
   qtyRecCheck(toLine: TransferOrderLine) {
     if (this.pageType == "transferOut") {
-      if ((toLine.QtyShipped + toLine.QtyToShip) > toLine.Quantity) {
+      if ((toLine.QtyShipped + toLine.inputQty) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
-        toLine.btnDisable = true;
         return false;
       } else {
-        toLine.balance = toLine.Quantity - (toLine.QtyToShip + toLine.QtyShipped);
-        toLine.btnDisable = false;
+        toLine.QtyToShip -= toLine.inputQty;
+        toLine.QtyShipped += toLine.inputQty;
+        toLine.updatableQty += toLine.inputQty;
+        this.qtyList[this.count] = toLine.updatableQty;
+        toLine.inputQty = 0;
         return true;
       }
     } else {
       if ((toLine.QtyReceived + toLine.QtyToReceive) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
-        toLine.btnDisable = true;
         return false;
       } else {
-        toLine.balance = toLine.Quantity - (toLine.QtyToReceive + toLine.QtyReceived);
-        toLine.btnDisable = false;
+        toLine.QtyToReceive -= toLine.inputQty;
+        toLine.QtyReceived += toLine.inputQty;
+        toLine.updatableQty += toLine.inputQty;
+        this.qtyList[this.count] = toLine.updatableQty;
+        toLine.inputQty = 0;
         return true;
       }
     }
-
   }
 
   async presentAlert(msg) {
@@ -303,16 +285,12 @@ export class TransferLinePage implements OnInit {
   }
   cancelBtn(toLine: TransferOrderLine) {
     if (this.pageType == "transferOut") {
-      toLine.QtyShipped = toLine.qtyReceivedFromServer;
-      toLine.QtyToShip = 0;
-      toLine.balance = toLine.Quantity - toLine.qtyReceivedFromServer;
+      toLine.QtyShipped -= toLine.updatableQty;
+      toLine.QtyToShip += toLine.updatableQty;
     } else {
-      toLine.QtyReceived = toLine.qtyReceivedFromServer;
-      toLine.QtyToReceive = 0;
-      toLine.balance = toLine.Quantity - toLine.qtyReceivedFromServer;
+      toLine.QtyReceived -= toLine.updatableQty;
+      toLine.QtyToReceive += toLine.updatableQty;
     }
-
+    toLine.updatableQty = 0;
   }
-
-
-}
+} 

@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title> PO Return</ion-title>
+    <ion-title> {{pageType}} </ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,12 +12,12 @@
   <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">Vendor Name</ion-label>
     <ionic-selectable [(ngModel)]="selectedVendor" [items]="vendorList" itemValueField="VendAccount"
-      itemTextField="displayText" [canSearch]="true" (onChange)="vendorSelected($event)">
+      itemTextField="displayText" [canSearch]="true" (onChange)="vendorSelected()">
     </ionic-selectable>
   </ion-item>
 
   <ion-item class="ionItemInputSqr">
-    <ion-label position="stacked">PO Return No.</ion-label>
+    <ion-label position="stacked">PO No.</ion-label>
     <ionic-selectable [(ngModel)]="selectedPurchOrder" [items]="purchaseList" itemValueField="PurchId"
       itemTextField="PurchId" [canSearch]="true">
     </ionic-selectable>
@@ -36,5 +36,5 @@
 </ion-content>
 <ion-footer>
   <!-- [disabled]="selectedPurchOrder.PurchId==null" -->
-  <ion-button expand="block" (click)="navigateToNext()">Return</ion-button>
+  <ion-button expand="block" (click)="navigateToNext()"> {{pageType}} </ion-button>
 </ion-footer>

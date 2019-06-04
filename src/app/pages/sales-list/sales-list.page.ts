@@ -1,5 +1,5 @@
 import { AxService } from './../../providers/axService/ax.service';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from './../../providers/dataService/data.service';
@@ -20,12 +20,12 @@ export class SalesListPage implements OnInit {
   salesLineList: SalesLineModel[] = [];
   updateDataTableList: STPLogSyncDetailsModel[] = [];
   user: any;
-  valueUpdated: boolean = false;
+  dataUpdatedToServer: boolean = false;
   pageType: any;
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
-    public router: Router, private activateRoute: ActivatedRoute) {
+    public router: Router, private activateRoute: ActivatedRoute, public alertController: AlertController) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
 
@@ -33,6 +33,13 @@ export class SalesListPage implements OnInit {
     this.getsalesLineList();
     this.user = this.dataServ.userId
     //this.getItemsFromStorage()
+  }
+  ngOnDestroy() {
+    if (!this.dataUpdatedToServer) {
+      this.storageService.clearSOItemList();
+    } else {
+      this.storageService.setSOItemList(this.salesLineList);
+    }
   }
   getItemsFromStorage() {
     this.storageService.getAllValuesFromStorage.subscribe((res) => {
@@ -71,19 +78,14 @@ export class SalesListPage implements OnInit {
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = lineNum;
-
-        var sum = 0;
-        el.updatableQty.forEach(data => {
-          sum = sum + data;
-        })
-        dataTable.Quantity = sum;
-
+        dataTable.Quantity = el.updatableQty;
         dataTable.TransactionType = 1;
         dataTable.UnitId = el.UnitOfMeasure;
         dataTable.User = this.user;
 
         el.dataSavedToList = true;
         //el.visible = false;
+        lineNum++;
         this.updateDataTableList.push(dataTable)
       }
     })
@@ -98,7 +100,8 @@ export class SalesListPage implements OnInit {
           this.presentToast("Line Updated successfully");
           this.updateDataTableList = [];
           this.salesLineList = [];
-          this.valueUpdated = true;
+          this.dataUpdatedToServer = true;
+          this.presentAlert();
           console.log(this.salesLineList)
 
         } else {
@@ -114,7 +117,22 @@ export class SalesListPage implements OnInit {
     }
   }
 
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Confirmation!',
+      message: 'Line Updated Successfully',
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+            this.router.navigateByUrl('/sales');
+          }
+        }
+      ]
+    });
 
+    await alert.present();
+  }
   async presentToast(msg) {
     const toast = await this.toastController.create({
       message: msg,
@@ -122,46 +140,54 @@ export class SalesListPage implements OnInit {
     });
     toast.present();
   }
-  ngOnDestroy() {
-    this.backBtn();
-  }
-  backBtn() {
-    if (this.valueUpdated) {
-      this.paramService.soLineUpdated = true;
-    } else {
-      this.paramService.soLineUpdated = false;
-    }
-  }
 
-  clearQtyToRec(soLine: SalesLineModel) {
-    if (this.pageType == "Sales-Order") {
-      soLine.QtyToShip = 0;
+  saveLine(soLine: SalesLineModel) {
+    if (this.qtyRecCheck(soLine)) {
+      soLine.isSaved = true;
     } else {
-      soLine.QtyToReceive = 0;
+      soLine.isSaved = false;
     }
+    console.log(this.salesLineList);
+
+    this.storageService.setPOItemList(this.salesLineList);
+  }
+  clearQtyToRec(soLine: SalesLineModel) {
+    soLine.inputQty = 0;
+  }
+  recQtyChanged(soLine: SalesLineModel) {
+    soLine.isSaved = false;
   }
   qtyRecCheck(soLine: SalesLineModel) {
     if (this.pageType == "Sales-Order") {
-      if ((soLine.QtyShipped + soLine.QtyToShip) > soLine.Quantity) {
+      if ((soLine.QtyShipped + soLine.inputQty) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
-        soLine.btnDisable = true;
         return false;
       } else {
-        soLine.balance = soLine.Quantity - (soLine.QtyToShip + soLine.QtyShipped);
-        soLine.btnDisable = false;
+        soLine.QtyToShip -= soLine.inputQty;
+        soLine.QtyShipped += soLine.inputQty;
+        soLine.updatableQty += soLine.inputQty;
+        //this.qtyList[this.count] = soLine.updatableQty;
+        soLine.inputQty = 0;
         return true;
       }
     } else {
       if ((soLine.QtyReceived + soLine.QtyToReceive) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
-        soLine.btnDisable = true;
         return false;
       } else {
-        soLine.balance = soLine.Quantity - (soLine.QtyToReceive + soLine.QtyReceived);
-        soLine.btnDisable = false;
+        soLine.QtyToReceive -= soLine.inputQty;
+        soLine.QtyReceived += soLine.inputQty;
+        soLine.updatableQty += soLine.inputQty;
+        //this.qtyList[this.count] = soLine.updatableQty;
+        soLine.inputQty = 0;
         return true;
       }
     }
+  }
+  cancelBtn(soLine: SalesLineModel) {
+    soLine.QtyShipped -= soLine.updatableQty;
+    soLine.QtyToShip += soLine.updatableQty;
+    soLine.updatableQty = 0;
   }
 
 }

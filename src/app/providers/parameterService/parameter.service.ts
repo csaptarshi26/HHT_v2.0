@@ -1,3 +1,5 @@
+import { SalesLineModel } from './../../models/STPSalesLine.model';
+import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { InventLocationModel } from './../../models/STPInventLocation.model';
 import { CommonModel } from './../../models/STPCommon.model';
@@ -19,9 +21,13 @@ export class ParameterService {
   public deviceID: any;
 
   public inventoryItemList: ItemModel[] = [];
-  public soLineUpdated: boolean;
+  public POItemList: PurchLineModel[] = [];
+  public SOItemList: SalesLineModel[] = [];
 
+  public soLineUpdated: boolean;
   public itemUpdated: boolean = false;
-  public totalStorageVariables: Number = 7;
+  public poItemUpdated: boolean = false;
+
+  public totalStorageVariables: Number = 8;
   constructor() { }
 }

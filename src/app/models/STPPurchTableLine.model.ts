@@ -6,15 +6,12 @@ export class PurchLineModel {
     QtyReceived: any;
     QtyToReceive: any;
     UnitId: any;
-    updatableQty: any[];
+    updatableQty: any;
     UnitAmt: any;
     NetAmt: any;
     qtyDesc: any;
 
-    qtyReceivedFromServer:any;
-
-    balance: any;
-
+    inputQty:any;
     isVisible: boolean;
     isSaved: boolean;
 

@@ -3,21 +3,21 @@ export class SalesLineModel {
     DocumentType: any;
     ItemNumber: any;
     LineNo: any;
-    QtyReceived: any;
-    QtyShipped: any;
-    QtyToReceive: any;
-    QtyToShip: any;
-    Quantity: any;
+    QtyReceived: number;
+    QtyShipped: number;
+    QtyToReceive: number;
+    QtyToShip: number;
+    Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
 
-    qtyReceivedFromServer: any;
-    balance: any;
-    updatableQty: any[]
-    qtyDesc:any;
-    BarCode:any;
-    btnDisable:boolean;
-    isSaved:boolean;
-    dataSavedToList:boolean;
-    isVisible:boolean;
+    inputQty: number;
+    updatableQty: number;
+
+    qtyDesc: any;
+    BarCode: any;
+    btnDisable: boolean;
+    isSaved: boolean;
+    dataSavedToList: boolean;
+    isVisible: boolean;
 }

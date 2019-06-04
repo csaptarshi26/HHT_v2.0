@@ -35,7 +35,7 @@
       <ion-card class="lineDetails">
         <ion-card-header>
           <span class="iconPos">
-            <ion-checkbox color="primary" mode="ios" [disabled]="toLine.btnDisable" [checked]="toLine.isSaved">
+            <ion-checkbox color="primary" mode="ios" [(ngModel)]="toLine.isSaved" [disabled]="toLine.btnDisable" [checked]="toLine.isSaved">
             </ion-checkbox>
           </span>
           <span (click)="toggleDetails(toLine,i)" style="width: 50%">
@@ -48,50 +48,53 @@
 
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left>Barcode</ion-label>
-            <!-- <ion-input type="text" style="text-align: left" [disabled]="true" [(ngModel)]="toLine.BarCode">
-              </ion-input> -->
             <ion-label text-left> {{toLine.BarCode}} </ion-label>
           </ion-item>
-
-          <ion-item lines="none" class="ionItemInput" *ngIf="pageType == 'transferOut'">
-            <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Ship</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.QtyToShip" id="Recinput{{i}}"
-              (ionChange)="qtyRecCheck(toLine)" (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)"
-              [min]="0">
-            </ion-input>
-          </ion-item>
-
-          <ion-item lines="none" class="ionItemInput" *ngIf="pageType =='transferIn'">
-            <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Rec</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.QtyToReceive" id="Recinput{{i}}"
-              (ionChange)="qtyRecCheck(toLine)" (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)"
-              [min]="0">
-            </ion-input>
-          </ion-item>
-
-
 
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left class="ion-text-wrap">Ordered Qty</ion-label>
             <ion-label text-left> {{toLine.Quantity}} </ion-label>
           </ion-item>
 
+          <div *ngIf="pageType == 'transferOut'">
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Ship</ion-label>
+              <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" id="Recinput{{i}}"
+               (keyup.enter)="onEnter(toLine)"  (click)="clearQtyToRec(toLine)"
+                [min]="0">
+              </ion-input>
+            </ion-item>
 
-          <ion-item lines="none" class="ionItemInput" *ngIf="pageType == 'transferOut'">
-            <ion-label text-left class="ion-text-wrap">Qty Shipped</ion-label>
-            <ion-label text-left> {{toLine.QtyShipped}} </ion-label>
-          </ion-item>
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left class="ion-text-wrap">Qty Shipped</ion-label>
+              <ion-label text-left> {{toLine.QtyShipped}} </ion-label>
+            </ion-item>
 
-          <ion-item lines="none" class="ionItemInput" *ngIf="pageType =='transferIn'">
-            <ion-label text-left class="ion-text-wrap">Qty Received</ion-label>
-            <ion-label text-left> {{toLine.QtyReceived}} </ion-label>
-          </ion-item>
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left class="ion-text-wrap">Balance</ion-label>
+              <ion-label text-left> {{toLine.QtyToShip}} </ion-label>
+            </ion-item>
+          </div>
 
-          <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left class="ion-text-wrap">Balance</ion-label>
-            <ion-label text-left> {{toLine.balance}} </ion-label>
+          <div *ngIf="pageType =='transferIn'">
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Rec</ion-label>
+              <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" id="Recinput{{i}}"
+                (keyup.enter)="onEnter(toLine)"  (click)="clearQtyToRec(toLine)"
+                [min]="0">
+              </ion-input>
+            </ion-item>
 
-          </ion-item>
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left class="ion-text-wrap">Qty Received</ion-label>
+              <ion-label text-left> {{toLine.QtyReceived}} </ion-label>
+            </ion-item>
+
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left class="ion-text-wrap">Balance</ion-label>
+              <ion-label text-left> {{toLine.QtyToReceive}} </ion-label>
+            </ion-item>
+          </div>
 
           <!-- <ion-item lines="none" class="ionItemInput twoItems">
               <ion-label position="stacked" class="disabledInput">Unit Amount</ion-label>

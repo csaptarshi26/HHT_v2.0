@@ -78,7 +78,34 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    this.storage.get('POItemList').then((data) => {
+      this.parameterservice.POItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
+
+    this.storage.get('SOItemList').then((data) => {
+      this.parameterservice.SOItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
+  setSOItemList(SOItemList: any) {
+    this.storage.set('SOItemList', SOItemList);
+    this.parameterservice.SOItemList = SOItemList;
+  }
+
+  setPOItemList(POItemList: any) {
+    this.storage.set('POItemList', POItemList);
+    this.parameterservice.POItemList = POItemList;
+  }
 
   setAuthenticated(authenticated: any) {
     this.storage.set('authenticated', authenticated);
@@ -118,7 +145,17 @@ export class StorageService {
   clearStorageValues() {
     this.storage.clear();
   }
-  clearItemList(){
+
+
+  clearItemList() {
     this.storage.remove('ItemList');
+  }
+
+  clearPoItemList() {
+    this.storage.remove('POItemList');
+  }
+
+  clearSOItemList() {
+    this.storage.remove('SOItemList');
   }
 }

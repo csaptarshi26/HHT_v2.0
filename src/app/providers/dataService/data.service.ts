@@ -32,6 +32,14 @@ export class DataService {
   private salesOrderListSub = new BehaviorSubject<any>(0);
   getSOList$ = this.salesOrderListSub.asObservable();
 
+
+  private POReceiveListSub = new BehaviorSubject<any>(0);
+  getPOReceiveList$ = this.POReceiveListSub.asObservable();
+
+
+  private POReturnListSub = new BehaviorSubject<any>(0);
+  getPOReturnList$ = this.POReturnListSub.asObservable();
+
   constructor() { }
 
   setPO(data) {
@@ -40,6 +48,14 @@ export class DataService {
 
   setPOReturn(data) {
     this.purchaseReturnSub.next(data);
+  }
+
+  setPOReceiveList(data){
+    this.POReceiveListSub.next(data);
+  }
+
+  setPOReturnList(data){
+    this.POReturnListSub.next(data);
   }
 
   setTO(data){
