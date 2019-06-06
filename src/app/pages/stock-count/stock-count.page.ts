@@ -58,9 +58,9 @@ export class StockCountPage implements OnInit {
       this.itemList = [];
       this.scannedQty = 0;
     }
-    // }else{
-    //   this.itemList = this.paramService.ItemList;
-    // }
+    else {
+      this.scannedQty = this.calculateItemListQty();
+    }
   }
   keyboardHide() {
     this.keyboard.hide();
@@ -80,11 +80,7 @@ export class StockCountPage implements OnInit {
     }
   }
 
-  confirm() {
-    this.qtyList[this.count] = this.item.quantity;
-    this.scannedQty = this.calculateSum();
-    this.storageServ.setItemList(this.itemList);
-  }
+
   getStorageData() {
     this.storageServ.getAllValuesFromStorage.subscribe((res) => {
 
@@ -95,15 +91,19 @@ export class StockCountPage implements OnInit {
         this.itemList = [];
       } else {
         this.itemList = this.paramService.ItemList;
-        var sum = 0;
-        this.itemList.forEach(el => {
-          sum = sum + el.quantity;
-        })
-
-        this.scannedQty = sum;
-        this.item.visible = true;
+        console.log(this.itemList)
+        this.scannedQty = this.calculateItemListQty();
+        //this.item.visible = true;
       }
     });
+  }
+  calculateItemListQty() {
+    var sum = 0;
+    this.itemList.forEach(el => {
+      this.qtyList.push(el.quantity);
+      sum = sum + el.quantity;
+    })
+    return sum;
   }
   calculateSum() {
     var sum = 0;
@@ -116,7 +116,6 @@ export class StockCountPage implements OnInit {
   async barcodeScan() {
     this.storageServ.setItemList(this.itemList);
     if (this.barcode != null && this.barcode.length > 3) {
-      this.count++;
       var flag = false;
       const loading = await this.loadingController.create({
         message: 'Please Wait',
@@ -125,13 +124,13 @@ export class StockCountPage implements OnInit {
       await loading.present();
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         this.item = res;
-        loading.dismiss();
         if (this.item.ItemId == null || this.item.ItemId == "") {
           flag = true;
           this.presentToast("Barcode Not Found");
         } else {
+          this.count++;
           if (this.editField) {
-            this.item.quantity = 0
+            this.item.quantity = 0;
             this.item.isEditable = true;
             $(document).ready(function () {
               $("#qtyInput").focus();
@@ -140,11 +139,17 @@ export class StockCountPage implements OnInit {
             this.item.quantity = 1;
             this.scannedQty = this.scannedQty + 1;
             this.item.isEditable = false;
+            this.item.isSaved = true;
           }
-          this.item.isSaved = true;
           this.item.visible = true;
+          loading.dismiss();
+
           this.itemList.push(this.item);
           this.itemList.reverse();
+
+
+          // this.itemList.push(this.item);
+          console.log(this.itemList)
           this.clearBarcode();
         }
       }, error => {
@@ -164,8 +169,20 @@ export class StockCountPage implements OnInit {
     });
     toast.present();
   }
-
-
+  valueChanged() {
+    this.item.isSaved = false;
+  }
+  confirm(item: ItemModel) {
+    if (item.quantity == 0 || item.quantity == null) {
+      item.isSaved = false;
+    } else {
+      item.isSaved = true;
+    }
+    this.qtyList[this.count] = this.item.quantity;
+    console.log(this.itemList)
+    this.scannedQty = this.calculateSum();
+    this.storageServ.setItemList(this.itemList);
+  }
 
   showList() {
     this.dataServ.setItemList(this.itemList);

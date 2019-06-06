@@ -40,10 +40,9 @@ export class PurchaseLinePage implements OnInit {
   }
 
   ngOnInit() {
-    this.getStorageData();
-    this.user = this.dataServ.userId
     this.getPoLineData();
-
+    //this.getStorageData();
+    this.user = this.dataServ.userId
     setTimeout(() => {
       this.keyboard.hide();
     }, 150);
@@ -55,8 +54,11 @@ export class PurchaseLinePage implements OnInit {
     }, (error) => {
 
     }, () => {
-      if (this.paramService.POItemList != null) {
-
+      if (this.paramService.POSavedHeader != null) {
+        this.poLineList = this.paramService.POSavedHeader.PurchLines;
+        console.log(this.poLineList);
+      }else{
+        
       }
     });
   }
@@ -104,7 +106,7 @@ export class PurchaseLinePage implements OnInit {
             el.toggle = false;
             //el.QtyToReceive = 0;
             flag = true;
-            el.updatableQty = 0;
+            //el.updatableQty = 0;
             //el.balance = el.Qty - el.QtyReceived;
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
@@ -112,6 +114,8 @@ export class PurchaseLinePage implements OnInit {
             multiLine++;
           }
         });
+
+        console.log(this.poLine);
 
         $(document).ready(function () {
           $("#Recinput").focus();
@@ -152,12 +156,14 @@ export class PurchaseLinePage implements OnInit {
       poLine.toggle = false;
     }
     console.log(poLine);
-    console.log(this.qtyList)
+    console.log(this.poLineList)
+    this.storageServ.setPOItemList(this.poLineList);
     var sum = 0;
     this.qtyList.forEach(data => {
       sum += data;
     })
     this.scannedQty = sum;
+    this.clearBarcode();
   }
   calculateSum() {
     var sum = 0;
@@ -167,56 +173,7 @@ export class PurchaseLinePage implements OnInit {
 
     return sum;
   }
-  async savePO() {
-    this.poLineList.forEach(el => {
-      var dataTable = {} as STPLogSyncDetailsModel;
-      if (el.isSaved && !el.dataSavedToList) {
-        dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
-        dataTable.DocumentDate = this.poHeader.OrderDate;
-        dataTable.ItemId = el.ItemId;
-        dataTable.DocumentNum = this.poHeader.PurchId;
-        dataTable.DocumentType = 1;
-        dataTable.ItemLocation = this.paramService.Location.LocationId;
-        dataTable.UserLocation = this.paramService.Location.LocationId;
-        dataTable.LineNum = el.LineNo;
-
-        var sum = 0;
-        el.updatableQty.forEach(data => {
-          sum = sum + data;
-        })
-
-        dataTable.Quantity = sum;
-        dataTable.TransactionType = 2;
-        dataTable.UnitId = el.UnitId;
-        dataTable.User = this.user;
-
-        el.dataSavedToList = true;
-        this.updateDataTableList.push(dataTable)
-      }
-    })
-
-    if (this.updateDataTableList.length > 0) {
-      const loading = await this.loadingController.create({
-        message: 'Please Wait'
-      });
-      await loading.present();
-      this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
-        if (res) {
-          this.presentToast("Line Updated successfully");
-          this.updateDataTableList = [];
-        } else {
-          this.presentToast("Error Updating Line");
-        }
-        loading.dismiss();
-      }, error => {
-        loading.dismiss();
-        console.log(error.message);
-      })
-    } else {
-      this.presentToast("Line Already Saved");
-    }
-  }
+  
   clearQtyToRec(poLine: PurchLineModel) {
     poLine.inputQty = 0;
   }
@@ -241,7 +198,7 @@ export class PurchaseLinePage implements OnInit {
         //poLine.btnDisable = true;
         return false;
       } else {
-        poLine.QtyToReceive -= poLine.inputQty;
+        poLine.QtyToReceive -= -poLine.inputQty;
         poLine.QtyReceived += poLine.inputQty;
         poLine.updatableQty += poLine.inputQty;
         this.qtyList[this.count] = poLine.updatableQty;
@@ -266,7 +223,7 @@ export class PurchaseLinePage implements OnInit {
       poLine.QtyToReceive += poLine.updatableQty;
     } else {
       poLine.QtyReceived -= poLine.updatableQty;
-      poLine.QtyToReceive += poLine.updatableQty;
+      poLine.QtyToReceive -= poLine.updatableQty;
     }
     poLine.updatableQty = 0;
   }

@@ -40,7 +40,8 @@
   <ion-card class="lineDetails">
     <div *ngIf="item.visible">
       <ion-card-header>
-        <b>Desc : {{item.Description}}</b>
+        Id : {{item.ItemId}}
+        <br> {{item.Description}}
       </ion-card-header>
 
       <ion-card-content>
@@ -57,8 +58,7 @@
 
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left style="margin-right: 20%;" class="ion-text-wrap">Quantity</ion-label>
-          <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" [min]="0"
-            [readonly]="!item.isEditable">
+          <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" [min]="0">
           </ion-input>
         </ion-item>
 
@@ -70,5 +70,5 @@
 <ion-footer>
   <!-- <ion-button expand="block" class="twoBtn" (click)="update()">Update</ion-button> -->
   <ion-button expand="block" class="twoBtn" (click)="confirm()">Confirm</ion-button>
-  <ion-button expand="block" class="twoBtn" (click)="showList()" [disabled]="!item.visible">Show List</ion-button>
+  <ion-button expand="block" class="twoBtn" (click)="showList()">Show List</ion-button>
 </ion-footer>

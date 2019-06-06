@@ -31,7 +31,7 @@ export class StockCountListPage implements OnInit {
 
   ngOnInit() {
     this.user = this.dataServ.userId
-    this.getItemsFromStorage()
+    //this.getItemsFromStorage()
     this.getItemList();
   }
   getItemsFromStorage() {
@@ -88,7 +88,7 @@ export class StockCountListPage implements OnInit {
         if (res) {
           this.presentToast("Line Updated successfully");
           this.updateDataTableList = [];
-          this.itemList = [];
+          this.itemList.splice(0);
           this.valueUpdated = true;
           this.storageService.clearItemList();
           console.log(this.itemList)
@@ -115,13 +115,22 @@ export class StockCountListPage implements OnInit {
     toast.present();
   }
   ngOnDestroy() {
-    this.backBtn();
-  }
-  backBtn() {
     if (this.valueUpdated) {
       this.paramService.itemUpdated = true;
     } else {
       this.paramService.itemUpdated = false;
+      this.storageService.setItemList(this.itemList);
     }
+  }
+
+  deleteLine(item:ItemModel){
+    this.itemList.forEach(el => {
+      if (el.ItemId == item.ItemId) {
+        var index = this.itemList.indexOf(el);
+        if (index > -1) {
+          this.itemList.splice(index, 1);
+        }
+      }
+    });
   }
 }

@@ -6,6 +6,7 @@ export class ItemModel {
     UnitFactor: any;
 
     quantity: any;
+
     visible: boolean;
     toggle: boolean;
     isSaved: boolean;

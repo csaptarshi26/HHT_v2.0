@@ -70,6 +70,7 @@ export class PurchaseListPage implements OnInit {
     toast.present();
   }
   async savePO() {
+    console.log(this.poLineList)
     this.poLineList.forEach(el => {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
@@ -78,14 +79,15 @@ export class PurchaseListPage implements OnInit {
         dataTable.DocumentDate = this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
         dataTable.DocumentNum = this.poHeader.PurchId;
-        dataTable.DocumentType = 1;
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = el.LineNo;
 
         if (this.pageType == "Receive") {
+          dataTable.DocumentType = 1;
           dataTable.Quantity = el.updatableQty;
         } else {
+          dataTable.DocumentType = 2;
           dataTable.Quantity = -el.updatableQty;
         }
         dataTable.TransactionType = 2;
@@ -103,20 +105,25 @@ export class PurchaseListPage implements OnInit {
       });
       await loading.present();
       console.log(this.updateDataTableList);
-      this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
-        if (res) {
-          this.updateDataTableList = [];
-          this.poLineList = [];
-          this.dataUpdatedToServer = true;
-          this.presentAlert();
-        } else {
-          this.presentToast("Error Updating Line");
-        }
-        loading.dismiss();
-      }, error => {
-        loading.dismiss();
-        console.log(error.message);
-      })
+      try{
+        this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
+          if (res) {
+            this.updateDataTableList = [];
+            this.poLineList = [];
+            this.dataUpdatedToServer = true;
+            this.presentAlert();
+          } else {
+            this.presentToast("Error Updating Line");
+          }
+          loading.dismiss();
+        }, error => {
+          loading.dismiss();
+          console.log(error.message);
+        })
+      }catch(e){
+        this.storageServ.setPOItemList(this.poHeader);
+      }
+      
     } else {
       this.presentToast("Line Already Saved");
     }
@@ -142,7 +149,7 @@ export class PurchaseListPage implements OnInit {
     if (!this.dataUpdatedToServer) {
       this.storageServ.clearPoItemList();
     } else {
-      this.storageServ.setPOItemList(this.poLineList);
+      this.storageServ.setPOItemList(this.poHeader);
     }
   }
   onEnter(poLine: PurchLineModel) {
@@ -158,14 +165,8 @@ export class PurchaseListPage implements OnInit {
       poLine.toggle = false;
     }
     console.log(this.poLineList);
-    //console.log(this.qtyList)
-
-    // var sum = 0;
-    // this.qtyList.forEach(data => {
-    //   sum += data;
-    // })
-    // this.scannedQty = sum;
-    this.storageServ.setPOItemList(this.poLineList);
+   
+    this.storageServ.setPOItemList(this.poHeader);
   }
 
   clearQtyToRec(poLine: PurchLineModel) {

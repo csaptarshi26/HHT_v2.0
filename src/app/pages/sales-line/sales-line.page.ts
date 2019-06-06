@@ -87,11 +87,9 @@ export class SalesLinePage implements OnInit {
           counter++;
           if (el.ItemNumber == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
-            // el.toggle = false;
             this.count++
-            el.updatableQty = 0;
             el.inputQty = 0;
-
+            el.DocumentNo = this.soHeader.DocumentNo;
             flag = true;
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
@@ -144,6 +142,9 @@ export class SalesLinePage implements OnInit {
     this.saveLine(soLine);
   }
   saveLine(soLine: SalesLineModel) {
+    if (soLine.updatableQty == 0) {
+      soLine.isSaved = false;
+    }
     if (this.qtyRecCheck(soLine)) {
       soLine.isSaved = true;
     } else {
@@ -193,7 +194,11 @@ export class SalesLinePage implements OnInit {
     soLine.updatableQty = 0;
   }
   showList() {
-    this.dataServ.setSOList(this.soLineList);
+    if (this.pageType == "Sales-Order") {
+      this.dataServ.setSOList(this.soLineList);
+    } else {
+      this.dataServ.setSOReturnList(this.soLineList);
+    }
     this.router.navigateByUrl('/sales-list/' + this.pageType);
   }
 }

@@ -119,7 +119,7 @@ export class TransferLinePage implements OnInit {
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
             el.toggle = false;
-            el.updatableQty = 0;
+            //el.updatableQty = 0;
             el.inputQty = 0;
             this.count++
             // if (this.pageType == "transferOut") {

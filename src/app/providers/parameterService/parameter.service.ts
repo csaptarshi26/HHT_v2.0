@@ -1,3 +1,4 @@
+import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
 import { SalesLineModel } from './../../models/STPSalesLine.model';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
@@ -21,7 +22,7 @@ export class ParameterService {
   public deviceID: any;
 
   public inventoryItemList: ItemModel[] = [];
-  public POItemList: PurchLineModel[] = [];
+  public POSavedHeader: PurchTableModel;
   public SOItemList: SalesLineModel[] = [];
 
   public soLineUpdated: boolean;

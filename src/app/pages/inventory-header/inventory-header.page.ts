@@ -107,17 +107,9 @@ export class InventoryHeaderPage implements OnInit {
           flag = true;
           this.presentToast("Barcode Not Found");
         } else {
-          if (this.editField) {
-            this.item.quantity = 0
-            this.item.isEditable = true;
-            $(document).ready(function () {
-              $("#qtyInput").focus();
-            });
-          } else {
-            this.item.quantity = 1;
-            this.scannedQty = this.scannedQty + 1;
-            this.item.isEditable = false;
-          }
+          $(document).ready(function () {
+            $("#qtyInput").focus();
+          });
           this.item.isSaved = true;
           this.item.visible = true;
           this.itemList.push(this.item);

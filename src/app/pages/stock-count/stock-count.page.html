@@ -40,7 +40,12 @@
   <ion-card class="lineDetails">
     <div *ngIf="item.visible">
       <ion-card-header>
-        <b>Desc : {{item.Description}}</b>
+        <span class="iconPos">
+          <ion-checkbox color="primary" mode="ios" [(ngModel)]="item.isSaved"
+            [checked]="item.isSaved" (ionChange)="notify()">
+          </ion-checkbox>
+        </span>
+        <b>Id : {{item.ItemId}} <br> {{item.Description}} </b>
       </ion-card-header>
 
       <ion-card-content>
@@ -58,8 +63,12 @@
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left style="margin-right: 20%;" class="ion-text-wrap">Quantity</ion-label>
           <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" [min]="0"
-            [readonly]="!item.isEditable">
+            [readonly]="!item.isEditable" (ionChange)="valueChanged()">
           </ion-input>
+
+          <ion-button fill="clear" slots="end" item-right (click)="confirm(item)">
+            <ion-icon name="return-left"></ion-icon>
+          </ion-button>
         </ion-item>
 
       </ion-card-content>
@@ -69,6 +78,6 @@
 
 <ion-footer>
   <!-- <ion-button expand="block" class="twoBtn" (click)="update()">Update</ion-button> -->
-  <ion-button expand="block" class="twoBtn" (click)="confirm()">Confirm</ion-button>
-  <ion-button expand="block" class="twoBtn" (click)="showList()" [disabled]="!item.visible">Show List</ion-button>
+  <!-- <ion-button expand="block" class="twoBtn" (click)="confirm(item)">Confirm</ion-button> -->
+  <ion-button expand="block" (click)="showList()">Show List</ion-button>
 </ion-footer>

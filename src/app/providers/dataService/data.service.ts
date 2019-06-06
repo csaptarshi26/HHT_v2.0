@@ -7,6 +7,7 @@ import { BehaviorSubject} from 'rxjs';
 export class DataService {
   
   public userId:any;
+  public ScScannedQty:any;
 
   private purchaseSub = new BehaviorSubject<any>(0);
   getPO$ = this.purchaseSub.asObservable();
@@ -32,6 +33,9 @@ export class DataService {
   private salesOrderListSub = new BehaviorSubject<any>(0);
   getSOList$ = this.salesOrderListSub.asObservable();
 
+  private salesOrderReturnListSub = new BehaviorSubject<any>(0);
+  getSOReturnList$ = this.salesOrderReturnListSub.asObservable();
+
 
   private POReceiveListSub = new BehaviorSubject<any>(0);
   getPOReceiveList$ = this.POReceiveListSub.asObservable();
@@ -45,6 +49,8 @@ export class DataService {
   setPO(data) {
     this.purchaseSub.next(data);
   }
+
+  
 
   setPOReturn(data) {
     this.purchaseReturnSub.next(data);
@@ -80,6 +86,10 @@ export class DataService {
 
   setSOList(data){
     this.salesOrderListSub.next(data);
+  }
+
+  setSOReturnList(data){
+    this.salesOrderReturnListSub.next(data);
   }
   
 }

@@ -80,7 +80,7 @@ export class StorageService {
     });
 
     this.storage.get('POItemList').then((data) => {
-      this.parameterservice.POItemList = data;
+      this.parameterservice.POSavedHeader = data;
       observer.next(data);
       variables++;
       if (variables == this.parameterservice.totalStorageVariables) {
@@ -104,7 +104,7 @@ export class StorageService {
 
   setPOItemList(POItemList: any) {
     this.storage.set('POItemList', POItemList);
-    this.parameterservice.POItemList = POItemList;
+    this.parameterservice.POSavedHeader = POItemList;
   }
 
   setAuthenticated(authenticated: any) {

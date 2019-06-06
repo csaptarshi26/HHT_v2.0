@@ -8,6 +8,7 @@ import { SalesLineModel } from 'src/app/models/STPSalesLine.model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
+import { SalesTable } from 'src/app/models/STPSalesTable.model';
 
 @Component({
   selector: 'app-sales-list',
@@ -16,7 +17,7 @@ import { StorageService } from 'src/app/providers/storageService/storage.service
 })
 export class SalesListPage implements OnInit {
 
-
+  soHeader: SalesTable;
   salesLineList: SalesLineModel[] = [];
   updateDataTableList: STPLogSyncDetailsModel[] = [];
   user: any;
@@ -52,12 +53,34 @@ export class SalesListPage implements OnInit {
   }
 
   getsalesLineList() {
-    this.dataServ.getSOList$.subscribe(res => {
-      this.salesLineList = res;
-      console.log(this.salesLineList);
-    }, error => {
+    if (this.pageType == 'Sales-Order') {
+      this.dataServ.getSO$.subscribe(res => {
+        this.soHeader = res;
+        console.log(this.soHeader)
+      })
 
-    })
+      this.dataServ.getSOList$.subscribe(res => {
+        this.salesLineList = res;
+        console.log(this.salesLineList);
+      }, error => {
+
+      })
+    } else {
+      this.dataServ.getSOReturn$.subscribe(res => {
+        this.soHeader = res;
+        console.log(this.soHeader)
+      })
+      this.dataServ.getSOReturnList$.subscribe(res => {
+        this.salesLineList = res;
+        console.log(this.salesLineList);
+      }, error => {
+
+      })
+    }
+
+
+
+
   }
 
   async saveItem() {
@@ -69,6 +92,7 @@ export class SalesListPage implements OnInit {
         dataTable.BarCode = el.BarCode;
         dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
+        dataTable.DocumentNum = el.DocumentNo;
         dataTable.ItemId = el.ItemNumber;
         if (this.pageType == "Sales-Order") {
           dataTable.DocumentType = 1;
@@ -142,6 +166,9 @@ export class SalesListPage implements OnInit {
   }
 
   saveLine(soLine: SalesLineModel) {
+    if(soLine.Quantity == 0){
+      soLine.isSaved = false;
+    }
     if (this.qtyRecCheck(soLine)) {
       soLine.isSaved = true;
     } else {
@@ -149,7 +176,7 @@ export class SalesListPage implements OnInit {
     }
     console.log(this.salesLineList);
 
-    this.storageService.setPOItemList(this.salesLineList);
+    this.storageService.setSOItemList(this.salesLineList);
   }
   clearQtyToRec(soLine: SalesLineModel) {
     soLine.inputQty = 0;

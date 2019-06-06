@@ -11,7 +11,7 @@ export class PurchLineModel {
     NetAmt: any;
     qtyDesc: any;
 
-    inputQty:any;
+    inputQty: any;
     isVisible: boolean;
     isSaved: boolean;
 
@@ -21,6 +21,6 @@ export class PurchLineModel {
 
     btnDisable: boolean = true;
     constructor() {
-
+        
     }
 }
