@@ -1,3 +1,4 @@
+import { PipesModule } from './../../pipes/mod.pipe.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +17,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    CommonModule,
+    CommonModule,PipesModule,
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes)

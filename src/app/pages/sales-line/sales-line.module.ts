@@ -1,3 +1,4 @@
+import { PipesModule } from './../../pipes/mod.pipe.module';
 import { HideKeyboardModule } from 'hide-keyboard';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     CommonModule,HideKeyboardModule,
-    FormsModule,
+    FormsModule,PipesModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],

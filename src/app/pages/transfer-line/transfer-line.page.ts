@@ -259,7 +259,7 @@ export class TransferLinePage implements OnInit {
         return true;
       }
     } else {
-      if ((toLine.QtyReceived + toLine.QtyToReceive) > toLine.Quantity) {
+      if ((toLine.QtyReceived + toLine.inputQty) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {

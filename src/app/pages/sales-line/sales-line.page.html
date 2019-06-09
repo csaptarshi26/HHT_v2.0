@@ -63,7 +63,7 @@
 
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left class="ion-text-wrap">Ordered Qty</ion-label>
-          <ion-label text-left> {{salesDetails.Quantity}} </ion-label>
+          <ion-label text-left> {{salesDetails.Quantity | mod}} </ion-label>
         </ion-item>
 
         <ion-item lines="none" class="ionItemInput" *ngIf="pageType == 'Sales-Order'">
@@ -78,12 +78,12 @@
 
         <ion-item lines="none" class="ionItemInput" *ngIf="pageType =='Sales-Return'">
           <ion-label text-left class="ion-text-wrap">Balance</ion-label>
-          <ion-label text-left> {{salesDetails.QtyToReceive}} </ion-label>
+          <ion-label text-left> {{salesDetails.QtyToReceive  | mod}} </ion-label>
         </ion-item>
 
         <ion-item lines="none" class="ionItemInput" *ngIf="pageType == 'Sales-Order'">
           <ion-label text-left class="ion-text-wrap">Balance</ion-label>
-          <ion-label text-left> {{salesDetails.QtyToShip}} </ion-label>
+          <ion-label text-left> {{salesDetails.QtyToShip  | mod}} </ion-label>
         </ion-item>
 
         <!-- <ion-item lines="none" class="ionItemInput twoItems">
@@ -104,5 +104,5 @@
   <ion-button expand="block" color="light" class="threeItems" (click)="cancelBtn(salesDetails)">Clear</ion-button>
   <ion-button expand="block" class="threeItems" (click)="saveLine(salesDetails)" [disabled]="salesDetails.btnDisable">
     Save</ion-button>
-  <ion-button expand="block" class="threeItems" (click)="showList()">Show List</ion-button>
+  <ion-button expand="block" color="light" class="threeItems" (click)="showList()">Show List</ion-button>
 </ion-footer>

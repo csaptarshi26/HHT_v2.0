@@ -12,7 +12,7 @@
   <ion-card class="scanCard">
     <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" autofocus="true"
+        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" 
           [(ngModel)]="barcode" (ionChange)="searchBarcode()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 

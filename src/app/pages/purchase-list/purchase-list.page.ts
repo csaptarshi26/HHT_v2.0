@@ -84,12 +84,11 @@ export class PurchaseListPage implements OnInit {
         dataTable.LineNum = el.LineNo;
 
         if (this.pageType == "Receive") {
-          dataTable.DocumentType = 1;
-          dataTable.Quantity = el.updatableQty;
+          dataTable.DocumentType = 1;          
         } else {
           dataTable.DocumentType = 2;
-          dataTable.Quantity = -el.updatableQty;
         }
+        dataTable.Quantity = el.updatableQty;
         dataTable.TransactionType = 2;
         dataTable.UnitId = el.UnitId;
         dataTable.User = this.user;

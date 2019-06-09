@@ -175,7 +175,7 @@ export class SalesLinePage implements OnInit {
         return true;
       }
     } else {
-      if ((soLine.QtyReceived + soLine.QtyToReceive) > soLine.Quantity) {
+      if ((soLine.QtyReceived + soLine.inputQty) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
@@ -189,8 +189,13 @@ export class SalesLinePage implements OnInit {
     }
   }
   cancelBtn(soLine: SalesLineModel) {
-    soLine.QtyShipped -= soLine.updatableQty;
-    soLine.QtyToShip += soLine.updatableQty;
+    if (this.pageType == "Sales-Order") {
+      soLine.QtyShipped -= soLine.updatableQty;
+      soLine.QtyToShip += soLine.updatableQty;
+    } else {
+      soLine.QtyReceived -= soLine.updatableQty;
+      soLine.QtyToReceive += soLine.updatableQty;
+    }
     soLine.updatableQty = 0;
   }
   showList() {
