@@ -1,4 +1,4 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TransferOrderModel } from './../../models/STPTransferOrder.model';
 import { ParameterService } from './../../providers/parameterService/parameter.service';
 import { STPLogSyncDetailsModel } from './../../models/STPLogSyncData.model';
@@ -22,6 +22,7 @@ export class TransferLinePage implements OnInit {
   toHeader: TransferOrderModel;
   toLineList: TransferOrderLine[] = [];
   user: any;
+  toLine:TransferOrderLine = {} as TransferOrderLine;
 
   pageType: any;
   scannedQty: any;
@@ -38,7 +39,7 @@ export class TransferLinePage implements OnInit {
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
-    public loadingController: LoadingController) {
+    public loadingController: LoadingController,public router:Router) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
@@ -58,7 +59,7 @@ export class TransferLinePage implements OnInit {
     this.keyboard.hide();
   }
   getToLineData() {
-    if (this.pageType == 'transferOut') {
+    if (this.pageType == 'Transfer-out') {
       this.dataServ.getTO$.subscribe(res => {
         this.toHeader = res;
         this.toLineList = this.toHeader.JournalLine;
@@ -78,35 +79,17 @@ export class TransferLinePage implements OnInit {
     }
 
   }
-  barcodeScan() {
-    if (this.barcode == null) {
-      this.barcodeScanner.scan().then(barcodeData => {
-        console.log('Barcode data', barcodeData);
-        this.barcode = barcodeData.text;
-        this.searchBarcode();
-      }).catch(err => {
-        console.log('Error', err);
-      });
-    } else {
-      this.searchBarcode();
-    }
-  }
+
   clearBarcode() {
     this.barcode = "";
     document.getElementById("barcodeInput").focus();
     this.keyboard.hide();
   }
-  toggleDetails(toLine: TransferOrderLine, i) {
-    toLine.toggle = !toLine.toggle;
-    let id = "#Recinput" + i;
-    $(document).ready(function () {
-      $(id).focus();
-    });
-  }
+ 
   ngOnDestroy() {
     this.toHeader.scannedQty = this.scannedQty;
   }
-  searchBarcode() {
+  barcodeScan() {
     var visibleLine = [];
 
     if (this.barcode != null && this.barcode.length > 3) {
@@ -118,26 +101,15 @@ export class TransferLinePage implements OnInit {
           counter++;
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
-            el.toggle = false;
-            //el.updatableQty = 0;
+            
             el.inputQty = 0;
             this.count++
-            // if (this.pageType == "transferOut") {
-            //   el.Quantity = el.QtyToShip;
-            //   el.qtyReceivedFromServer = el.QtyShipped;
-
-
-            //   el.balance = el.Quantity - el.QtyShipped;
-            // } else {
-            //   el.Quantity = el.QtyToReceive;
-            //   el.qtyReceivedFromServer = el.QtyReceived;
-
-            //   el.balance = el.Quantity - el.QtyReceived;
-            // }
 
             flag = true;
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
+
+            this.toLine = el;
 
             visibleLine.push(counter);
             multiLine++;
@@ -177,10 +149,8 @@ export class TransferLinePage implements OnInit {
   saveLine(toLine: TransferOrderLine) {
     if (this.qtyRecCheck(toLine)) {
       toLine.isSaved = true;
-      toLine.toggle = true;
     } else {
       toLine.isSaved = false;
-      toLine.toggle = false;
     }
     console.log(toLine);
     console.log(this.qtyList)
@@ -199,7 +169,7 @@ export class TransferLinePage implements OnInit {
         dataTable.DocumentDate = this.toHeader.ReceiveDate;
         dataTable.ItemId = el.ItemNo;
         dataTable.DocumentNum = this.toHeader.JournalId;
-        if (this.pageType == "transferOut") {
+        if (this.pageType == "Transfer-out") {
           dataTable.DocumentType = 4;
         } else {
           dataTable.DocumentType = 3;
@@ -246,7 +216,7 @@ export class TransferLinePage implements OnInit {
     toLine.isSaved = false;
   }
   qtyRecCheck(toLine: TransferOrderLine) {
-    if (this.pageType == "transferOut") {
+    if (this.pageType == "Transfer-out") {
       if ((toLine.QtyShipped + toLine.inputQty) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
@@ -284,7 +254,7 @@ export class TransferLinePage implements OnInit {
     await alert.present();
   }
   cancelBtn(toLine: TransferOrderLine) {
-    if (this.pageType == "transferOut") {
+    if (this.pageType == "Transfer-out") {
       toLine.QtyShipped -= toLine.updatableQty;
       toLine.QtyToShip += toLine.updatableQty;
     } else {
@@ -292,5 +262,14 @@ export class TransferLinePage implements OnInit {
       toLine.QtyToReceive += toLine.updatableQty;
     }
     toLine.updatableQty = 0;
+  }
+
+  showList() {
+    if (this.pageType == "Transfer-out") {
+      this.dataServ.setTOList(this.toLineList);
+    } else {
+      this.dataServ.setToInList(this.toLineList);
+    }
+    this.router.navigateByUrl('/transfer-line-list/' + this.pageType);
   }
 } 

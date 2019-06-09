@@ -20,8 +20,6 @@ export class TransferOrderLine {
     isSaved: boolean;
 
     dataSavedToList: boolean;
-    toggle: boolean = true;
-
 
     btnDisable: boolean = true;
 }

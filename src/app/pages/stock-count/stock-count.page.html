@@ -65,10 +65,6 @@
           <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" [min]="0"
             [readonly]="!item.isEditable" (ionChange)="valueChanged()">
           </ion-input>
-
-          <ion-button fill="clear" slots="end" item-right (click)="confirm(item)">
-            <ion-icon name="return-left"></ion-icon>
-          </ion-button>
         </ion-item>
 
       </ion-card-content>
@@ -78,6 +74,6 @@
 
 <ion-footer>
   <!-- <ion-button expand="block" class="twoBtn" (click)="update()">Update</ion-button> -->
-  <!-- <ion-button expand="block" class="twoBtn" (click)="confirm(item)">Confirm</ion-button> -->
+  <ion-button expand="block" class="twoBtn" (click)="confirm(item)">Save</ion-button>
   <ion-button expand="block" (click)="showList()">Show List</ion-button>
 </ion-footer>

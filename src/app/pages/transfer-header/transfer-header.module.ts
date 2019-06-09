@@ -6,22 +6,22 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { TransferOutPage } from './transfer-out.page';
+import { TransferHeaderPage } from './transfer-header.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: TransferOutPage
+    component: TransferHeaderPage
   }
 ];
 
 @NgModule({
   imports: [
-    CommonModule,IonicSelectableModule,
-    FormsModule,
+    CommonModule,
+    FormsModule,IonicSelectableModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [TransferOutPage]
+  declarations: [TransferHeaderPage]
 })
-export class TransferOutPageModule {}
+export class TransferHeaderPageModule {}
