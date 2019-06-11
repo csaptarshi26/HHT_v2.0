@@ -19,7 +19,7 @@
   <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">SO No.</ion-label>
     <ionic-selectable [(ngModel)]="selectedSalesTable" [items]="salesList" itemValueField="DocumentNo"
-      itemTextField="DocumentNo" [canSearch]="true">
+      itemTextField="DocumentNo" [canSearch]="true" (onChange)="soSelected()">
     </ionic-selectable>
   </ion-item>
 

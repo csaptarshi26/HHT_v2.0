@@ -24,6 +24,8 @@ export class SalesListPage implements OnInit {
   dataUpdatedToServer: boolean = false;
   pageType: any;
 
+  soItemSotrageList: any[];
+
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
     public router: Router, private activateRoute: ActivatedRoute, public alertController: AlertController) {
@@ -36,20 +38,51 @@ export class SalesListPage implements OnInit {
     //this.getItemsFromStorage()
   }
   ngOnDestroy() {
-    if (!this.dataUpdatedToServer) {
-      this.storageService.clearSOItemList();
-    } else {
-      this.storageService.setSOItemList(this.salesLineList);
-    }
-  }
-  getItemsFromStorage() {
+
     this.storageService.getAllValuesFromStorage.subscribe((res) => {
 
     }, (error) => {
 
     }, () => {
+      if (this.paramService.SOItemList != null) {
+        this.soItemSotrageList = this.paramService.SOItemList;
+      } else {
+        this.soItemSotrageList = [];
+      }
 
+      if (this.dataUpdatedToServer) {
+        this.removeElementFromStorageList();
+      } else {
+        this.soItemSotrageList.push(
+          {
+            type: this.pageType,
+            soNo: this.soHeader.DocumentNo,
+            soHeader: this.soHeader
+          }
+        )
+        this.storeDataInStorage();
+        this.paramService.SOItemList = this.soItemSotrageList;
+      }
     });
+  }
+  removeElementFromStorageList() {
+    if (this.soItemSotrageList != null) {
+      this.soItemSotrageList = this.soItemSotrageList.slice();
+      this.soItemSotrageList.forEach(el => {
+        if (el.type == this.pageType && el.soNo == this.soHeader.DocumentNo ) {
+          var index = this.soItemSotrageList.indexOf(el);
+          if (index > -1) {
+            this.soItemSotrageList.splice(index, 1);
+          }
+        }
+      })
+      this.storeDataInStorage();
+      this.paramService.SOItemList = this.soItemSotrageList;
+    }
+  }
+
+  storeDataInStorage() {
+    this.storageService.setSOItemList(this.soItemSotrageList);
   }
 
   getsalesLineList() {
@@ -166,7 +199,7 @@ export class SalesListPage implements OnInit {
   }
 
   saveLine(soLine: SalesLineModel) {
-    if(soLine.Quantity == 0){
+    if (soLine.Quantity == 0) {
       soLine.isSaved = false;
     }
     if (this.qtyRecCheck(soLine)) {
@@ -176,7 +209,7 @@ export class SalesListPage implements OnInit {
     }
     console.log(this.salesLineList);
 
-    this.storageService.setSOItemList(this.salesLineList);
+    this.storageService.setSOItemList(this.soHeader);
   }
   clearQtyToRec(soLine: SalesLineModel) {
     soLine.inputQty = 0;

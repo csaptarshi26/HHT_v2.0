@@ -4,10 +4,10 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { AxService } from './../../providers/axService/ax.service';
 import { DataService } from './../../providers/dataService/data.service';
 import { PurchTableModel } from './../../models/STPPurchTable.model';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
-import { ToastController, LoadingController, AlertController } from '@ionic/angular';
+import { ToastController, LoadingController, AlertController, IonInput } from '@ionic/angular';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 declare var $: any;
 @Component({
@@ -32,6 +32,9 @@ export class PurchaseLinePage implements OnInit {
   count: any = -1;
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
 
+  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("Recinput") qtyInput: IonInput;
+
   constructor(public dataServ: DataService, public alertController: AlertController, private activateRoute: ActivatedRoute,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public loadingController: LoadingController,
@@ -40,6 +43,8 @@ export class PurchaseLinePage implements OnInit {
   }
 
   ngOnInit() {
+    this.keyboard.hide();
+    this.barcodeInput.autofocus = true;
     this.getPoLineData();
     //this.getStorageData();
     this.user = this.dataServ.userId
@@ -57,8 +62,8 @@ export class PurchaseLinePage implements OnInit {
       if (this.paramService.POSavedHeader != null) {
         this.poLineList = this.paramService.POSavedHeader.PurchLines;
         console.log(this.poLineList);
-      }else{
-        
+      } else {
+
       }
     });
   }
@@ -111,6 +116,7 @@ export class PurchaseLinePage implements OnInit {
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
             this.poLine = el;
+            this.qtyInput.autofocus = true;
             multiLine++;
           }
         });
@@ -173,7 +179,7 @@ export class PurchaseLinePage implements OnInit {
 
     return sum;
   }
-  
+
   clearQtyToRec(poLine: PurchLineModel) {
     poLine.inputQty = 0;
   }

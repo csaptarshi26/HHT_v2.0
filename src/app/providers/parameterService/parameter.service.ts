@@ -6,6 +6,7 @@ import { InventLocationModel } from './../../models/STPInventLocation.model';
 import { CommonModel } from './../../models/STPCommon.model';
 import { Injectable } from '@angular/core';
 import { ItemModel } from 'src/app/models/STPItem.model';
+import { SalesTable } from 'src/app/models/STPSalesTable.model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,7 @@ export class ParameterService {
 
   public inventoryItemList: ItemModel[] = [];
   public POSavedHeader: PurchTableModel;
-  public SOItemList: SalesLineModel[] = [];
+  public SOItemList: any[] = [];
 
   public soLineUpdated: boolean;
   public itemUpdated: boolean = false;

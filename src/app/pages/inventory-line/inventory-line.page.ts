@@ -56,7 +56,7 @@ export class InventoryLinePage implements OnInit {
 
     this.itemList.forEach(el => {
       var dataTable = {} as STPLogSyncDetailsModel;
-      if (el.isSaved && !el.dataSavedToList) {
+      if (el.isSaved && !el.dataSavedToList && el.quantity > 0) {
         dataTable.BarCode = el.BarCode;
         dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;

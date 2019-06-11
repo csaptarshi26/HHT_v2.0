@@ -1,8 +1,9 @@
+import { LoadingController, IonInput } from '@ionic/angular';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { DataService } from 'src/app/providers/dataService/data.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AxService } from './../../providers/axService/ax.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { TransferOrderModel } from 'src/app/models/STPTransferOrder.model';
 
@@ -23,9 +24,10 @@ export class TransferHeaderPage implements OnInit {
   transOrderList: TransferOrderModel[] = [];
   selectedTrans: TransferOrderModel = {} as TransferOrderModel;
 
+  
   constructor(public dataServ: DataService, public axService: AxService,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
-    public router: Router) {
+    public router: Router, public loadingController: LoadingController) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
@@ -36,12 +38,16 @@ export class TransferHeaderPage implements OnInit {
     this.getWarehouse();
 
   }
-  fromListSelected() {
-    console.log(this.fromWarehouse.LocationId);
+  async fromListSelected() {
+    const loading = await this.loadingController.create({
+      message: 'Please Wait'
+    });
+    await loading.present();
     this.axService.readTransferOrders(this.paramService.Location.LocationId, this.fromWarehouse.LocationId).subscribe(res => {
-      console.log(res);
+      loading.dismiss();
       this.transOrderList = res;
     }, error => {
+      loading.dismiss();
       console.log(error)
     })
   }
@@ -57,11 +63,17 @@ export class TransferHeaderPage implements OnInit {
     })
   }
 
-  ToListSelected() {
+  async ToListSelected() {
+    const loading = await this.loadingController.create({
+      message: 'Please Wait'
+    });
+    await loading.present();
     this.axService.readTransferOrders(this.toWarehouse.LocationId, this.paramService.Location.LocationId).subscribe(res => {
       console.log(res);
+      loading.dismiss();
       this.transOrderList = res;
     }, error => {
+      loading.dismiss();
       console.log(error)
     })
   }

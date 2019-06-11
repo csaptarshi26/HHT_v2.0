@@ -17,7 +17,7 @@
   <ion-card class="scanCard">
     <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" autofocus="true"
+        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" 
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 
@@ -58,7 +58,7 @@
         <div *ngIf="pageType == 'Transfer-out'">
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Ship</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" id="Recinput{{i}}"
+            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" #Recinput id="Recinput"
               (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)" [min]="0">
             </ion-input>
           </ion-item>
@@ -77,7 +77,7 @@
         <div *ngIf="pageType =='Transfer-in'">
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Rec</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" id="Recinput{{i}}"
+            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty"  #Recinput id="Recinput"
               (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)" [min]="0">
             </ion-input>
           </ion-item>
@@ -102,5 +102,5 @@
   <ion-button expand="block" color="light" class="threeItems" (click)="cancelBtn(toLine)">Clear</ion-button>
   <ion-button expand="block" class="threeItems" (click)="saveLine(toLine)" [disabled]="toLine.btnDisable">Save
   </ion-button>
-  <ion-button expand="block" class="threeItems" (click)="showList()">Show List</ion-button>
+  <ion-button expand="block" color="light" class="threeItems" (click)="showList()">Show List</ion-button>
 </ion-footer>

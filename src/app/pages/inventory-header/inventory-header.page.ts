@@ -2,10 +2,10 @@ import { DataService } from './../../providers/dataService/data.service';
 import { ItemModel } from './../../models/STPItem.model';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { AlertController, LoadingController, ToastController, IonInput } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AxService } from './../../providers/axService/ax.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
@@ -33,6 +33,10 @@ export class InventoryHeaderPage implements OnInit {
 
   editField: boolean = false;
   count: any = -1;
+
+  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("qtyInput") qtyInput: IonInput;
+
   constructor(public axService: AxService,public paramService: ParameterService, 
     public alertController: AlertController,private activateRoute: ActivatedRoute,
     public toastController: ToastController, private keyboard: Keyboard,
@@ -44,10 +48,9 @@ export class InventoryHeaderPage implements OnInit {
   }
 
   ngOnInit() {
+    this.keyboard.hide();
+    this.barcodeInput.autofocus = true;
     this.user = this.dataServ.userId
-    setTimeout(() => {
-      this.keyboard.hide();
-    }, 200);
     this.currentLoc = this.paramService.Location;
   } 
 
@@ -77,7 +80,12 @@ export class InventoryHeaderPage implements OnInit {
     }
   }
 
-  confirm() {
+  confirm(item:ItemModel) {
+    if(item.quantity < 0 ){
+      item.isSaved = false;
+    }else{
+      item.isSaved = true;
+    }
     this.qtyList[this.count] = this.item.quantity;
     this.scannedQty =  this.calculateSum();
   }
@@ -107,9 +115,11 @@ export class InventoryHeaderPage implements OnInit {
           flag = true;
           this.presentToast("Barcode Not Found");
         } else {
+          this.qtyInput.autofocus = true;
           $(document).ready(function () {
             $("#qtyInput").focus();
           });
+          this.item.quantity = 0;
           this.item.isSaved = true;
           this.item.visible = true;
           this.itemList.push(this.item);

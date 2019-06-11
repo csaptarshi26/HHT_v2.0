@@ -10,6 +10,7 @@ export class SalesPage implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    
   }
-
+  
 }

@@ -1,12 +1,13 @@
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { SalesLineModel } from './../../models/STPSalesLine.model';
 import { SalesTable } from './../../models/STPSalesTable.model';
 import { AxService } from 'src/app/providers/axService/ax.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/providers/dataService/data.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
-import { ToastController, AlertController } from '@ionic/angular';
+import { ToastController, AlertController, IonInput } from '@ionic/angular';
 declare var $: any;
 @Component({
   selector: 'app-sales-line',
@@ -34,24 +35,22 @@ export class SalesLinePage implements OnInit {
   count: any = -1;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
+
+  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("Recinput") qtyInput: IonInput;
+
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
-    public paramService: ParameterService, private activateRoute: ActivatedRoute,
+    public paramService: ParameterService, private activateRoute: ActivatedRoute,private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
 
   ngOnInit() {
+    this.keyboard.hide();
+    this.barcodeInput.autofocus = true;
     this.user = this.dataServ.userId
     this.getSoLineData();
   }
-
-  // ionViewWillEnter() {
-  //   if (this.paramService.soLineUpdated) {
-  //     this.salesDetails = {} as SalesLineModel;
-  //     this.salesLineList = [];
-  //     this.scannedQty = 0;
-  //   }
-  // }
 
   getSoLineData() {
     if (this.pageType == 'Sales-Order') {
@@ -98,12 +97,11 @@ export class SalesLinePage implements OnInit {
             multiLine++;
 
             this.salesDetails = el;
+            this.qtyInput.autofocus = true;
           }
         });
-
-        let id = "#Recinput" + visibleLine[0];
         $(document).ready(function () {
-          $(id).focus();
+          $("#Recinput").focus();
         });
 
         if (multiLine > 1) {

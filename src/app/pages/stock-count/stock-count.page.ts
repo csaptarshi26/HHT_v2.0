@@ -35,6 +35,11 @@ export class StockCountPage implements OnInit {
 
   editField: boolean = false;
   count: any = -1;
+
+  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("Recinput") qtyInput: IonInput;
+
+
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private router: Router,
@@ -42,12 +47,10 @@ export class StockCountPage implements OnInit {
   }
 
   ngOnInit() {
+    this.keyboard.hide();
+    this.barcodeInput.autofocus = true;
     this.getStorageData();
     this.user = this.dataServ.userId
-    setTimeout(() => {
-      this.keyboard.hide();
-    }, 200);
-    this.keyboard.hide();
     this.currentLoc = this.paramService.Location;
   }
 
@@ -135,11 +138,18 @@ export class StockCountPage implements OnInit {
             $(document).ready(function () {
               $("#qtyInput").focus();
             });
+            this.qtyInput.autofocus = true;
           } else {
             this.item.quantity = 1;
             this.scannedQty = this.scannedQty + 1;
             this.item.isEditable = false;
             this.item.isSaved = true;
+
+            $(document).ready(function () {
+              $("#barcodeInput").focus();
+            });
+
+            this.barcodeInput.autofocus = true;
           }
           this.item.visible = true;
           loading.dismiss();

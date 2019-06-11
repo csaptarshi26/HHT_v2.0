@@ -30,7 +30,10 @@ export class TransferLinePage implements OnInit {
   itemBarcode: any = "";
   updateDataTableList: STPLogSyncDetailsModel[] = [];
 
-  @ViewChild('input') inputElement: IonInput;
+  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("Recinput") qtyInput: IonInput;
+
+
   qtyList: any[] = [];
 
   count: any = -1;
@@ -49,10 +52,8 @@ export class TransferLinePage implements OnInit {
     this.user = this.dataServ.userId
     this.getToLineData();
 
-    setTimeout(() => {
-      this.inputElement.setFocus();
-    }, 150);
     this.keyboard.hide();
+    this.barcodeInput.autofocus = true;
   }
 
   keyboardHide() {
@@ -110,7 +111,7 @@ export class TransferLinePage implements OnInit {
             el.BarCode = res.BarCode;
 
             this.toLine = el;
-
+            this.qtyInput.autofocus = true;
             visibleLine.push(counter);
             multiLine++;
           }
