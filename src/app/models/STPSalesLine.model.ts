@@ -11,6 +11,7 @@ export class SalesLineModel {
     UnitOfMeasure: any;
     VariantCode: any;
 
+    QtyReceivedServer: any;
     inputQty: number;
     updatableQty: number;
 

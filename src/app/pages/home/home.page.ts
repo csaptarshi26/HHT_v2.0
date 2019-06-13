@@ -19,10 +19,14 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.dataAreadId = this.paramService.dataAreaId;
     this.location = this.paramService.Location;
-    
+
     this.menuCtrl.enable(true);
   }
-
+  ionViewDidEnter() {
+    document.addEventListener("backbutton", function (e) {
+      console.log("disable back button")
+    }, false);
+  }
   logoff() {
     this.confirmAlert();
   }

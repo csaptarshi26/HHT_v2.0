@@ -21,9 +21,6 @@
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 
-        <ion-button fill="clear" slots="end" item-right (click)="clearBarcode()">
-          <ion-icon name="close"></ion-icon>
-        </ion-button>
       </ion-item>
       Total Scan Qty: {{scannedQty}}
     </ion-card-content>
@@ -40,7 +37,8 @@
         <span style="width: 50%">
           <b><span>Id : {{toLine.ItemNo}}</span>
             <span style="margin-left: 15px;">UOM : {{toLine.UnitOfMeasure}}</span><br>
-            Desc : {{toLine.qtyDesc}}</b>
+            Desc : {{toLine.qtyDesc}}</b><br>
+            Currently Received : {{toLine.updatableQty}}
         </span>
       </ion-card-header>
       <ion-card-content class="itemLineContent">

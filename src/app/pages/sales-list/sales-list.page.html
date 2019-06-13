@@ -15,7 +15,7 @@
 <ion-content>
   <div *ngIf="salesLineList.length; else noItem">
     <div *ngFor="let salesDetails of salesLineList">
-      <ion-card *ngIf="salesDetails.isSaved">
+      <ion-card *ngIf="salesDetails.isVisible">
         <ion-card-header>
           <span style="width: 50%">
             <b>
@@ -26,7 +26,8 @@
               </span>
               <span>Id : {{salesDetails.ItemNumber}}</span>
               <span style="margin-left: 15px;">UOM : {{salesDetails.UnitOfMeasure}}</span><br>
-              Desc : {{salesDetails.qtyDesc}}</b>
+              Desc : {{salesDetails.qtyDesc}}</b><br>
+            Currently Received : {{salesDetails.updatableQty}}
           </span>
         </ion-card-header>
         <ion-card-content class="itemLineContent">
@@ -38,8 +39,9 @@
 
           <ion-item lines="none" class="ionItemInput" *ngIf="pageType == 'Sales-Order'">
             <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Ship</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput id="Recinput"
-              (keyup.enter)="onEnter(salesDetails)" (click)="clearQtyToRec(salesDetails)" [min]="0">
+            <ion-input type="number" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput
+              id="Recinput" (keyup.enter)="onEnter(salesDetails)" (click)="clearQtyToRec(salesDetails)" [min]="0"
+              (ionChange)="valueChanged(salesDetails)">
             </ion-input>
 
             <ion-button fill="clear" slots="end" item-right (click)="saveLine(salesDetails)"
@@ -54,8 +56,9 @@
 
           <ion-item lines="none" class="ionItemInput" *ngIf="pageType =='Sales-Return'">
             <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Rec</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput id="Recinput"
-              (keyup.enter)="onEnter(salesDetails)" (click)="clearQtyToRec(salesDetails)" [min]="0">
+            <ion-input type="number" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput
+              id="Recinput" (keyup.enter)="onEnter(salesDetails)" (click)="clearQtyToRec(salesDetails)" [min]="0"
+              (ionChange)="valueChanged(salesDetails)">
             </ion-input>
 
             <ion-button fill="clear" slots="end" item-right (click)="saveLine(salesDetails)"

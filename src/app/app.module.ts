@@ -28,7 +28,7 @@ import { ModPipe } from './pipes/mod.pipe';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({hardwareBackButton: false}),
     IonicStorageModule.forRoot(),    
     AppRoutingModule,
     HttpClientModule,

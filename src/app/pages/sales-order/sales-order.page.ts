@@ -29,7 +29,7 @@ export class SalesOrderPage implements OnInit {
 
   salesLineList: SalesLineModel[] = [];
 
-  soStorageItemList: any[];
+  soStorageItemList: any[] = [];
   itemExistsInStorage: boolean;
 
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
@@ -46,8 +46,9 @@ export class SalesOrderPage implements OnInit {
   }
 
   soSelected() {
-    var soItem:SalesTable;
-    if (this.soStorageItemList != null) {
+    var soItem: SalesTable;
+    if (this.soStorageItemList != null || this.soStorageItemList.length !=0) {
+      console.log(this.soStorageItemList != null)
       this.soStorageItemList.forEach(el => {
         if (el.soNo == this.selectedSalesTable.DocumentNo && el.type == this.pageType) {
           this.itemExistsInStorage = true;
@@ -110,7 +111,7 @@ export class SalesOrderPage implements OnInit {
     });
   }
 
-  async presentAlert(soItem:SalesTable) {
+  async presentAlert(soItem: SalesTable) {
     const alert = await this.alertController.create({
       header: 'Data Exits!',
       message: `There is Unsaved data for this Sales Order Number, 

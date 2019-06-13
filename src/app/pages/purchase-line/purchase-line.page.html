@@ -13,12 +13,8 @@
     <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
         <ion-input type="text" hideKeyboard #input id="barcodeInput"  placeholder="Scan" 
-          [(ngModel)]="barcode" (ionChange)="searchBarcode()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
+          [(ngModel)]="barcode" (ionChange)="searchBarcode()" (click)="clearBarcode()" >
         </ion-input>
-
-        <ion-button fill="clear" slots="end" item-right (click)="clearBarcode()">
-          <ion-icon name="close"></ion-icon>
-        </ion-button>
       </ion-item>
       Total Scan Qty: {{scannedQty}}
     </ion-card-content>

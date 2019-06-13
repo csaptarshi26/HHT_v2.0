@@ -9,6 +9,7 @@ import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ToastController, LoadingController, AlertController, IonInput } from '@ionic/angular';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
+
 declare var $: any;
 @Component({
   selector: 'app-purchase-line',
@@ -40,17 +41,15 @@ export class PurchaseLinePage implements OnInit {
     public paramService: ParameterService, public loadingController: LoadingController,
     public router: Router, public storageServ: StorageService) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
-  }
 
+  }
+  ionViewWillEnter() {
+    this.setBarcodeFocus();
+  }
   ngOnInit() {
-    this.keyboard.hide();
-    this.barcodeInput.autofocus = true;
     this.getPoLineData();
     //this.getStorageData();
     this.user = this.dataServ.userId
-    setTimeout(() => {
-      this.keyboard.hide();
-    }, 150);
   }
 
   getStorageData() {
@@ -68,9 +67,6 @@ export class PurchaseLinePage implements OnInit {
     });
   }
 
-  keyboardHide() {
-    this.keyboard.hide();
-  }
   getPoLineData() {
     if (this.pageType == "Receive") {
       this.dataServ.getPO$.subscribe(res => {
@@ -89,10 +85,19 @@ export class PurchaseLinePage implements OnInit {
   }
   clearBarcode() {
     this.barcode = "";
-    document.getElementById("barcodeInput").focus();
-    this.keyboard.hide();
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 150);
   }
 
+  setBarcodeFocus() {
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 150);
+    setTimeout(() => {
+      this.keyboard.hide();
+    }, 150);
+  }
 
   searchBarcode() {
     if (this.barcode != null && this.barcode.length > 3) {
@@ -100,44 +105,36 @@ export class PurchaseLinePage implements OnInit {
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
-        var multiLine = 0;
         this.poLineList.forEach(el => {
           counter++;
           if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
             this.count++
             el.inputQty = 0;
-            //el.qtyReceivedFromServer = el.QtyReceived;
             el.isVisible = true;
             el.toggle = false;
-            //el.QtyToReceive = 0;
+            el.QtyReceivedServer = el.QtyReceived;
             flag = true;
-            //el.updatableQty = 0;
-            //el.balance = el.Qty - el.QtyReceived;
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
             this.poLine = el;
-            this.qtyInput.autofocus = true;
-            multiLine++;
+            return;
           }
         });
 
         console.log(this.poLine);
-
-        $(document).ready(function () {
-          $("#Recinput").focus();
-        });
-
-        if (multiLine > 1) {
-          this.presentAlert("This Item has " + multiLine + " Lines");
-        }
         if (!flag) {
-          this.presentToast("Barcode not found");
           this.barcode = "";
-          document.getElementById("barcodeInput").focus();
+          this.setBarcodeFocus();
+          this.presentToast("This item barcode not in order list");
+        } else {
+          setTimeout(() => {
+            this.qtyInput.setFocus();
+          }, 150);
         }
       }, error => {
-        this.presentToast("Barcode not found");
-        document.getElementById("barcodeInput").focus();
+        this.barcode = "";
+        this.setBarcodeFocus();
+        this.presentToast("Connection Error");
       })
     }
 
@@ -161,6 +158,7 @@ export class PurchaseLinePage implements OnInit {
       poLine.isSaved = false;
       poLine.toggle = false;
     }
+
     console.log(poLine);
     console.log(this.poLineList)
     this.storageServ.setPOItemList(this.poLineList);
@@ -205,7 +203,7 @@ export class PurchaseLinePage implements OnInit {
         return false;
       } else {
         poLine.QtyToReceive -= -poLine.inputQty;
-        poLine.QtyReceived += poLine.inputQty;
+        poLine.QtyReceived += -poLine.inputQty;
         poLine.updatableQty += poLine.inputQty;
         this.qtyList[this.count] = poLine.updatableQty;
         poLine.inputQty = 0;
@@ -213,25 +211,37 @@ export class PurchaseLinePage implements OnInit {
       }
     }
   }
-  async presentAlert(msg) {
+  async presentAlert(poLine: PurchLineModel) {
     const alert = await this.alertController.create({
-      header: 'Multiple Item',
-      subHeader: '',
-      message: msg,
-      buttons: ['OK']
+      header: 'Confirmation',
+      message: `Are you sure you want to clear the entered data? `,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.pageType == "Receive") {
+              poLine.QtyReceived -= poLine.updatableQty;
+              poLine.QtyToReceive += poLine.updatableQty;
+            } else {
+              poLine.QtyReceived -= -poLine.updatableQty;
+              poLine.QtyToReceive -= poLine.updatableQty;
+            }
+            poLine.updatableQty = 0;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
+          }
+        }
+      ]
     });
 
     await alert.present();
   }
   cancelBtn(poLine: PurchLineModel) {
-    if (this.pageType == "Receive") {
-      poLine.QtyReceived -= poLine.updatableQty;
-      poLine.QtyToReceive += poLine.updatableQty;
-    } else {
-      poLine.QtyReceived -= poLine.updatableQty;
-      poLine.QtyToReceive -= poLine.updatableQty;
-    }
-    poLine.updatableQty = 0;
+    this.presentAlert(poLine);
   }
   showList() {
     if (this.pageType == "Receive") {

@@ -14,7 +14,7 @@
 
 <ion-content>
   <div *ngFor="let poLine of poLineList,let i=index">
-    <div *ngIf="poLine.isVisible && poLine.isSaved">
+    <div *ngIf="poLine.isVisible">
       <ion-card class="lineDetails">
         <ion-card-header>
           <span class="iconPos">
@@ -26,7 +26,7 @@
           <span style="width: 50%">
             <b><span>Id : {{poLine.ItemId}}</span>
               <span style="margin-left: 15px;">UOM : {{poLine.UnitId}}</span><br>
-              Desc : {{poLine.qtyDesc}}</b>
+              Desc : {{poLine.qtyDesc}}</b><br>
           </span>
         </ion-card-header>
         <!-- *ngIf="!poLine.toggle" -->
@@ -41,7 +41,8 @@
             <ion-item lines="none" class="ionItemInput">
               <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Receive</ion-label>
               <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty" id="Recinput"
-                [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
+                [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0"
+                (ionChange)="valueChanged(poLine)">
               </ion-input>
 
               <ion-button fill="clear" slots="end" item-right (click)="saveLine(poLine)" [disabled]="poLine.btnDisable">
@@ -76,7 +77,8 @@
             <ion-item lines="none" class="ionItemInput">
               <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Return</ion-label>
               <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty" id="Recinput{{i}}"
-                [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
+                [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0"
+                (ionChange)="valueChanged(poLine)">
               </ion-input>
 
               <ion-button fill="clear" slots="end" item-right (click)="saveLine(poLine)" [disabled]="poLine.btnDisable">

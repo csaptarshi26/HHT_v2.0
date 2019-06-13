@@ -22,7 +22,7 @@ export class TransferLinePage implements OnInit {
   toHeader: TransferOrderModel;
   toLineList: TransferOrderLine[] = [];
   user: any;
-  toLine:TransferOrderLine = {} as TransferOrderLine;
+  toLine: TransferOrderLine = {} as TransferOrderLine;
 
   pageType: any;
   scannedQty: any;
@@ -42,18 +42,26 @@ export class TransferLinePage implements OnInit {
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
-    public loadingController: LoadingController,public router:Router) {
+    public loadingController: LoadingController, public router: Router) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
+  ionViewWillEnter() {
+    this.setBarcodeFocus();
+  }
+
+  setBarcodeFocus() {
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 150);
+    setTimeout(() => {
+      this.keyboard.hide();
+    }, 150);
+  }
 
   ngOnInit() {
-
     this.user = this.dataServ.userId
     this.getToLineData();
-
-    this.keyboard.hide();
-    this.barcodeInput.autofocus = true;
   }
 
   keyboardHide() {
@@ -83,26 +91,29 @@ export class TransferLinePage implements OnInit {
 
   clearBarcode() {
     this.barcode = "";
-    document.getElementById("barcodeInput").focus();
-    this.keyboard.hide();
+    this.setBarcodeFocus()
   }
- 
+
   ngOnDestroy() {
     this.toHeader.scannedQty = this.scannedQty;
   }
-  barcodeScan() {
+  async barcodeScan() {
     var visibleLine = [];
 
     if (this.barcode != null && this.barcode.length > 3) {
+      const loading = await this.loadingController.create({
+        message: 'Please Wait'
+      });
+      await loading.present();
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
-        var multiLine = 0;
+        loading.dismiss();
         this.toLineList.forEach(el => {
           counter++;
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
-            
+
             el.inputQty = 0;
             this.count++
 
@@ -111,28 +122,25 @@ export class TransferLinePage implements OnInit {
             el.BarCode = res.BarCode;
 
             this.toLine = el;
-            this.qtyInput.autofocus = true;
             visibleLine.push(counter);
-            multiLine++;
           }
         });
 
-        let id = "#Recinput" + visibleLine[0];
-        $(document).ready(function () {
-          $(id).focus();
-        });
-
-        if (multiLine > 1) {
-          this.presentAlert("This Item has " + multiLine + " Lines");
-        }
         if (!flag) {
-          this.presentToast("Barcode not found");
           this.barcode = "";
-          document.getElementById("barcodeInput").focus();
+          this.setBarcodeFocus()
+          this.presentToast("This item barcode not in order list");
+
+        } else {
+          setTimeout(() => {
+            this.qtyInput.setFocus();
+          }, 150);
         }
       }, error => {
-        this.presentToast("Barcode not found");
-        document.getElementById("barcodeInput").focus();
+        loading.dismiss()
+        this.barcode = "";
+        this.setBarcodeFocus()
+        this.presentToast("Connection Error");
       })
     }
 
@@ -153,6 +161,7 @@ export class TransferLinePage implements OnInit {
     } else {
       toLine.isSaved = false;
     }
+
     console.log(toLine);
     console.log(this.qtyList)
     var sum = 0;
@@ -254,15 +263,38 @@ export class TransferLinePage implements OnInit {
 
     await alert.present();
   }
+
+  async presentAlertForCancel(toLine: TransferOrderLine) {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Are you sure you want to clear the entered data? `,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.pageType == "Transfer-out") {
+              toLine.QtyShipped -= toLine.updatableQty;
+              toLine.QtyToShip += toLine.updatableQty;
+            } else {
+              toLine.QtyReceived -= toLine.updatableQty;
+              toLine.QtyToReceive += toLine.updatableQty;
+            }
+            toLine.updatableQty = 0;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
   cancelBtn(toLine: TransferOrderLine) {
-    if (this.pageType == "Transfer-out") {
-      toLine.QtyShipped -= toLine.updatableQty;
-      toLine.QtyToShip += toLine.updatableQty;
-    } else {
-      toLine.QtyReceived -= toLine.updatableQty;
-      toLine.QtyToReceive += toLine.updatableQty;
-    }
-    toLine.updatableQty = 0;
+    this.presentAlertForCancel(toLine);
   }
 
   showList() {

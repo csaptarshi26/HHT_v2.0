@@ -26,7 +26,7 @@ export class StockCountListPage implements OnInit {
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
-    public router: Router) {
+    public router: Router, public alertController: AlertController) {
   }
 
   ngOnInit() {
@@ -124,13 +124,37 @@ export class StockCountListPage implements OnInit {
   }
 
   deleteLine(item:ItemModel){
-    this.itemList.forEach(el => {
-      if (el.ItemId == item.ItemId) {
-        var index = this.itemList.indexOf(el);
-        if (index > -1) {
-          this.itemList.splice(index, 1);
+    this.presentAlertForCancel(item);
+  }
+
+  async presentAlertForCancel(item:ItemModel) {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Are you sure you want to delete this line? `,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            this.itemList.forEach(el => {
+              if (el.ItemId == item.ItemId) {
+                var index = this.itemList.indexOf(el);
+                if (index > -1) {
+                  this.itemList.splice(index, 1);
+                  return;
+                }
+              }
+            });
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
+          }
         }
-      }
+      ]
     });
+
+    await alert.present();
   }
 }

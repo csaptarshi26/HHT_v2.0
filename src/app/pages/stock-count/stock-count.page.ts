@@ -37,7 +37,7 @@ export class StockCountPage implements OnInit {
   count: any = -1;
 
   @ViewChild("input") barcodeInput: IonInput;
-  @ViewChild("Recinput") qtyInput: IonInput;
+  @ViewChild("qtyInput") qtyInput: IonInput;
 
 
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
@@ -47,14 +47,22 @@ export class StockCountPage implements OnInit {
   }
 
   ngOnInit() {
-    this.keyboard.hide();
-    this.barcodeInput.autofocus = true;
     this.getStorageData();
     this.user = this.dataServ.userId
     this.currentLoc = this.paramService.Location;
   }
 
+  setBarcodeFocus() {
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 150);
+    setTimeout(() => {
+      this.keyboard.hide();
+    }, 150);
+  }
+
   ionViewWillEnter() {
+    this.setBarcodeFocus();
     console.log(this.paramService.itemUpdated)
     if (this.paramService.itemUpdated) {
       this.item = {} as ItemModel;
@@ -70,8 +78,7 @@ export class StockCountPage implements OnInit {
   }
   clearBarcode() {
     this.barcode = "";
-    document.getElementById("barcodeInput").focus();
-    this.keyboard.hide();
+    this.setBarcodeFocus();
   }
 
 
@@ -129,27 +136,25 @@ export class StockCountPage implements OnInit {
         this.item = res;
         if (this.item.ItemId == null || this.item.ItemId == "") {
           flag = true;
-          this.presentToast("Barcode Not Found");
+          this.presentToast("This item barcode not in order list");
+          this.setBarcodeFocus();
         } else {
           this.count++;
           if (this.editField) {
             this.item.quantity = 0;
             this.item.isEditable = true;
-            $(document).ready(function () {
-              $("#qtyInput").focus();
-            });
-            this.qtyInput.autofocus = true;
+            setTimeout(() => {
+              this.qtyInput.setFocus();
+              this.barcode = "";
+            }, 150);
+            this.qtyInput.setFocus();
           } else {
             this.item.quantity = 1;
             this.scannedQty = this.scannedQty + 1;
             this.item.isEditable = false;
             this.item.isSaved = true;
-
-            $(document).ready(function () {
-              $("#barcodeInput").focus();
-            });
-
-            this.barcodeInput.autofocus = true;
+            this.barcode = "";
+            this.setBarcodeFocus();
           }
           this.item.visible = true;
           loading.dismiss();
@@ -160,7 +165,6 @@ export class StockCountPage implements OnInit {
 
           // this.itemList.push(this.item);
           console.log(this.itemList)
-          this.clearBarcode();
         }
       }, error => {
         loading.dismiss();
@@ -168,7 +172,8 @@ export class StockCountPage implements OnInit {
       });
       loading.dismiss();
       if (flag) {
-        this.presentToast("Barcode Not Found");
+        this.presentToast("This item barcode not in order list");
+        this.setBarcodeFocus();
       }
     }
   }

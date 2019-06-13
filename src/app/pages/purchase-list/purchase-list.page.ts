@@ -59,6 +59,10 @@ export class PurchaseListPage implements OnInit {
         this.poHeader = res;
       })
     }
+
+    this.poLineList.forEach(el=>{
+      el.inputQty = el.updatableQty;
+    })
   }
 
 
@@ -84,7 +88,7 @@ export class PurchaseListPage implements OnInit {
         dataTable.LineNum = el.LineNo;
 
         if (this.pageType == "Receive") {
-          dataTable.DocumentType = 1;          
+          dataTable.DocumentType = 1;
         } else {
           dataTable.DocumentType = 2;
         }
@@ -104,7 +108,7 @@ export class PurchaseListPage implements OnInit {
       });
       await loading.present();
       console.log(this.updateDataTableList);
-      try{
+      try {
         this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
           if (res) {
             this.updateDataTableList = [];
@@ -119,10 +123,10 @@ export class PurchaseListPage implements OnInit {
           loading.dismiss();
           console.log(error.message);
         })
-      }catch(e){
+      } catch (e) {
         this.storageServ.setPOItemList(this.poHeader);
       }
-      
+
     } else {
       this.presentToast("Line Already Saved");
     }
@@ -164,50 +168,76 @@ export class PurchaseListPage implements OnInit {
       poLine.toggle = false;
     }
     console.log(this.poLineList);
-   
+
     this.storageServ.setPOItemList(this.poHeader);
   }
 
   clearQtyToRec(poLine: PurchLineModel) {
-    poLine.inputQty = 0;
+
   }
   qtyRecCheck(poLine: PurchLineModel) {
+    poLine.isSaved = false;
     if (this.pageType == "Receive") {
-      if ((poLine.QtyReceived + poLine.inputQty) > poLine.Qty) {
+      if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableQty) > poLine.Qty) {
         this.presentToast("Rec item cannot be greater than Qty");
         //poLine.btnDisable = true;
         return false;
       } else {
-        poLine.QtyToReceive -= poLine.inputQty;
-        poLine.QtyReceived += poLine.inputQty;
-        poLine.updatableQty += poLine.inputQty;
+        poLine.QtyToReceive = poLine.QtyToReceive + poLine.updatableQty - poLine.inputQty;
+        poLine.QtyReceived = poLine.QtyReceived - poLine.updatableQty + poLine.inputQty;
+        poLine.updatableQty = poLine.inputQty;
         this.qtyList[this.count] = poLine.updatableQty;
-        poLine.inputQty = 0;
         return true;
       }
     } else {
-      if ((poLine.QtyReceived + poLine.inputQty) > (-poLine.Qty)) {
+      if ((-poLine.QtyReceived + poLine.inputQty - poLine.updatableQty) > (-poLine.Qty)) {
         this.presentToast("Rec item cannot be greater than Qty");
         //poLine.btnDisable = true;
         return false;
       } else {
-        poLine.QtyToReceive -= poLine.inputQty;
-        poLine.QtyReceived += poLine.inputQty;
-        poLine.updatableQty += poLine.inputQty;
+        poLine.QtyToReceive = poLine.QtyToReceive - poLine.updatableQty + poLine.inputQty;
+        poLine.QtyReceived = poLine.QtyReceived + poLine.updatableQty - poLine.inputQty;
+        poLine.updatableQty = poLine.inputQty;
         this.qtyList[this.count] = poLine.updatableQty;
-        poLine.inputQty = 0;
         return true;
       }
     }
+  }
+  async presentAlertForCancel(poLine: PurchLineModel) {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Are you sure you want to clear the entered data? `,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.pageType == "Receive") {
+              poLine.QtyReceived -= poLine.updatableQty;
+              poLine.QtyToReceive += poLine.updatableQty;
+            } else {
+              poLine.QtyReceived -= -poLine.updatableQty;
+              poLine.QtyToReceive -= poLine.updatableQty;
+            }
+            poLine.updatableQty = 0;
+            poLine.inputQty = 0;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
   cancelBtn(poLine: PurchLineModel) {
-    if (this.pageType == "Receive") {
-      poLine.QtyReceived -= poLine.updatableQty;
-      poLine.QtyToReceive += poLine.updatableQty;
-    } else {
-      poLine.QtyReceived -= poLine.updatableQty;
-      poLine.QtyToReceive += poLine.updatableQty;
-    }
-    poLine.updatableQty = 0;
+    this.presentAlertForCancel(poLine);
   }
+  valueChanged(poLine: PurchLineModel) {
+    poLine.isSaved = false;
+  }
+
 }

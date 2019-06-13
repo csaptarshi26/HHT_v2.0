@@ -23,9 +23,6 @@
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 
-        <ion-button fill="clear" slots="end" item-right (click)="clearBarcode()">
-          <ion-icon name="close"></ion-icon>
-        </ion-button>
       </ion-item>
 
       <!-- <ion-item lines="none">

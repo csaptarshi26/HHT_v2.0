@@ -24,7 +24,7 @@
 
 
     <ion-item lines="none" class="ionItemInput">
-      <ion-label position="stacked">Transfer Order In</ion-label>
+      <ion-label position="stacked">Transfer Order No.</ion-label>
       <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
         itemTextField="JournalId" [canSearch]="true">
       </ionic-selectable>
@@ -53,7 +53,7 @@
 
 
     <ion-item lines="none" class="ionItemInput">
-      <ion-label position="stacked">Transfer Order Out</ion-label>
+      <ion-label position="stacked">Transfer Order No.</ion-label>
       <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
         itemTextField="JournalId" [canSearch]="true">
       </ionic-selectable>
@@ -68,5 +68,5 @@
 
 <ion-footer>
   <!-- [disabled]="selectedPurchOrder.PurchId==null" -->
-  <ion-button expand="block" (click)="navigateToNext()">Scan</ion-button>
+  <ion-button expand="block" (click)="navigateToNext()">Next</ion-button>
 </ion-footer>

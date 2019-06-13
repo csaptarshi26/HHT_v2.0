@@ -56,6 +56,10 @@ export class TransferLineListPage implements OnInit {
         this.toLineList = res;
       })
     }
+
+    this.toLineList.forEach(el => {
+      el.inputQty = el.updatableQty;
+    })
   }
 
   async presentToast(msg) {
@@ -128,32 +132,30 @@ export class TransferLineListPage implements OnInit {
     }
   }
   clearQtyToRec(toLine: TransferOrderLine) {
-    toLine.inputQty = 0;
+    
   }
   recQtyChanged(toLine: TransferOrderLine) {
     toLine.isSaved = false;
   }
   qtyRecCheck(toLine: TransferOrderLine) {
     if (this.pageType == "Transfer-out") {
-      if ((toLine.QtyShipped + toLine.inputQty) > toLine.Quantity) {
+      if ((toLine.QtyShipped + toLine.inputQty  - toLine.updatableQty) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
-        toLine.QtyToShip -= toLine.inputQty;
-        toLine.QtyShipped += toLine.inputQty;
-        toLine.updatableQty += toLine.inputQty;
-        toLine.inputQty = 0;
+        toLine.QtyToShip = toLine.QtyToShip + toLine.updatableQty - toLine.inputQty;
+        toLine.QtyShipped = toLine.QtyShipped - toLine.updatableQty + toLine.inputQty;
+        toLine.updatableQty = toLine.inputQty;
         return true;
       }
     } else {
-      if ((toLine.QtyReceived + toLine.inputQty) > toLine.Quantity) {
+      if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableQty) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
-        toLine.QtyToReceive -= toLine.inputQty;
-        toLine.QtyReceived += toLine.inputQty;
-        toLine.updatableQty += toLine.inputQty;
-        toLine.inputQty = 0;
+        toLine.QtyToReceive = toLine.QtyToReceive + toLine.updatableQty - toLine.inputQty;
+        toLine.QtyReceived = toLine.QtyReceived - toLine.updatableQty + toLine.inputQty;
+        toLine.updatableQty = toLine.inputQty;
         return true;
       }
     }
@@ -167,7 +169,38 @@ export class TransferLineListPage implements OnInit {
         {
           text: 'Okay',
           handler: () => {
-            this.router.navigateByUrl('/sales');
+            this.router.navigateByUrl('/transfer'); 
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async presentAlertForCancel(toLine: TransferOrderLine) {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Are you sure you want to clear the entered data? `,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.pageType == "Transfer-out") {
+              toLine.QtyShipped -= toLine.updatableQty;
+              toLine.QtyToShip += toLine.updatableQty;
+            } else {
+              toLine.QtyReceived -= toLine.updatableQty;
+              toLine.QtyToReceive += toLine.updatableQty;
+            }
+            toLine.updatableQty = 0;
+            toLine.inputQty = 0;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
           }
         }
       ]
@@ -176,14 +209,6 @@ export class TransferLineListPage implements OnInit {
     await alert.present();
   }
   cancelBtn(toLine: TransferOrderLine) {
-    if (this.pageType == "Transfer-out") {
-      toLine.QtyShipped -= toLine.updatableQty;
-      toLine.QtyToShip += toLine.updatableQty;
-    } else {
-      toLine.QtyReceived -= toLine.updatableQty;
-      toLine.QtyToReceive += toLine.updatableQty;
-    }
-    toLine.updatableQty = 0;
+    this.presentAlertForCancel(toLine);
   }
-
 }

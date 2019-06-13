@@ -24,7 +24,7 @@ export class SalesListPage implements OnInit {
   dataUpdatedToServer: boolean = false;
   pageType: any;
 
-  soItemSotrageList: any[];
+  soItemSotrageList: any = [];
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
@@ -67,9 +67,9 @@ export class SalesListPage implements OnInit {
   }
   removeElementFromStorageList() {
     if (this.soItemSotrageList != null) {
-      this.soItemSotrageList = this.soItemSotrageList.slice();
+      //this.soItemSotrageList = this.soItemSotrageList.slice();
       this.soItemSotrageList.forEach(el => {
-        if (el.type == this.pageType && el.soNo == this.soHeader.DocumentNo ) {
+        if (el.type == this.pageType && el.soNo == this.soHeader.DocumentNo) {
           var index = this.soItemSotrageList.indexOf(el);
           if (index > -1) {
             this.soItemSotrageList.splice(index, 1);
@@ -111,9 +111,9 @@ export class SalesListPage implements OnInit {
       })
     }
 
-
-
-
+    this.salesLineList.forEach(el => {
+      el.inputQty = el.updatableQty;
+    })
   }
 
   async saveItem() {
@@ -207,52 +207,78 @@ export class SalesListPage implements OnInit {
     } else {
       soLine.isSaved = false;
     }
+
     console.log(this.salesLineList);
 
     this.storageService.setSOItemList(this.soHeader);
   }
   clearQtyToRec(soLine: SalesLineModel) {
-    soLine.inputQty = 0;
+
   }
   recQtyChanged(soLine: SalesLineModel) {
     soLine.isSaved = false;
   }
   qtyRecCheck(soLine: SalesLineModel) {
     if (this.pageType == "Sales-Order") {
-      if ((soLine.QtyShipped + soLine.inputQty) > soLine.Quantity) {
+      if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableQty) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
-        soLine.QtyToShip -= soLine.inputQty;
-        soLine.QtyShipped += soLine.inputQty;
-        soLine.updatableQty += soLine.inputQty;
+        soLine.QtyToShip = soLine.QtyToShip + soLine.updatableQty - soLine.inputQty;
+        soLine.QtyShipped = soLine.QtyShipped - soLine.updatableQty + soLine.inputQty;
+        soLine.updatableQty = soLine.inputQty;
         //this.qtyList[this.count] = soLine.updatableQty;
-        soLine.inputQty = 0;
         return true;
       }
     } else {
-      if ((soLine.QtyReceived + soLine.inputQty) > soLine.Quantity) {
+      if ((soLine.QtyReceived + soLine.inputQty - soLine.updatableQty) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
-        soLine.QtyToReceive -= soLine.inputQty;
-        soLine.QtyReceived += soLine.inputQty;
-        soLine.updatableQty += soLine.inputQty;
+        soLine.QtyToReceive = soLine.QtyToReceive + soLine.updatableQty - soLine.inputQty;
+        soLine.QtyReceived = soLine.QtyReceived - soLine.updatableQty + soLine.inputQty;
+        soLine.updatableQty = soLine.inputQty;
         //this.qtyList[this.count] = soLine.updatableQty;
-        soLine.inputQty = 0;
         return true;
       }
     }
-  }
-  cancelBtn(soLine: SalesLineModel) {
-    if (this.pageType == "Sales-Order") {
-      soLine.QtyShipped -= soLine.updatableQty;
-      soLine.QtyToShip += soLine.updatableQty;
-    } else {
-      soLine.QtyReceived -= soLine.updatableQty;
-      soLine.QtyToReceive += soLine.updatableQty;
-    }
-    soLine.updatableQty = 0;
   }
 
+  async presentAlertForCancel(soLine: SalesLineModel) {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Are you sure you want to clear the entered data? `,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.pageType == "Sales-Order") {
+              soLine.QtyShipped -= soLine.updatableQty;
+              soLine.QtyToShip += soLine.updatableQty;
+            } else {
+              soLine.QtyReceived -= soLine.updatableQty;
+              soLine.QtyToReceive += soLine.updatableQty;
+            }
+            soLine.updatableQty = 0;
+            soLine.inputQty = 0;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+  cancelBtn(soLine: SalesLineModel) {
+    this.presentAlertForCancel(soLine);
+  }
+
+  valueChanged(soLine: SalesLineModel) {
+    soLine.isSaved = false;
+  }
 }

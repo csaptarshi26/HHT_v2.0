@@ -11,6 +11,7 @@ export class PurchLineModel {
     NetAmt: any;
     qtyDesc: any;
 
+    QtyReceivedServer: any;
     inputQty: any;
     isVisible: boolean;
     isSaved: boolean;

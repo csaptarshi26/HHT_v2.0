@@ -130,6 +130,7 @@ export class InventoryLinePage implements OnInit {
         var index = this.itemList.indexOf(el);
         if (index > -1) {
           this.itemList.splice(index, 1);
+          return;
         }
       }
     });

@@ -17,7 +17,7 @@ declare var $: any;
 })
 export class InventoryHeaderPage implements OnInit {
 
-  pageType:any;
+  pageType: any;
   barcode: string;
   warehouseList: InventLocationLineModel[] = [];
   currentLoc: InventLocationLineModel = {} as InventLocationLineModel;
@@ -37,24 +37,30 @@ export class InventoryHeaderPage implements OnInit {
   @ViewChild("input") barcodeInput: IonInput;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
-  constructor(public axService: AxService,public paramService: ParameterService, 
-    public alertController: AlertController,private activateRoute: ActivatedRoute,
+  constructor(public axService: AxService, public paramService: ParameterService,
+    public alertController: AlertController, private activateRoute: ActivatedRoute,
     public toastController: ToastController, private keyboard: Keyboard,
     private router: Router, public storageServ: StorageService,
-    public loadingController: LoadingController,public dataServ:DataService) {
+    public loadingController: LoadingController, public dataServ: DataService) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
     console.log(this.pageType)
   }
 
   ngOnInit() {
-    this.keyboard.hide();
-    this.barcodeInput.autofocus = true;
     this.user = this.dataServ.userId
     this.currentLoc = this.paramService.Location;
-  } 
-
+  }
+  setBarcodeFocus() {
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 150);
+    setTimeout(() => {
+      this.keyboard.hide();
+    }, 150);
+  }
   ionViewWillEnter() {
+    this.setBarcodeFocus();
     console.log(this.paramService.itemUpdated)
     if (this.paramService.itemUpdated) {
       this.item = {} as ItemModel;
@@ -67,11 +73,10 @@ export class InventoryHeaderPage implements OnInit {
   }
   clearBarcode() {
     this.barcode = "";
-    document.getElementById("barcodeInput").focus();
-    this.keyboard.hide();
+    this.setBarcodeFocus();
   }
 
- 
+
   notify() {
     if (this.editField) {
       this.item.isEditable = true;
@@ -80,14 +85,14 @@ export class InventoryHeaderPage implements OnInit {
     }
   }
 
-  confirm(item:ItemModel) {
-    if(item.quantity < 0 ){
+  confirm(item: ItemModel) {
+    if (item.quantity < 0) {
       item.isSaved = false;
-    }else{
+    } else {
       item.isSaved = true;
     }
     this.qtyList[this.count] = this.item.quantity;
-    this.scannedQty =  this.calculateSum();
+    this.scannedQty = this.calculateSum();
   }
 
   calculateSum() {
@@ -113,12 +118,11 @@ export class InventoryHeaderPage implements OnInit {
         loading.dismiss();
         if (this.item.ItemId == null || this.item.ItemId == "") {
           flag = true;
-          this.presentToast("Barcode Not Found");
+          this.presentToast("This item barcode not in order list");
         } else {
-          this.qtyInput.autofocus = true;
-          $(document).ready(function () {
-            $("#qtyInput").focus();
-          });
+          setTimeout(() => {
+            this.qtyInput.setFocus();
+          }, 150);
           this.item.quantity = 0;
           this.item.isSaved = true;
           this.item.visible = true;
@@ -132,7 +136,8 @@ export class InventoryHeaderPage implements OnInit {
       });
       loading.dismiss();
       if (flag) {
-        this.presentToast("Barcode Not Found");
+        this.presentToast("This item barcode not in order list");
+        this.setBarcodeFocus();
       }
     }
   }
@@ -149,7 +154,7 @@ export class InventoryHeaderPage implements OnInit {
   showList() {
     this.storageServ.setItemList(this.itemList);
     this.dataServ.setItemList(this.itemList);
-    this.router.navigateByUrl('/inventory-line/'+this.pageType);
+    this.router.navigateByUrl('/inventory-line/' + this.pageType);
   }
 
 
