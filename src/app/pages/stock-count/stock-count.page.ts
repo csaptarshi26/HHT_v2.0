@@ -166,11 +166,12 @@ export class StockCountPage implements OnInit {
           // this.itemList.push(this.item);
           console.log(this.itemList)
         }
+        loading.dismiss();
       }, error => {
         loading.dismiss();
         flag = true;
+        this.presentToast("Connection Error");
       });
-      loading.dismiss();
       if (flag) {
         this.presentToast("This item barcode not in order list");
         this.setBarcodeFocus();

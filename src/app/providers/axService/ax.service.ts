@@ -158,4 +158,19 @@ export class AxService {
     };
     return this.http.post(url, body, httpOptions);
   }
+
+  getSalesReturnOrder(custAcc): Observable<any>{
+    let url = this.baseAddress + "readSalesReturnOrders";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "CustAccount": custAcc,
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
 }

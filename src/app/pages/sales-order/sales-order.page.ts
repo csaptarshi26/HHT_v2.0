@@ -41,8 +41,11 @@ export class SalesOrderPage implements OnInit {
   }
 
   customerSelected() {
-    this.getSalesOrder();
-
+    if (this.pageType == "Sales-Order") {
+      this.getSalesOrder();
+    }else{
+      this.getSalesReturnOrder();
+    }
   }
 
   soSelected() {
@@ -81,6 +84,21 @@ export class SalesOrderPage implements OnInit {
     });
     await loading.present();
     this.axService.getSalesOrder(this.selectedCustomer.CustAccount).subscribe(res => {
+      loading.dismiss();
+      this.salesList = res;
+      console.log(res);
+    }, error => {
+      loading.dismiss();
+      console.log(error);
+    })
+  }
+
+  async getSalesReturnOrder() {
+    const loading = await this.loadingController.create({
+      message: 'Please Wait'
+    });
+    await loading.present();
+    this.axService.getSalesReturnOrder(this.selectedCustomer.CustAccount).subscribe(res => {
       loading.dismiss();
       this.salesList = res;
       console.log(res);

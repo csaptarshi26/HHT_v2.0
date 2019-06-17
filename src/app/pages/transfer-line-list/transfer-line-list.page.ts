@@ -139,7 +139,7 @@ export class TransferLineListPage implements OnInit {
   }
   qtyRecCheck(toLine: TransferOrderLine) {
     if (this.pageType == "Transfer-out") {
-      if ((toLine.QtyShipped + toLine.inputQty  - toLine.updatableQty) > toLine.Quantity) {
+      if ((toLine.QtyShipped + toLine.inputQty  - toLine.updatableQty) > toLine.Quantity || (toLine.inputQty - toLine.updatableQty) > toLine.QtyToShip) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
@@ -149,7 +149,7 @@ export class TransferLineListPage implements OnInit {
         return true;
       }
     } else {
-      if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableQty) > toLine.Quantity) {
+      if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableQty) > toLine.Quantity || (toLine.inputQty - toLine.updatableQty) > toLine.QtyToReceive) {
         this.presentToast("Rec item cannot be greater than Qty");
         return false;
       } else {
