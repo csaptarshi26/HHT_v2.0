@@ -154,7 +154,7 @@ export class SalesListPage implements OnInit {
       await loading.present();
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
-          this.presentToast("Line Updated successfully");
+          //this.presentToast("Line Updated successfully");
           this.updateDataTableList = [];
           this.salesLineList = [];
           this.dataUpdatedToServer = true;

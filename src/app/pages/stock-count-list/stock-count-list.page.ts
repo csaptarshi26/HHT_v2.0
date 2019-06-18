@@ -123,11 +123,11 @@ export class StockCountListPage implements OnInit {
     }
   }
 
-  deleteLine(item:ItemModel){
+  deleteLine(item: ItemModel) {
     this.presentAlertForCancel(item);
   }
 
-  async presentAlertForCancel(item:ItemModel) {
+  async presentAlertForCancel(item: ItemModel) {
     const alert = await this.alertController.create({
       header: 'Confirmation',
       message: `Are you sure you want to delete this line? `,
@@ -135,15 +135,24 @@ export class StockCountListPage implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-            this.itemList.forEach(el => {
-              if (el.ItemId == item.ItemId) {
-                var index = this.itemList.indexOf(el);
-                if (index > -1) {
-                  this.itemList.splice(index, 1);
-                  return;
+            for (var i = 0; i < this.itemList.length; i++) {
+              if (this.itemList[i].ItemId == item.ItemId) {
+                if (i > -1) {
+                  this.itemList.splice(i, 1);
+                  console.log("deleted")
+                  break;
                 }
               }
-            });
+            }
+            // this.itemList.forEach(el => {
+            //   if (el.ItemId == item.ItemId) {
+            //     var index = this.itemList.indexOf(el);
+            //     if (index > -1) {
+            //       this.itemList.splice(index, 1);
+
+            //     }
+            //   }
+            // });
           }
         },
         {

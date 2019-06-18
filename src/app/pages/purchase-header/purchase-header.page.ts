@@ -24,6 +24,8 @@ export class PurchaseHeaderPage implements OnInit {
   selectedPurchOrder: PurchTableModel = {} as PurchTableModel;
 
   poLineList: PurchLineModel[] = [];
+  poSotrageItemList: any[] = [];
+  itemExistsInStorage: boolean;
 
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
@@ -34,8 +36,9 @@ export class PurchaseHeaderPage implements OnInit {
   }
 
   ngOnInit() {
+    this.itemExistsInStorage = false;
+    this.getItemsFromStorage();
     this.getVendorList();
-    this.getStorageData();
   }
   vendorSelected() {
     if (this.pageType == "Receive") {
@@ -46,14 +49,14 @@ export class PurchaseHeaderPage implements OnInit {
   }
 
 
-  getStorageData() {
+  getItemsFromStorage() {
     this.storageService.getAllValuesFromStorage.subscribe((res) => {
 
     }, (error) => {
 
     }, () => {
-      if (this.paramService.POSavedHeader != null) {
-        
+      if (this.paramService.POItemList != null) {
+        this.poSotrageItemList = this.paramService.POItemList;
       }
     });
   }
@@ -66,6 +69,7 @@ export class PurchaseHeaderPage implements OnInit {
       this.vendorList.forEach(el => {
         el.displayText = el.VendAccount + " - " + el.Name;
       })
+      this.storageService.setVendorList(this.vendorList);
     }, error => {
       console.log(error);
     })
@@ -109,6 +113,30 @@ export class PurchaseHeaderPage implements OnInit {
 
   }
 
+  async presentAlert(poItem: PurchTableModel) {
+    const alert = await this.alertController.create({
+      header: 'Data Exits!',
+      message: `There is Unsaved data for this Order Number, 
+      Click Continue to proceed with Unsaved data `,
+      buttons: [
+        {
+          text: 'Continue',
+          handler: () => {
+            this.selectedPurchOrder = poItem;
+          }
+        },
+        {
+          text: 'Discard',
+          handler: () => {
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   async presentToast(msg) {
     const toast = await this.toastController.create({
       message: msg,
@@ -117,4 +145,18 @@ export class PurchaseHeaderPage implements OnInit {
     toast.present();
   }
 
+  poSelected(){
+    var poItem: PurchTableModel;
+    if (this.poSotrageItemList != null || this.poSotrageItemList.length !=0) {
+      this.poSotrageItemList.forEach(el => {
+        if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
+          this.itemExistsInStorage = true;
+          poItem = el.poHeader;
+        }
+      })
+      if (this.itemExistsInStorage) {
+        this.presentAlert(poItem);
+      }
+    }
+  }
 }

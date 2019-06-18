@@ -1,3 +1,4 @@
+import { VendorsModel } from 'src/app/models/STPVendors.model';
 import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
 import { SalesLineModel } from './../../models/STPSalesLine.model';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
@@ -19,17 +20,19 @@ export class ParameterService {
   public inventLocationList: InventLocationModel[] = [];
   public wareHouseList: InventLocationLineModel[] = [];
   public ItemList: ItemModel[] = [];
+  public vendorList: VendorsModel[];
 
   public deviceID: any;
 
   public inventoryItemList: ItemModel[] = [];
-  public POSavedHeader: PurchTableModel;
+  public POItemList: any[] = [];
   public SOItemList: any[] = [];
+  public TOItemList: any[] = [];
 
   public soLineUpdated: boolean;
   public itemUpdated: boolean = false;
   public poItemUpdated: boolean = false;
 
-  public totalStorageVariables: Number = 8;
+  public totalStorageVariables: Number = 10;
   constructor() { }
 }

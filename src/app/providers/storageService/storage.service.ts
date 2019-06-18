@@ -80,7 +80,7 @@ export class StorageService {
     });
 
     this.storage.get('POItemList').then((data) => {
-      this.parameterservice.POSavedHeader = data;
+      this.parameterservice.POItemList = data;
       observer.next(data);
       variables++;
       if (variables == this.parameterservice.totalStorageVariables) {
@@ -96,16 +96,46 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    this.storage.get('vendorList').then((data) => {
+      this.parameterservice.vendorList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
+
+    this.storage.get('TOItemList').then((data) => {
+      this.parameterservice.TOItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
   setSOItemList(SOItemList: any) {
     this.storage.set('SOItemList', SOItemList);
     this.parameterservice.SOItemList = SOItemList;
   }
-
   setPOItemList(POItemList: any) {
     this.storage.set('POItemList', POItemList);
-    this.parameterservice.POSavedHeader = POItemList;
+    this.parameterservice.POItemList = POItemList;
   }
+
+  setTOItemList(TOItemList: any) {
+    this.storage.set('TOItemList', TOItemList);
+    this.parameterservice.TOItemList = TOItemList;
+  }
+
+
+  setVendorList(vendorList: any) {
+    this.storage.set('vendorList', vendorList);
+    this.parameterservice.vendorList = vendorList;
+  }
+
+
 
   setAuthenticated(authenticated: any) {
     this.storage.set('authenticated', authenticated);
@@ -146,6 +176,9 @@ export class StorageService {
     this.storage.clear();
   }
 
+  clearInventoryItemList(){
+    this.storage.remove('InventoryItemList');
+  }
 
   clearItemList() {
     this.storage.remove('ItemList');

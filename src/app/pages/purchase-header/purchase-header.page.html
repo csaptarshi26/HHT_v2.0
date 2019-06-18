@@ -19,7 +19,7 @@
   <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">PO No.</ion-label>
     <ionic-selectable [(ngModel)]="selectedPurchOrder" [items]="purchaseList" itemValueField="PurchId"
-      itemTextField="PurchId" [canSearch]="true">
+      itemTextField="PurchId" [canSearch]="true"  (onChange)="poSelected()">
     </ionic-selectable>
   </ion-item>
 

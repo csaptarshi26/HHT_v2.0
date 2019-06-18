@@ -53,6 +53,7 @@ export class StockCountPage implements OnInit {
   }
 
   setBarcodeFocus() {
+    this.barcode = "";
     setTimeout(() => {
       this.barcodeInput.setFocus();
     }, 150);
@@ -109,10 +110,14 @@ export class StockCountPage implements OnInit {
   }
   calculateItemListQty() {
     var sum = 0;
+    this.qtyList = [];
     this.itemList.forEach(el => {
       this.qtyList.push(el.quantity);
       sum = sum + el.quantity;
     })
+    if(sum==0){
+      this.item = {} as ItemModel;
+    }
     return sum;
   }
   calculateSum() {
@@ -195,7 +200,7 @@ export class StockCountPage implements OnInit {
       item.isSaved = true;
     }
     this.qtyList[this.count] = this.item.quantity;
-    console.log(this.itemList)
+    console.log(this.count + "   " + this.qtyList)
     this.scannedQty = this.calculateSum();
     this.storageServ.setItemList(this.itemList);
   }

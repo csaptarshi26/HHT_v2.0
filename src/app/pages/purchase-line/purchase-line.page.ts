@@ -52,21 +52,6 @@ export class PurchaseLinePage implements OnInit {
     this.user = this.dataServ.userId
   }
 
-  getStorageData() {
-    this.storageServ.getAllValuesFromStorage.subscribe((res) => {
-
-    }, (error) => {
-
-    }, () => {
-      if (this.paramService.POSavedHeader != null) {
-        this.poLineList = this.paramService.POSavedHeader.PurchLines;
-        console.log(this.poLineList);
-      } else {
-
-      }
-    });
-  }
-
   getPoLineData() {
     if (this.pageType == "Receive") {
       this.dataServ.getPO$.subscribe(res => {

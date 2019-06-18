@@ -55,7 +55,7 @@
     <ion-item lines="none" class="ionItemInput">
       <ion-label position="stacked">Transfer Order No.</ion-label>
       <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
-        itemTextField="JournalId" [canSearch]="true">
+        itemTextField="JournalId" [canSearch]="true" (onChange)="toSelected()">
       </ionic-selectable>
     </ion-item>
 

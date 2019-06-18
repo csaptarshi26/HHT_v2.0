@@ -31,6 +31,7 @@ export class PurchaseListPage implements OnInit {
   count: any = -1;
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
 
+  poItemSotrageList: any = [];
   constructor(public dataServ: DataService, private activateRoute: ActivatedRoute,
     public toastController: ToastController, public axService: AxService,
     public paramService: ParameterService, public loadingController: LoadingController,
@@ -60,7 +61,7 @@ export class PurchaseListPage implements OnInit {
       })
     }
 
-    this.poLineList.forEach(el=>{
+    this.poLineList.forEach(el => {
       el.inputQty = el.updatableQty;
     })
   }
@@ -149,11 +150,50 @@ export class PurchaseListPage implements OnInit {
     await alert.present();
   }
   ngOnDestroy() {
-    if (!this.dataUpdatedToServer) {
-      this.storageServ.clearPoItemList();
-    } else {
-      this.storageServ.setPOItemList(this.poHeader);
+    this.storageServ.getAllValuesFromStorage.subscribe((res) => {
+
+    }, (error) => {
+
+    }, () => {
+      if (this.paramService.POItemList != null) {
+        this.poItemSotrageList = this.paramService.POItemList;
+      } else {
+        this.poItemSotrageList = [];
+      }
+
+      if (this.dataUpdatedToServer) {
+        this.removeElementFromStorageList();
+      } else {
+        this.poItemSotrageList.push(
+          {
+            type: this.pageType,
+            poNo: this.poHeader.PurchId,
+            poHeader: this.poHeader
+          }
+        )
+        this.storeDataInStorage();
+        this.paramService.POItemList = this.poItemSotrageList;
+      }
+    });
+  }
+  removeElementFromStorageList() {
+    if (this.poItemSotrageList != null) {
+      //this.poItemSotrageList = this.poItemSotrageList.slice();
+      this.poItemSotrageList.forEach(el => {
+        if (el.type == this.pageType && el.poNo == this.poHeader.PurchId) {
+          var index = this.poItemSotrageList.indexOf(el);
+          if (index > -1) {
+            this.poItemSotrageList.splice(index, 1);
+          }
+        }
+      })
+      this.storeDataInStorage();
+      this.paramService.POItemList = this.poItemSotrageList;
     }
+  }
+
+  storeDataInStorage() {
+    this.storageServ.setPOItemList(this.poItemSotrageList);
   }
   onEnter(poLine: PurchLineModel) {
     this.saveLine(poLine);

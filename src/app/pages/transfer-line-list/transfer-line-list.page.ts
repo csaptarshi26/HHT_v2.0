@@ -26,11 +26,12 @@ export class TransferLineListPage implements OnInit {
 
   itemBarcode: any = "";
   updateDataTableList: STPLogSyncDetailsModel[] = [];
+  dataUpdatedToServer: boolean;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
-
+  toSotrageItemList: any = [];
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService,
-    public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
+    public paramService: ParameterService, public storageServ: StorageService, public loadingController: LoadingController,
     public router: Router, private activateRoute: ActivatedRoute, public alertController: AlertController) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
@@ -118,6 +119,7 @@ export class TransferLineListPage implements OnInit {
           this.presentToast("Line Updated successfully");
           this.updateDataTableList = [];
           this.toLineList = [];
+          this.dataUpdatedToServer = true;
           this.presentAlert();
         } else {
           this.presentToast("Error Updating Line");
@@ -169,7 +171,7 @@ export class TransferLineListPage implements OnInit {
         {
           text: 'Okay',
           handler: () => {
-            this.router.navigateByUrl('/transfer'); 
+            this.router.navigateByUrl('/transfer');  
           }
         }
       ]
@@ -211,4 +213,52 @@ export class TransferLineListPage implements OnInit {
   cancelBtn(toLine: TransferOrderLine) {
     this.presentAlertForCancel(toLine);
   }
+
+  ngOnDestroy() {
+    this.storageServ.getAllValuesFromStorage.subscribe((res) => {
+
+    }, (error) => {
+
+    }, () => {
+      if (this.paramService.TOItemList != null) {
+        this.toSotrageItemList = this.paramService.TOItemList;
+      } else {
+        this.toSotrageItemList = [];
+      }
+
+      if (this.dataUpdatedToServer) {
+        this.removeElementFromStorageList();
+      } else {
+        this.toSotrageItemList.push(
+          {
+            type: this.pageType,
+            toNo: this.toHeader.JournalId,
+            toHeader: this.toHeader
+          }
+        )
+        this.storeDataInStorage();
+        this.paramService.TOItemList = this.toSotrageItemList;
+      }
+    });
+  }
+  removeElementFromStorageList() {
+    if (this.toSotrageItemList != null) {
+      //this.toSotrageItemList = this.toSotrageItemList.slice();
+      this.toSotrageItemList.forEach(el => {
+        if (el.type == this.pageType && el.toNo == this.toHeader.JournalId) {
+          var index = this.toSotrageItemList.indexOf(el);
+          if (index > -1) {
+            this.toSotrageItemList.splice(index, 1);
+          }
+        }
+      })
+      this.storeDataInStorage();
+      this.paramService.TOItemList = this.toSotrageItemList;
+    }
+  }
+
+  storeDataInStorage() {
+    this.storageServ.setTOItemList(this.toSotrageItemList);
+  }
+
 }
