@@ -27,7 +27,6 @@ export class SalesOrderPage implements OnInit {
   salesList: SalesTable[] = [];
   selectedSalesTable: SalesTable = {} as SalesTable;
 
-  salesLineList: SalesLineModel[] = [];
 
   soStorageItemList: any[] = [];
   itemExistsInStorage: boolean;

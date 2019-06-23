@@ -25,13 +25,13 @@ export class PurchaseLinePage implements OnInit {
   pageType: any;
 
   itemBarcode: any = "";
-  updateDataTableList: STPLogSyncDetailsModel[] = [];
+
 
   qtyList: any[] = [];
 
   poLine: PurchLineModel = {} as PurchLineModel;
   count: any = -1;
-  dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
+
 
   @ViewChild("input") barcodeInput: IonInput;
   @ViewChild("Recinput") qtyInput: IonInput;
@@ -90,32 +90,69 @@ export class PurchaseLinePage implements OnInit {
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
-        this.poLineList.forEach(el => {
-          counter++;
-          if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
-            this.count++
-            el.inputQty = 0;
-            el.isVisible = true;
-            el.toggle = false;
-            el.QtyReceivedServer = el.QtyReceived;
-            flag = true;
-            el.qtyDesc = res.Description;
-            el.BarCode = res.BarCode;
-            this.poLine = el;
-            return;
-          }
-        });
+        if (res.Unit != "" || res.Unit != null) {
+          this.poLineList.forEach(el => {
+            counter++;
+            if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
+              this.count++
+              el.inputQty = 0;
+              el.isVisible = true;
+              el.toggle = false;
+              el.QtyReceivedServer = el.QtyReceived;
+              flag = true;
+              el.qtyDesc = res.Description;
+              el.BarCode = res.BarCode;
+              this.poLine = el;
+              return;
+            }
+          });
 
-        console.log(this.poLine);
-        if (!flag) {
-          this.barcode = "";
-          this.setBarcodeFocus();
-          this.presentToast("This item barcode not in order list");
+          console.log(this.poLine);
+          if (!flag) {
+            this.barcode = "";
+            this.setBarcodeFocus();
+            this.presentToast("This item barcode not in order list");
+          } else {
+            setTimeout(() => {
+              this.qtyInput.setFocus();
+            }, 150);
+          }
         } else {
-          setTimeout(() => {
-            this.qtyInput.setFocus();
-          }, 150);
+          var multiple = 0;
+          var multiPoLineList: PurchLineModel[] = [];
+          this.poLineList.forEach(el => {
+            counter++;
+            if (el.ItemId == res.ItemId) {
+              this.count++;
+              flag = true;
+
+              el.inputQty = 0;
+              // el.isVisible = true;
+              el.QtyReceivedServer = el.QtyReceived;
+
+              el.qtyDesc = res.Description;
+              el.BarCode = res.BarCode;
+              multiPoLineList.push(el);
+              // this.poLine = el;
+            }
+          });
+
+          console.log(this.poLine);
+          if (!flag) {
+            this.barcode = "";
+            this.setBarcodeFocus();
+            this.presentToast("This item barcode not in order list");
+          } else {
+            if (multiPoLineList.length == 1) {
+              this.poLine = multiPoLineList.pop();
+              this.poLine.isVisible = true;
+            } else {
+              this.presentAlertRadio(multiPoLineList);
+            }
+
+          }
         }
+
       }, error => {
         this.barcode = "";
         this.setBarcodeFocus();
@@ -235,5 +272,43 @@ export class PurchaseLinePage implements OnInit {
       this.dataServ.setPOReturnList(this.poLineList);
     }
     this.router.navigateByUrl('/purchase-list/' + this.pageType);
+  }
+
+  async presentAlertRadio(multiPoLineList: PurchLineModel[]) {
+    var inputArr = [];
+    multiPoLineList.forEach(el => {
+      inputArr.push({
+        name: el.UnitId,
+        type: 'radio',
+        label: el.UnitId,
+        value: el
+      })
+    })
+    const alert = await this.alertController.create({
+      header: 'Select UOM',
+      inputs: inputArr,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+            console.log('Confirm Cancel');
+          }
+        }, {
+          text: 'Ok',
+          handler: (data: PurchLineModel) => {
+            data.isVisible = true;
+            this.poLine = data;
+            console.log(data);
+            // setTimeout(() => {
+            //   this.qtyInput.setFocus();
+            // }, 150);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

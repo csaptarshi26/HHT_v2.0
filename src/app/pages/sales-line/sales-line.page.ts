@@ -29,12 +29,9 @@ export class SalesLinePage implements OnInit {
   scannedQty: any;
 
   itemBarcode: any = "";
-  updateDataTableList: STPLogSyncDetailsModel[] = [];
-
+  
   qtyList: any[] = [];
   count: any = -1;
-
-  dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
 
   @ViewChild("input") barcodeInput: IonInput;
   @ViewChild("Recinput") qtyInput: IonInput;

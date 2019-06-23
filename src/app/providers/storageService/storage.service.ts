@@ -70,15 +70,6 @@ export class StorageService {
       }
     });
 
-    this.storage.get('InventoryItemList').then((data) => {
-      this.parameterservice.inventoryItemList = data;
-      observer.next(data);
-      variables++;
-      if (variables == this.parameterservice.totalStorageVariables) {
-        observer.complete();
-      }
-    });
-
     this.storage.get('POItemList').then((data) => {
       this.parameterservice.POItemList = data;
       observer.next(data);
@@ -108,6 +99,24 @@ export class StorageService {
 
     this.storage.get('TOItemList').then((data) => {
       this.parameterservice.TOItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
+
+    this.storage.get('InventoryPOSItemList').then((data) => {
+      this.parameterservice.inventoryPOSItemList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
+
+    this.storage.get('InventoryNEGItemList').then((data) => {
+      this.parameterservice.inventoryNEGItemList = data;
       observer.next(data);
       variables++;
       if (variables == this.parameterservice.totalStorageVariables) {
@@ -168,16 +177,25 @@ export class StorageService {
     this.parameterservice.ItemList = itemList;
   }
 
-  setInventoryItemList(itemList) {
-    this.storage.set('InventoryItemList', itemList);
-    this.parameterservice.inventoryItemList = itemList;
+  setInventoryPOSItemList(itemList) {
+    this.storage.set('InventoryPOSItemList', itemList);
+    this.parameterservice.inventoryPOSItemList = itemList;
+  }
+
+  setInventoryNEGItemList(itemList) {
+    this.storage.set('InventoryNEGItemList', itemList);
+    this.parameterservice.inventoryNEGItemList = itemList;
   }
   clearStorageValues() {
     this.storage.clear();
   }
 
-  clearInventoryItemList(){
-    this.storage.remove('InventoryItemList');
+  clearInventoryPOSItemList(){
+    this.storage.remove('InventoryPOSItemList');
+  }
+
+  clearInventoryNEGItemList(){
+    this.storage.remove('InventoryNEGItemList');
   }
 
   clearItemList() {

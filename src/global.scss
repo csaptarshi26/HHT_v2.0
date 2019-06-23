@@ -122,3 +122,7 @@
   padding: 10px !important;
   text-align: center !important;
 }
+
+ion-item > ion-label:first-child {
+  width: 48% !important;
+}

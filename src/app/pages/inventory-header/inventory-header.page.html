@@ -54,7 +54,7 @@
 
 
         <ion-item lines="none" class="ionItemInput">
-          <ion-label text-left style="margin-right: 20%;" class="ion-text-wrap">Quantity</ion-label>
+          <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
           <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" 
           #qtyInput id="qtyInput" (keyup.enter)="confirm(item)" [min]="0">
           </ion-input>

@@ -42,7 +42,7 @@
 
         <div *ngIf="pageType == 'Transfer-out'">
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Ship</ion-label>
+            <ion-label text-left class="ion-text-wrap">Qty To Ship</ion-label>
             <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" id="Recinput{{i}}"
               (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)" [min]="0">
             </ion-input>
@@ -69,7 +69,7 @@
 
         <div *ngIf="pageType =='Transfer-in'">
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left style="margin-right: 10%;" class="ion-text-wrap">Qty To Rec</ion-label>
+            <ion-label text-left class="ion-text-wrap">Qty To Receive</ion-label>
             <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" id="Recinput{{i}}"
               (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)" [min]="0">
             </ion-input>

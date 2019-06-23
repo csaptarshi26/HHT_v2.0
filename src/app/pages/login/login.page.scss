@@ -59,3 +59,7 @@ ion-content{
 .toast-md .toast-message{
     --color: black !important;
 }
+
+ion-item > ion-label:first-child {
+    width: auto !important;
+  }

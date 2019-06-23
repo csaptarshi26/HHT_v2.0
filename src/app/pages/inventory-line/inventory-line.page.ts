@@ -20,13 +20,13 @@ export class InventoryLinePage implements OnInit {
   updateDataTableList: STPLogSyncDetailsModel[] = [];
   user: any;
   valueUpdated: boolean = false;
-  pageType:any;
+  pageType: any;
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
-    public router: Router,private activateRoute: ActivatedRoute,
-    public alertController:AlertController) {
-      this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
+    public router: Router, private activateRoute: ActivatedRoute,
+    public alertController: AlertController) {
+    this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
   ngOnInit() {
     this.user = this.dataServ.userId
@@ -62,15 +62,15 @@ export class InventoryLinePage implements OnInit {
         dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
-        if(this.pageType == "Positive-adj"){
+        if (this.pageType == "Positive-adj") {
           dataTable.DocumentType = 5;
-        }else{
+        } else {
           dataTable.DocumentType = 6;
         }
         dataTable.Quantity = el.quantity;
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
-        dataTable.LineNum = lineNum;        
+        dataTable.LineNum = lineNum;
         dataTable.TransactionType = 4;
         dataTable.UnitId = el.Unit;
         dataTable.User = this.user;
@@ -115,7 +115,7 @@ export class InventoryLinePage implements OnInit {
         {
           text: 'Okay',
           handler: () => {
-            this.router.navigateByUrl('/inventory');  
+            this.router.navigateByUrl('/inventory');
           }
         }
       ]
@@ -132,11 +132,20 @@ export class InventoryLinePage implements OnInit {
     toast.present();
   }
   ngOnDestroy() {
-    if (this.valueUpdated) {
-      this.storageService.clearInventoryItemList();
+    if (this.pageType == "Positive-adj") {
+      if (this.valueUpdated) {
+        this.storageService.clearInventoryPOSItemList();
+      } else {
+        this.storageService.setInventoryPOSItemList(this.itemList);
+      }
     } else {
-      this.storageService.setInventoryItemList(this.itemList);
+      if (this.valueUpdated) {
+        this.storageService.clearInventoryNEGItemList();
+      } else {
+        this.storageService.setInventoryNEGItemList(this.itemList);
+      }
     }
+
   }
 
   deleteLine(item: ItemModel) {

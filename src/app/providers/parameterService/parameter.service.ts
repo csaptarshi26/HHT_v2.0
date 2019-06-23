@@ -24,7 +24,8 @@ export class ParameterService {
 
   public deviceID: any;
 
-  public inventoryItemList: ItemModel[] = [];
+  public inventoryPOSItemList: any[] = [];
+  public inventoryNEGItemList: any[] = [];
   public POItemList: any[] = [];
   public SOItemList: any[] = [];
   public TOItemList: any[] = [];
@@ -33,6 +34,7 @@ export class ParameterService {
   public itemUpdated: boolean = false;
   public poItemUpdated: boolean = false;
 
-  public totalStorageVariables: Number = 10;
+  public totalStorageVariables: Number = 12;
   constructor() { }
 }
+

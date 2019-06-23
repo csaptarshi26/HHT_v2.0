@@ -48,6 +48,7 @@ export class InventoryHeaderPage implements OnInit {
   }
 
   ngOnInit() {
+    this.getStorageData();
     this.user = this.dataServ.userId
     this.currentLoc = this.paramService.Location;
   }
@@ -67,6 +68,45 @@ export class InventoryHeaderPage implements OnInit {
       this.itemList = [];
       this.scannedQty = 0;
     }
+  }
+  getStorageData() {
+    this.storageServ.getAllValuesFromStorage.subscribe((res) => {
+
+    }, (error) => {
+
+    }, () => {
+      if (this.pageType == "Positive-adj") {
+        console.log(this.paramService.inventoryPOSItemList )
+        if (this.paramService.inventoryPOSItemList == null || this.paramService.inventoryPOSItemList.length == 0) {
+          this.itemList = [];
+        } else {
+          this.itemList = this.paramService.inventoryPOSItemList;
+          console.log(this.itemList)
+          this.scannedQty = this.calculateItemListQty();
+        }
+      } else {
+        if (this.paramService.inventoryNEGItemList == null || this.paramService.inventoryNEGItemList.length == 0) {
+          this.itemList = [];
+        } else {
+          this.itemList = this.paramService.inventoryNEGItemList;
+          console.log(this.itemList)
+          this.scannedQty = this.calculateItemListQty();
+        }
+      }
+
+    });
+  }
+  calculateItemListQty() {
+    var sum = 0;
+    this.qtyList = [];
+    this.itemList.forEach(el => {
+      this.qtyList.push(el.quantity);
+      sum = sum + el.quantity;
+    })
+    if (sum == 0) {
+      this.item = {} as ItemModel;
+    }
+    return sum;
   }
   keyboardHide() {
     this.keyboard.hide();
