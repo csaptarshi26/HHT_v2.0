@@ -5,7 +5,7 @@ import { STPLogSyncDetailsModel } from './../../models/STPLogSyncData.model';
 import { AxService } from 'src/app/providers/axService/ax.service';
 import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
@@ -42,9 +42,26 @@ export class TransferLinePage implements OnInit {
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
-    public loadingController: LoadingController, public router: Router) {
+    public loadingController: LoadingController, public router: Router,
+    private changeDetectorref: ChangeDetectorRef) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
+
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();

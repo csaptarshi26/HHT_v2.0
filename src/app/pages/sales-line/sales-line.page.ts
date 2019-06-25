@@ -4,7 +4,7 @@ import { SalesTable } from './../../models/STPSalesTable.model';
 import { AxService } from 'src/app/providers/axService/ax.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/providers/dataService/data.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ToastController, AlertController, IonInput, LoadingController } from '@ionic/angular';
@@ -29,7 +29,7 @@ export class SalesLinePage implements OnInit {
   scannedQty: any;
 
   itemBarcode: any = "";
-  
+
   qtyList: any[] = [];
   count: any = -1;
 
@@ -39,8 +39,25 @@ export class SalesLinePage implements OnInit {
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute, private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController,
-    public loadingController: LoadingController) {
+    public loadingController: LoadingController,  private changeDetectorref: ChangeDetectorRef) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
+
+
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
   }
 
   ionViewWillEnter() {

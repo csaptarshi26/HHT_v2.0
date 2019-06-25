@@ -11,10 +11,24 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 export class AxService {
 
   public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
+
+  //MASSKAR URL
+  //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
   }
 
+  getCurrentDate() {
+    let url = this.baseAddress + "getCurrentDate";
+    let body = { };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+  
   checkUser(userId: string, password: string): Observable<any> {
     let url = this.baseAddress + "checkuser";
     let body = {
@@ -69,12 +83,12 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  readTransferOrders(toLocaion: any,fromLocation:any): Observable<any> {
+  readTransferOrders(toLocaion: any, fromLocation: any): Observable<any> {
     let url = this.baseAddress + "readTransOrders";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
       "ToLocationId": toLocaion,
-      "FromLocationId":  fromLocation
+      "FromLocationId": fromLocation
     };
     let httpOptions = {
       headers: new HttpHeaders({
@@ -115,7 +129,7 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  getItemFromBarcode(barcode): Observable<any>{
+  getItemFromBarcode(barcode): Observable<any> {
     let url = this.baseAddress + "getItemFromBarcode";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
@@ -130,7 +144,7 @@ export class AxService {
   }
 
 
-  getCustomerList(): Observable<any>{
+  getCustomerList(): Observable<any> {
     let url = this.baseAddress + "readCustomers";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
@@ -144,7 +158,7 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  getSalesOrder(custAcc): Observable<any>{
+  getSalesOrder(custAcc): Observable<any> {
     let url = this.baseAddress + "readSalesOrders";
     let body = {
       "LocationId": this.paramService.Location.LocationId,
@@ -159,7 +173,7 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  getSalesReturnOrder(custAcc): Observable<any>{
+  getSalesReturnOrder(custAcc): Observable<any> {
     let url = this.baseAddress + "readSalesReturnOrders";
     let body = {
       "LocationId": this.paramService.Location.LocationId,

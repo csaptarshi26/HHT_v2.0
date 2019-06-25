@@ -6,7 +6,7 @@ import { AxService } from './../../providers/axService/ax.service';
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuController, Events } from '@ionic/angular';
+import { MenuController, Events, AlertController } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
@@ -25,21 +25,51 @@ export class LoginPage implements OnInit {
   warehouseList: InventLocationLineModel[] = [];
 
   inventList: InventLocationModel[] = [];
-
-
+  currentDate: Date;
+  expirationDate:Date;
   constructor(public router: Router, public menuCtrl: MenuController, public events: Events,
     public toastController: ToastController, public axService: AxService, private uniqueDeviceID: UniqueDeviceID,
     public storageService: StorageService, public paramService: ParameterService,
-    public dataService: DataService) {
+    public dataService: DataService, public alertController: AlertController) {
 
 
   }
 
   ngOnInit() {
-
+    this.expirationDate = new Date('07-31-2019');
+    console.log(this.expirationDate);
+    this.getCurrentDate();
     this.getStorageData();
     this.getInventoryLocation();
     this.menuCtrl.enable(false);
+  }
+
+  getCurrentDate() {
+    this.axService.getCurrentDate().subscribe(res => {
+      this.currentDate = new Date(res.toString());      
+      if(this.currentDate.toISOString().slice(0, 10) >= this.expirationDate.toISOString().slice(0, 10)){
+        this.presentAlertForExpiration();
+      }
+    }, error => {
+      console.log(error);
+    })
+  }
+
+  async presentAlertForExpiration() {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Your license expired`,
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+            navigator['app'].exitApp();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
   checkForm(): boolean {
     if (this.userId == "") {

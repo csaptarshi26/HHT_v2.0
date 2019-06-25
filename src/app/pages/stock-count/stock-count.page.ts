@@ -6,7 +6,7 @@ import { STPLogSyncDetailsModel } from './../../models/STPLogSyncData.model';
 import { AxService } from 'src/app/providers/axService/ax.service';
 import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { Component, OnInit, Input, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
@@ -21,11 +21,9 @@ declare var $: any;
 export class StockCountPage implements OnInit {
 
   barcode: string;
-  warehouseList: InventLocationLineModel[] = [];
-  currentLoc: InventLocationLineModel = {} as InventLocationLineModel;
-  selectedWarehouse: InventLocationLineModel = {} as InventLocationLineModel;
 
-  updateDataTableList: STPLogSyncDetailsModel[] = [];
+  currentLoc: InventLocationLineModel = {} as InventLocationLineModel;
+
   item: ItemModel = {} as ItemModel;
   itemList: ItemModel[] = [];
   scannedQty: any = 0;
@@ -43,7 +41,60 @@ export class StockCountPage implements OnInit {
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private router: Router,
-    public loadingController: LoadingController, public storageServ: StorageService) {
+    public loadingController: LoadingController, public storageServ: StorageService,
+    private changeDetectorref: ChangeDetectorRef) {
+      
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
+
+    // let profileConfig2 = {
+    //   "PROFILE_NAME": "ZebraIonicDemo",
+    //   "PROFILE_ENABLED": "true",
+    //   "CONFIG_MODE": "UPDATE",
+    //   "PLUGIN_CONFIG": {
+    //     "PLUGIN_NAME": "INTENT",
+    //     "RESET_CONFIG": "true",
+    //     "PARAM_LIST": {
+    //       "intent_output_enabled": "true",
+    //       "intent_action": "com.zebra.ionicdemo.ACTION",
+    //       "intent_delivery": "2" // Broadcast
+    //     }
+    //   }
+    // };
+    // (<any>window).plugins.intentShim.sendBroadcast({
+    //   action: 'com.symbol.datawedge.api.ACTION',
+    //   extras: {
+    //     "com.symbol.datawedge.api.SET_CONFIG": profileConfig2,
+    //     "SEND_RESULT": this.requestResultCodes
+    //   }
+    // },
+    //   function () { },  //  Success in sending the intent, not success of DW to process the intent.
+    //   function () { }  //  Failure in sending the intent, not failure of DW to process the intent.
+    // );
+
+
+
+
+
+
+
+
+
+
+
   }
 
   ngOnInit() {
@@ -115,7 +166,7 @@ export class StockCountPage implements OnInit {
       this.qtyList.push(el.quantity);
       sum = sum + el.quantity;
     })
-    if(sum==0){
+    if (sum == 0) {
       this.item = {} as ItemModel;
     }
     return sum;

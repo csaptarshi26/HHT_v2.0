@@ -5,7 +5,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { AlertController, LoadingController, ToastController, IonInput } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AxService } from './../../providers/axService/ax.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
@@ -41,10 +41,27 @@ export class InventoryHeaderPage implements OnInit {
     public alertController: AlertController, private activateRoute: ActivatedRoute,
     public toastController: ToastController, private keyboard: Keyboard,
     private router: Router, public storageServ: StorageService,
-    public loadingController: LoadingController, public dataServ: DataService) {
+    public loadingController: LoadingController, public dataServ: DataService,
+    private changeDetectorref: ChangeDetectorRef) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
     console.log(this.pageType)
+
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
   }
 
   ngOnInit() {
@@ -76,7 +93,7 @@ export class InventoryHeaderPage implements OnInit {
 
     }, () => {
       if (this.pageType == "Positive-adj") {
-        console.log(this.paramService.inventoryPOSItemList )
+        console.log(this.paramService.inventoryPOSItemList)
         if (this.paramService.inventoryPOSItemList == null || this.paramService.inventoryPOSItemList.length == 0) {
           this.itemList = [];
         } else {

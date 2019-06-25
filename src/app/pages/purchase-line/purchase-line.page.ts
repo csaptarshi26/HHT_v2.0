@@ -4,7 +4,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { AxService } from './../../providers/axService/ax.service';
 import { DataService } from './../../providers/dataService/data.service';
 import { PurchTableModel } from './../../models/STPPurchTable.model';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ToastController, LoadingController, AlertController, IonInput } from '@ionic/angular';
@@ -39,9 +39,26 @@ export class PurchaseLinePage implements OnInit {
   constructor(public dataServ: DataService, public alertController: AlertController, private activateRoute: ActivatedRoute,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public loadingController: LoadingController,
-    public router: Router, public storageServ: StorageService) {
+    public router: Router, public storageServ: StorageService,
+    private changeDetectorref: ChangeDetectorRef) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
+
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -72,6 +89,9 @@ export class PurchaseLinePage implements OnInit {
     this.barcode = "";
     setTimeout(() => {
       this.barcodeInput.setFocus();
+    }, 150);
+    setTimeout(() => {
+      this.keyboard.hide();
     }, 150);
   }
 
