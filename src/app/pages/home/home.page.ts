@@ -1,9 +1,9 @@
 import { Router } from '@angular/router';
 import { MenuController, AlertController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
-
+import { IonInfiniteScroll } from '@ionic/angular';
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -14,8 +14,9 @@ export class HomePage implements OnInit {
   location: any;
 
   constructor(public router: Router, public menuCtrl: MenuController, public paramService: ParameterService,
-    public alertCtrl: AlertController, public sotrageService: StorageService) { }
-
+    public alertCtrl: AlertController, public sotrageService: StorageService) {
+   
+  }
   ngOnInit() {
     this.dataAreadId = this.paramService.dataAreaId;
     this.location = this.paramService.Location;

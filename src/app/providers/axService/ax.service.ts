@@ -140,6 +140,7 @@ export class AxService {
         'Content-Type': 'application/json'
       })
     };
+    console.log(body);
     return this.http.post(url, body, httpOptions);
   }
 

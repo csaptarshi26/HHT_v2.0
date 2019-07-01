@@ -6,7 +6,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { StockCountListPage } from './stock-count-list.page';
-
+import {DialogModule} from 'primeng/dialog';
+import {ButtonModule} from 'primeng/button';
 const routes: Routes = [
   {
     path: '',
@@ -16,6 +17,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
+    DialogModule,ButtonModule,
     CommonModule,
     FormsModule,
     IonicModule,

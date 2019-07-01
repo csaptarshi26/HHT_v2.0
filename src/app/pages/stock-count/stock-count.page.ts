@@ -43,22 +43,7 @@ export class StockCountPage implements OnInit {
     public paramService: ParameterService, private router: Router,
     public loadingController: LoadingController, public storageServ: StorageService,
     private changeDetectorref: ChangeDetectorRef) {
-      
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+
 
     // let profileConfig2 = {
     //   "PROFILE_NAME": "ZebraIonicDemo",
@@ -84,19 +69,7 @@ export class StockCountPage implements OnInit {
     //   function () { },  //  Success in sending the intent, not success of DW to process the intent.
     //   function () { }  //  Failure in sending the intent, not failure of DW to process the intent.
     // );
-
-
-
-
-
-
-
-
-
-
-
   }
-
   ngOnInit() {
     this.getStorageData();
     this.user = this.dataServ.userId
@@ -107,10 +80,10 @@ export class StockCountPage implements OnInit {
     this.barcode = "";
     setTimeout(() => {
       this.barcodeInput.setFocus();
-    }, 150);
+    }, 100);
     setTimeout(() => {
       this.keyboard.hide();
-    }, 150);
+    }, 100);
   }
 
   ionViewWillEnter() {
@@ -124,6 +97,23 @@ export class StockCountPage implements OnInit {
     else {
       this.scannedQty = this.calculateItemListQty();
     }
+
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        this.changeDetectorref.detectChanges();
+      });
+
   }
   keyboardHide() {
     this.keyboard.hide();
@@ -153,7 +143,6 @@ export class StockCountPage implements OnInit {
         this.itemList = [];
       } else {
         this.itemList = this.paramService.ItemList;
-        console.log(this.itemList)
         this.scannedQty = this.calculateItemListQty();
         //this.item.visible = true;
       }
@@ -196,14 +185,14 @@ export class StockCountPage implements OnInit {
           this.setBarcodeFocus();
         } else {
           this.count++;
+          this.item.visible = true;
           if (this.editField) {
             this.item.quantity = 0;
             this.item.isEditable = true;
             setTimeout(() => {
               this.qtyInput.setFocus();
               this.barcode = "";
-            }, 150);
-            this.qtyInput.setFocus();
+            }, 100);
           } else {
             this.item.quantity = 1;
             this.scannedQty = this.scannedQty + 1;
@@ -212,7 +201,6 @@ export class StockCountPage implements OnInit {
             this.barcode = "";
             this.setBarcodeFocus();
           }
-          this.item.visible = true;
           loading.dismiss();
 
           this.itemList.push(this.item);
@@ -248,7 +236,13 @@ export class StockCountPage implements OnInit {
     if (item.quantity == 0 || item.quantity == null) {
       item.isSaved = false;
     } else {
-      item.isSaved = true;
+      if (item.quantity > 9999) {
+        this.presentToast("Qty cann't be greater than 9999");
+        item.quantity = 0;
+        return false;
+      } else {
+        item.isSaved = true;
+      }
     }
     this.qtyList[this.count] = this.item.quantity;
     console.log(this.count + "   " + this.qtyList)

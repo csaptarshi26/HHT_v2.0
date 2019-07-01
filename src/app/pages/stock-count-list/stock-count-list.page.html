@@ -14,43 +14,73 @@
 
 <ion-content>
   <div *ngIf="itemList.length; else noItem">
-    <div *ngFor="let item of itemList">
-      <ion-card *ngIf="item.isSaved">
-        <ion-card-header>
-          <span class="iconPos">
-            <ion-icon name="close" (click)="deleteLine(item)"></ion-icon>
-          </span>
-          <b> Id : {{item.ItemId}}
-            <span style="margin-left: 15px;"> UOM : {{item.Unit}}</span>
-          </b>
-          <br> {{item.Description}}
-        </ion-card-header>
+    <ion-virtual-scroll [items]="itemList">
+      <ion-list *virtualItem="let item; let i=index">
+        <ion-card *ngIf="item.isSaved">
+          <ion-card-header>
+            <span class="iconPos">
+              <ion-icon name="close" (click)="deleteLine(item,i)"></ion-icon>
+            </span>
+            <b> Id : {{item.ItemId}}
+              <span style="margin-left: 15px;"> UOM : {{item.Unit}}</span>
+            </b>
+            <br> {{item.Description}}
+          </ion-card-header>
 
-        <ion-card-content>
-          <ion-item lines="none">
-            <ion-label text-left>Barcode</ion-label>
-            <ion-label text-left> {{item.BarCode}} </ion-label>
-          </ion-item>
+          <ion-card-content>
+            <ion-item lines="none" class="ionItemInput">
+              <ion-label text-left>Barcode</ion-label>
+              <ion-label text-left> {{item.BarCode}} </ion-label>
+            </ion-item>
 
-          <ion-item lines="none">
-            <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" [min]="0">
-            </ion-input>
+            <ion-item lines="none" class="ionItemInput" (click)="presentAlertForItem(item)">
+              <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
+              <ion-label text-left> {{item.quantity}} </ion-label>
+              <!-- <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" min="0"
+                max="9999" (ionChange)="qtyCheck(item)">
+              </ion-input> -->
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+      </ion-list>
+    </ion-virtual-scroll>
+  </div>
 
+  <div class="ui modal" style="height: 55vh;">
+    <i class="icon close"></i>
+    <div class="header">
+      Item Details
+    </div>
+    <div class="content">
+      <div class="description">
+        <div class="ui header">
+          {{selectedItem.Description}}
+        </div>
+        <p>
+          Id : {{selectedItem.ItemId}}
+          <span style="margin-left: 5px"> UOM : {{selectedItem.Unit}}</span>
+        </p>
+        <div class="ui labeled input">
+          <div class="ui label">
+            Qty
+          </div>
+          <input type="number" [(ngModel)]="selectedItem.quantity" (ionChange)="qtyCheck(selectedItem)"
+            (keyup.enter)="onEnter(selectedItem)">
+        </div>
+        <div class="ui red message" *ngIf="errMsg">
+          {{errMsg}}
+        </div>
 
-            <!-- <ion-button fill="clear" slots="end" item-right (click)="saveLine(item)"
-              >
-              <ion-icon name="return-left"></ion-icon>
-            </ion-button>
-
-            <ion-button fill="clear" slots="end" item-right (click)="cancelBtn(item)">
-              <ion-icon name="close"></ion-icon>
-            </ion-button> -->
-          </ion-item>
-        </ion-card-content>
-      </ion-card>
+        <div class="ui labeled input inputMargin">
+          <div class="ui label">
+            Barcode
+          </div>
+          <input type="number" [(ngModel)]="selectedItem.BarCode" [disabled]="true">
+        </div>
+      </div>
     </div>
   </div>
+
   <ng-template #noItem>
     <div class="alert alert-warning">
       All item saved, Scan new Item

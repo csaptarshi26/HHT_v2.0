@@ -9,6 +9,7 @@ import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 
+declare var $: any;
 @Component({
   selector: 'app-purchase-header',
   templateUrl: './purchase-header.page.html',
@@ -36,11 +37,13 @@ export class PurchaseHeaderPage implements OnInit {
   }
 
   ngOnInit() {
+    $('.ui.dropdown').dropdown({fullTextSearch: true});
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
     this.getVendorList();
   }
-  vendorSelected() {
+  vendorSelected(vend:VendorsModel) {
+    this.selectedVendor = vend;
     if (this.pageType == "Receive") {
       this.getPurchaseOrder();
     } else {
@@ -145,7 +148,8 @@ export class PurchaseHeaderPage implements OnInit {
     toast.present();
   }
 
-  poSelected(){
+  poSelected(po:PurchTableModel){
+    this.selectedPurchOrder = po;
     var poItem: PurchTableModel;
     if (this.poSotrageItemList != null || this.poSotrageItemList.length !=0) {
       this.poSotrageItemList.forEach(el => {

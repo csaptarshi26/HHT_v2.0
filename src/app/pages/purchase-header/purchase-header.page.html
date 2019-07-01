@@ -9,19 +9,40 @@
 
 
 <ion-content padding>
-  <ion-item class="ionItemInputSqr">
+  <div class="ui fluid search selection dropdown">
+    <input type="hidden" name="country">
+    <i class="dropdown icon"></i>
+    <div class="default text">Vendor Name</div>
+    <div class="menu" id="idDropDown">
+      <div class="item" data-value="vendor.VendAccount" (click)="vendorSelected(vendor)"
+        *ngFor="let vendor of vendorList">{{vendor.displayText}}</div>
+    </div>
+  </div>
+
+  <!-- <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">Vendor Name</ion-label>
     <ionic-selectable [(ngModel)]="selectedVendor" [items]="vendorList" itemValueField="VendAccount"
       itemTextField="displayText" [canSearch]="true" (onChange)="vendorSelected()">
     </ionic-selectable>
-  </ion-item>
+  </ion-item> -->
 
-  <ion-item class="ionItemInputSqr">
+  <div class="ui fluid search selection dropdown inputMargin">
+    <input type="hidden" name="country">
+    <i class="dropdown icon"></i>
+    <div class="default text">Po No.</div>
+    <div class="menu" id="idDropDown">
+      <div class="item" data-value="po.PurchId" (click)="poSelected(po)" *ngFor="let po of purchaseList">
+        {{po.PurchId}}</div>
+    </div>
+  </div>
+
+
+  <!-- <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">PO No.</ion-label>
     <ionic-selectable [(ngModel)]="selectedPurchOrder" [items]="purchaseList" itemValueField="PurchId"
-      itemTextField="PurchId" [canSearch]="true"  (onChange)="poSelected()">
+      itemTextField="PurchId" [canSearch]="true" (onChange)="poSelected()">
     </ionic-selectable>
-  </ion-item>
+  </ion-item> -->
 
   <ion-card *ngIf="selectedPurchOrder.PurchId!=null">
     <ion-card-header>Purchase Order Details</ion-card-header>

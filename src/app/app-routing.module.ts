@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'purchase-line/:pageName', loadChildren: './pages/purchase-line/purchase-line.module#PurchaseLinePageModule' },
   { path: 'purchase-list/:pageName', loadChildren: './pages/purchase-list/purchase-list.module#PurchaseListPageModule' },
   { path: 'transfer-header/:pageName', loadChildren: './pages/transfer-header/transfer-header.module#TransferHeaderPageModule' },
-  { path: 'item-information', loadChildren: './pages/item-information/item-information.module#ItemInformationPageModule' }
+  { path: 'item-information', loadChildren: './pages/item-information/item-information.module#ItemInformationPageModule' },
 ];
 
 @NgModule({

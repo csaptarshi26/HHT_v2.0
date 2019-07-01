@@ -38,11 +38,14 @@
               {
                 "input": "src/global.scss"
               },
-              "node_modules/primeicons/primeicons.css",
-              "node_modules/primeng/resources/themes/nova-light/theme.css",
-              "node_modules/primeng/resources/primeng.min.css"
+              "./node_modules/semantic-ui/dist/semantic.min.css",
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/primeng/resources/themes/nova-light/theme.css",
+              "./node_modules/primeng/resources/primeng.min.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "./node_modules/semantic-ui/dist/semantic.min.js"
+            ],
             "es5BrowserSupport": true
           },
           "configurations": {

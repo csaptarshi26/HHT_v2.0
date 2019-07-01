@@ -1,6 +1,5 @@
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { Component, OnInit } from '@angular/core';
-
 @Component({
   selector: 'app-purchase',
   templateUrl: './purchase.page.html',
@@ -8,10 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PurchasePage implements OnInit {
 
-  constructor(public paramService:ParameterService) { }
+  constructor(public paramService: ParameterService) { }
 
   ngOnInit() {
-    
+   
   }
 
 }

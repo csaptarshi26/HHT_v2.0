@@ -19,7 +19,7 @@
           </ionic-selectable>
         </ion-item> -->
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan"
+        <ion-input type="number" hideKeyboard #input id="barcodeInput" placeholder="Scan"
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 

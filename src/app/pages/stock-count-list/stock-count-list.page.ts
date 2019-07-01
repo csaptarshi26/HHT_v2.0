@@ -1,16 +1,17 @@
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { AxService } from './../../providers/axService/ax.service';
-import { AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { AlertController, ToastController, LoadingController, ModalController } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ItemModel } from 'src/app/models/STPItem.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DataService } from 'src/app/providers/dataService/data.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
-
+import { IonInfiniteScroll } from '@ionic/angular';
+declare var $: any;
 
 @Component({
   selector: 'app-stock-count-list',
@@ -20,19 +21,29 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 export class StockCountListPage implements OnInit {
 
   itemList: ItemModel[] = [];
+  selectedItem: ItemModel = {} as ItemModel;
   updateDataTableList: STPLogSyncDetailsModel[] = [];
   user: any;
   valueUpdated: boolean = false;
+  index: any = 0;
+  errMsg: any = "";
+
+  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
-    public router: Router, public alertController: AlertController) {
+    public router: Router, public alertController: AlertController,
+    public modalController: ModalController) {
+
   }
 
   ngOnInit() {
     this.user = this.dataServ.userId
     //this.getItemsFromStorage()
     this.getItemList();
+  }
+  trackByFn(index, item) {
+    return index; // or item.id
   }
   getItemsFromStorage() {
     this.storageService.getAllValuesFromStorage.subscribe((res) => {
@@ -47,12 +58,46 @@ export class StockCountListPage implements OnInit {
   getItemList() {
     this.dataServ.getItemList$.subscribe(res => {
       this.itemList = res;
-      console.log(this.itemList);
     }, error => {
 
     })
   }
+  qtyCheck(item: ItemModel) {
+    if (item.quantity > 9999) {
+      this.errMsg = "Qty cann't be greater than 9999";
+      //this.presentToast("Qty cann't be greater than 9999");
+      return false;
+    } else if (!item.quantity || item.quantity < 0) {
+      this.errMsg = "Qty cann't be blank";
+      //this.presentToast("Qty cann't be blank");
+      return false;
+    } else if (item.quantity < 0) {
+      this.errMsg = "Qty cann't be in negetive";
+      //this.presentToast("Qty cann't be in negetive");
+      return false;
+    }
+    else {
+      this.errMsg = "";
+      return true;
+    }
+  }
 
+  async presentAlert(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error!',
+      message: msg,
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+            this.router.navigateByUrl('/sales');
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
   async saveItem() {
     var lineNum = 1;
 
@@ -68,6 +113,10 @@ export class StockCountListPage implements OnInit {
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = lineNum;
 
+        if (el.quantity == 0 || el.quantity < 0 || el.quantity == "") {
+          this.presentAlert("Qty can't be blank");
+          return false;
+        }
         dataTable.Quantity = el.quantity;
         dataTable.TransactionType = 5;
         dataTable.UnitId = el.Unit;
@@ -110,7 +159,8 @@ export class StockCountListPage implements OnInit {
   async presentToast(msg) {
     const toast = await this.toastController.create({
       message: msg,
-      duration: 2000
+      duration: 2000,
+      position: 'top'
     });
     toast.present();
   }
@@ -123,11 +173,11 @@ export class StockCountListPage implements OnInit {
     }
   }
 
-  deleteLine(item: ItemModel) {
-    this.presentAlertForCancel(item);
+  deleteLine(item: ItemModel, i) {
+    this.presentAlertForCancel(item, i);
   }
 
-  async presentAlertForCancel(item: ItemModel) {
+  async presentAlertForCancel(item: ItemModel, i) {
     const alert = await this.alertController.create({
       header: 'Confirmation',
       message: `Are you sure you want to delete this line? `,
@@ -135,24 +185,8 @@ export class StockCountListPage implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-            for (var i = 0; i < this.itemList.length; i++) {
-              if (this.itemList[i].ItemId == item.ItemId) {
-                if (i > -1) {
-                  this.itemList.splice(i, 1);
-                  console.log("deleted")
-                  break;
-                }
-              }
-            }
-            // this.itemList.forEach(el => {
-            //   if (el.ItemId == item.ItemId) {
-            //     var index = this.itemList.indexOf(el);
-            //     if (index > -1) {
-            //       this.itemList.splice(index, 1);
-
-            //     }
-            //   }
-            // });
+            this.itemList.splice(i, 1);
+            this.itemList = [...this.itemList];
           }
         },
         {
@@ -165,5 +199,22 @@ export class StockCountListPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  presentAlertForItem(item: ItemModel) {
+    //document.getElementById('id01').style.display = 'block'
+    this.selectedItem = item;
+    let self = this;
+    //$('.ui.modal').modal('show');
+    $('.ui.modal').modal({
+      onHide: function () {
+        return self.qtyCheck(item);
+      }
+    }).modal('show');
+  }
+  onEnter(item: ItemModel) {
+    if (this.qtyCheck(item)) {
+      $('.ui.modal').modal('hide');
+    }
   }
 }
