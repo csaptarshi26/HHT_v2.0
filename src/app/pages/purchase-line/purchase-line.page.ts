@@ -44,21 +44,21 @@ export class PurchaseLinePage implements OnInit {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -105,12 +105,12 @@ export class PurchaseLinePage implements OnInit {
   }
 
   searchBarcode() {
-    if (this.barcode != null && this.barcode.length > 3) {
+    if (this.barcode != null && this.barcode.length > 1) {
 
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
-        if (res.Unit != "" || res.Unit != null) {
+        if (res.Unit) {
           this.poLineList.forEach(el => {
             counter++;
             if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
@@ -145,7 +145,7 @@ export class PurchaseLinePage implements OnInit {
             if (el.ItemId == res.ItemId) {
               this.count++;
               flag = true;
-
+              
               el.inputQty = 0;
               // el.isVisible = true;
               el.QtyReceivedServer = el.QtyReceived;
@@ -179,7 +179,6 @@ export class PurchaseLinePage implements OnInit {
         this.presentToast("Connection Error");
       })
     }
-
   }
   async presentToast(msg) {
     const toast = await this.toastController.create({

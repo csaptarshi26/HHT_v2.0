@@ -177,7 +177,7 @@ export class StockCountPage implements OnInit {
 
       });
       await loading.present();
-      this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
+      this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         this.item = res;
         if (this.item.ItemId == null || this.item.ItemId == "") {
           flag = true;

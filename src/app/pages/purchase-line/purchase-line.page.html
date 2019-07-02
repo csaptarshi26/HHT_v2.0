@@ -12,7 +12,7 @@
   <ion-card class="scanCard">
     <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="number" hideKeyboard #input id="barcodeInput"  placeholder="Scan" 
+        <ion-input type="text" hideKeyboard #input id="barcodeInput"  placeholder="Scan" 
           [(ngModel)]="barcode" (ionChange)="searchBarcode()" (click)="clearBarcode()" >
         </ion-input>
       </ion-item>
@@ -30,7 +30,7 @@
       <span>
         <b><span>Id : {{poLine.ItemId}}</span>
           <span style="margin-left: 15px;">UOM : {{poLine.UnitId}}</span><br>
-          Desc : {{poLine.qtyDesc}}</b>
+          {{poLine.qtyDesc}}</b>
       </span>
     </ion-card-header>
     <ion-card-content class="itemLineContent">
@@ -56,7 +56,7 @@
 
 
         <ion-item lines="none" class="ionItemInput">
-          <ion-label text-left class="ion-text-wrap">Qty Received</ion-label>
+          <ion-label text-left class="ion-text-wrap">Qty Scanned</ion-label>
           <ion-label text-left> {{poLine.QtyReceived}} </ion-label>
 
         </ion-item>

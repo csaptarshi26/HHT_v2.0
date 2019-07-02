@@ -28,12 +28,12 @@
           </ion-card-header>
 
           <ion-card-content>
-            <ion-item lines="none" class="ionItemInput">
+            <ion-item lines="none">
               <ion-label text-left>Barcode</ion-label>
               <ion-label text-left> {{item.BarCode}} </ion-label>
             </ion-item>
 
-            <ion-item lines="none" class="ionItemInput" (click)="presentAlertForItem(item)">
+            <ion-item lines="none" (click)="presentAlertForItem(item)">
               <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
               <ion-label text-left> {{item.quantity}} </ion-label>
               <!-- <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" id="qtyInput" min="0"

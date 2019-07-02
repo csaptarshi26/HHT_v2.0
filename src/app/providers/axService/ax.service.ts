@@ -144,6 +144,21 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
+  getItemFromBarcodeWithOUM(barcode): Observable<any> {
+    let url = this.baseAddress + "getItemFromBarcodeWithUOM";
+    let body = {
+      "DataAreaId": this.paramService.dataAreaId,
+      "ItemBarcode": barcode
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    console.log(body);
+    return this.http.post(url, body, httpOptions);
+  }
+
 
   getCustomerList(): Observable<any> {
     let url = this.baseAddress + "readCustomers";

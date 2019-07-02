@@ -12,7 +12,7 @@
   <ion-card class="scanCard">
     <ion-card-content class="padding">
       <ion-item lines="none" class="ionItemInput">
-        <ion-input type="number" hideKeyboard #input id="barcodeInput" placeholder="Scan" 
+        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" 
           [(ngModel)]="barcode" (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
         </ion-input>
 
@@ -32,7 +32,7 @@
         <span style="width: 50%">
           <b><span>Id : {{toLine.ItemNo}}</span>
             <span style="margin-left: 15px;">UOM : {{toLine.UnitOfMeasure}}</span><br>
-            Desc : {{toLine.qtyDesc}}</b><br>
+            {{toLine.qtyDesc}}</b><br>
             Currently Received : {{toLine.updatableQty}}
         </span>
       </ion-card-header>
@@ -57,7 +57,7 @@
           </ion-item>
 
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left class="ion-text-wrap">Qty Shipped</ion-label>
+            <ion-label text-left class="ion-text-wrap">Qty Scanned</ion-label>
             <ion-label text-left> {{toLine.QtyShipped}} </ion-label>
           </ion-item>
 
@@ -76,7 +76,7 @@
           </ion-item>
 
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left class="ion-text-wrap">Qty Received</ion-label>
+            <ion-label text-left class="ion-text-wrap">Qty Scanned</ion-label>
             <ion-label text-left> {{toLine.QtyReceived}} </ion-label>
           </ion-item>
 

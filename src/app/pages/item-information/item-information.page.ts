@@ -82,7 +82,7 @@ export class ItemInformationPage implements OnInit {
 
       });
       await loading.present();
-      this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
+      this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         this.item = res;
         this.item.visible = true;
         loading.dismiss();

@@ -107,7 +107,7 @@ export class SalesLinePage implements OnInit {
         message: 'Please Wait'
       });
       await loading.present();
-      this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
+      this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
         loading.dismiss();

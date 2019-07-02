@@ -25,7 +25,7 @@
         <span style="width: 50%">
           <b><span>Id : {{toLine.ItemNo}}</span>
             <span style="margin-left: 15px;">UOM : {{toLine.UnitOfMeasure}}</span><br>
-            Desc : {{toLine.qtyDesc}}</b>
+            {{toLine.qtyDesc}}</b>
         </span>
       </ion-card-header>
       <ion-card-content class="itemLineContent">
@@ -57,7 +57,7 @@
           </ion-item>
 
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left class="ion-text-wrap">Qty Shipped</ion-label>
+            <ion-label text-left class="ion-text-wrap">Qty Scanned</ion-label>
             <ion-label text-left> {{toLine.QtyShipped}} </ion-label>
           </ion-item>
 
@@ -84,7 +84,7 @@
           </ion-item>
 
           <ion-item lines="none" class="ionItemInput">
-            <ion-label text-left class="ion-text-wrap">Qty Received</ion-label>
+            <ion-label text-left class="ion-text-wrap">Qty Scanned</ion-label>
             <ion-label text-left> {{toLine.QtyReceived}} </ion-label>
           </ion-item>
 
