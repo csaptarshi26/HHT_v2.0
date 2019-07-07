@@ -126,3 +126,9 @@
 ion-item > ion-label:first-child {
   width: 48% !important;
 }
+
+@media only screen and (max-width: 767px){
+  .ui.search.dropdown .menu {
+      max-height: 50vh !important;
+  }
+}

@@ -39,7 +39,7 @@ export class SalesLinePage implements OnInit {
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute, private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController,
-    public loadingController: LoadingController,  private changeDetectorref: ChangeDetectorRef) {
+    public loadingController: LoadingController,  public changeDetectorref: ChangeDetectorRef) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 

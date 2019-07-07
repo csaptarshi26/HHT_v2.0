@@ -42,7 +42,7 @@ export class InventoryHeaderPage implements OnInit {
     public toastController: ToastController, private keyboard: Keyboard,
     private router: Router, public storageServ: StorageService,
     public loadingController: LoadingController, public dataServ: DataService,
-    private changeDetectorref: ChangeDetectorRef) {
+    public changeDetectorref: ChangeDetectorRef) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
     console.log(this.pageType)

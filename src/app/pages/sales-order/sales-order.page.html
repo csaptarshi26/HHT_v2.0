@@ -9,19 +9,33 @@
 
 
 <ion-content padding>
-  <ion-item class="ionItemInputSqr">
-    <ion-label position="stacked">Customer Name</ion-label>
-    <ionic-selectable [(ngModel)]="selectedCustomer" [items]="customerList" itemValueField="CustAccount"
-      itemTextField="displayText" [canSearch]="true" (onChange)="customerSelected()">
-    </ionic-selectable>
-  </ion-item>
 
-  <ion-item class="ionItemInputSqr">
+  <div class="ui fluid search selection dropdown">
+    <input type="hidden" name="country">
+    <i class="dropdown icon"></i>
+    <div class="default text">Customer Name</div>
+    <div class="menu" id="idDropDown">
+      <div class="item" data-value="customer.CustAccount" (click)="customerSelected(customer)"
+        *ngFor="let customer of customerList">{{customer.displayText}}</div>
+    </div>
+  </div>
+
+  <div class="ui fluid search selection dropdown inputMargin">
+    <input type="hidden" name="country">
+    <i class="dropdown icon"></i>
+    <div class="default text">SO No.</div>
+    <div class="menu" id="idDropDown">
+      <div class="item" data-value="sales.DocumentNo" (click)="soSelected(sales)"
+        *ngFor="let sales of salesList">{{sales.DocumentNo}}</div>
+    </div>
+  </div>
+
+  <!-- <ion-item class="ionItemInputSqr">
     <ion-label position="stacked">SO No.</ion-label>
     <ionic-selectable [(ngModel)]="selectedSalesTable" [items]="salesList" itemValueField="DocumentNo"
       itemTextField="DocumentNo" [canSearch]="true" (onChange)="soSelected()">
     </ionic-selectable>
-  </ion-item>
+  </ion-item> -->
 
   <ion-card *ngIf="selectedSalesTable.DocumentNo!=null">
     <ion-card-header>Sales Order Details</ion-card-header>
@@ -30,7 +44,7 @@
         <ion-label text-left>Order Date</ion-label>
         <ion-label text-right> {{selectedSalesTable.DocumentDate | date: 'mediumDate'}} </ion-label>
       </ion-item>
-    </ion-card-content> 
+    </ion-card-content>
   </ion-card>
 
 </ion-content>

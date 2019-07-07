@@ -86,6 +86,7 @@ export class PurchaseListPage implements OnInit {
         dataTable.DocumentNum = this.poHeader.PurchId;
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
+        dataTable.InvoiceId = this.poHeader.InvoiceId;
         dataTable.LineNum = el.LineNo;
 
         if (this.pageType == "Receive") {

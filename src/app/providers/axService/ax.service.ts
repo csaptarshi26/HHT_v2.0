@@ -10,10 +10,10 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 })
 export class AxService {
 
-  public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
+  //public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
 
   //MASSKAR URL
-  //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
+  public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
   }
@@ -67,6 +67,22 @@ export class AxService {
     };
     return this.http.post(url, body, httpOptions);
   }
+  
+  getPurchOrdersLine(purchId: any): Observable<any> {
+    let url = this.baseAddress + "readPurchOrdersLine";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "PurchId": purchId
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
 
   getPurchOrders(vendAcc: any): Observable<any> {
     let url = this.baseAddress + "readPurchOrders";
@@ -195,6 +211,21 @@ export class AxService {
       "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId,
       "CustAccount": custAcc,
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  getVendorByPO(purchid): Observable<any> {
+    let url = this.baseAddress + "readVendorNameByPO";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "PurchId": purchid,
     };
     let httpOptions = {
       headers: new HttpHeaders({

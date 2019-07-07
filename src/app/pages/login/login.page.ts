@@ -17,8 +17,8 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 })
 export class LoginPage implements OnInit {
 
-  userId: string = "Admin";
-  password: string = "1234";
+  userId: string = "";
+  password: string = "";
   selectedInventory: InventLocationModel;
   selectedWarehouse: InventLocationLineModel;
 

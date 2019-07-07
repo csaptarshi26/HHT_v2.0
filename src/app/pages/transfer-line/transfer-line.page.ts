@@ -43,7 +43,7 @@ export class TransferLinePage implements OnInit {
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
     public loadingController: LoadingController, public router: Router,
-    private changeDetectorref: ChangeDetectorRef) {
+    public changeDetectorref: ChangeDetectorRef) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 

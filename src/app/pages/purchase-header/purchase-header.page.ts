@@ -8,7 +8,6 @@ import { VendorsModel } from 'src/app/models/STPVendors.model';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
-
 declare var $: any;
 @Component({
   selector: 'app-purchase-header',
@@ -28,6 +27,8 @@ export class PurchaseHeaderPage implements OnInit {
   poSotrageItemList: any[] = [];
   itemExistsInStorage: boolean;
 
+  poNo: any = "";
+
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
     public storageService: StorageService, public loadingController: LoadingController,
@@ -37,12 +38,12 @@ export class PurchaseHeaderPage implements OnInit {
   }
 
   ngOnInit() {
-    $('.ui.dropdown').dropdown({fullTextSearch: true});
+    $('.ui.dropdown').dropdown({ fullTextSearch: true });
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
     this.getVendorList();
   }
-  vendorSelected(vend:VendorsModel) {
+  vendorSelected(vend: VendorsModel) {
     this.selectedVendor = vend;
     if (this.pageType == "Receive") {
       this.getPurchaseOrder();
@@ -67,6 +68,9 @@ export class PurchaseHeaderPage implements OnInit {
 
 
   getVendorList() {
+    if (this.paramService.vendorList) {
+      this.vendorList = this.paramService.vendorList;
+    }
     this.axService.getVendorList().subscribe(res => {
       this.vendorList = res;
       this.vendorList.forEach(el => {
@@ -85,6 +89,7 @@ export class PurchaseHeaderPage implements OnInit {
     this.axService.getPurchOrders(this.selectedVendor.VendAccount).subscribe(res => {
       loading.dismiss();
       this.purchaseList = res;
+      console.log(res);
     }, error => {
       loading.dismiss();
       this.presentToast("Connection Error")
@@ -105,8 +110,19 @@ export class PurchaseHeaderPage implements OnInit {
       console.log(error);
     })
   }
+  getPurchOrdersLine() {
+    console.log(this.selectedPurchOrder.PurchId);
+    this.axService.getPurchOrdersLine(this.selectedPurchOrder.PurchId).subscribe(res => {
+      this.selectedPurchOrder.PurchLines = res;
+
+      console.log(res);
+    }, error => {
+
+    })
+  }
   navigateToNext() {
     this.poLineList = this.selectedPurchOrder.PurchLines;
+    console.log(this.selectedPurchOrder)
     if (this.pageType == "Receive") {
       this.dataServ.setPO(this.selectedPurchOrder);
     } else {
@@ -148,10 +164,26 @@ export class PurchaseHeaderPage implements OnInit {
     toast.present();
   }
 
-  poSelected(po:PurchTableModel){
+  getVendorByPO() {
+    this.axService.getVendorByPO(this.poNo).subscribe(res => {
+      this.selectedPurchOrder = res;
+      console.log(this.selectedPurchOrder.VendorAccount)
+      this.vendorList.forEach(el => {
+        if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
+          this.selectedVendor = el;
+          $('.ui.fluid.dropdown').dropdown('set selected', [this.selectedVendor.displayText]);
+          console.log(el)
+        }
+      })
+    }, error => {
+
+    })
+  }
+  poSelected(po: PurchTableModel) {
     this.selectedPurchOrder = po;
+    this.getPurchOrdersLine();
     var poItem: PurchTableModel;
-    if (this.poSotrageItemList != null || this.poSotrageItemList.length !=0) {
+    if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
       this.poSotrageItemList.forEach(el => {
         if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
           this.itemExistsInStorage = true;

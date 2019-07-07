@@ -39,17 +39,20 @@ export class SalesOrderPage implements OnInit {
     console.log(this.pageType)
   }
 
-  customerSelected() {
+  customerSelected(cust: CustomerModel) {
+    this.selectedCustomer = cust;
+    alert(this.selectedCustomer)
     if (this.pageType == "Sales-Order") {
       this.getSalesOrder();
-    }else{
+    } else {
       this.getSalesReturnOrder();
     }
   }
 
-  soSelected() {
+  soSelected(sales: SalesTable) {
+    this.selectedSalesTable = sales;
     var soItem: SalesTable;
-    if (this.soStorageItemList != null || this.soStorageItemList.length !=0) {
+    if (this.soStorageItemList != null || this.soStorageItemList.length != 0) {
       console.log(this.soStorageItemList != null)
       this.soStorageItemList.forEach(el => {
         if (el.soNo == this.selectedSalesTable.DocumentNo && el.type == this.pageType) {
@@ -63,6 +66,7 @@ export class SalesOrderPage implements OnInit {
     }
   }
   ngOnInit() {
+    $('.ui.dropdown').dropdown({ fullTextSearch: true });
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
     this.getcustomerList();

@@ -10,7 +10,7 @@
 
 <ion-content padding>
   <div class="ui fluid search selection dropdown">
-    <input type="hidden" name="country">
+    <!-- <input type="hidden" name="country"> -->
     <i class="dropdown icon"></i>
     <div class="default text">Vendor Name</div>
     <div class="menu" id="idDropDown">
@@ -18,13 +18,6 @@
         *ngFor="let vendor of vendorList">{{vendor.displayText}}</div>
     </div>
   </div>
-
-  <!-- <ion-item class="ionItemInputSqr">
-    <ion-label position="stacked">Vendor Name</ion-label>
-    <ionic-selectable [(ngModel)]="selectedVendor" [items]="vendorList" itemValueField="VendAccount"
-      itemTextField="displayText" [canSearch]="true" (onChange)="vendorSelected()">
-    </ionic-selectable>
-  </ion-item> -->
 
   <div class="ui fluid search selection dropdown inputMargin">
     <input type="hidden" name="country">
@@ -36,17 +29,26 @@
     </div>
   </div>
 
-
-  <!-- <ion-item class="ionItemInputSqr">
-    <ion-label position="stacked">PO No.</ion-label>
-    <ionic-selectable [(ngModel)]="selectedPurchOrder" [items]="purchaseList" itemValueField="PurchId"
-      itemTextField="PurchId" [canSearch]="true" (onChange)="poSelected()">
-    </ionic-selectable>
-  </ion-item> -->
+  <!-- <div class="ui fluid icon input inputMargin">
+    <input type="text" [(ngModel)]="poNo" placeholder="Scan By Po No">
+    <div class="ui button" (click)="getVendorByPO()">Search</div>
+  </div> -->
 
   <ion-card *ngIf="selectedPurchOrder.PurchId!=null">
     <ion-card-header>Purchase Order Details</ion-card-header>
     <ion-card-content>
+      <ion-item lines="none">
+        <ion-label text-left>Invoice No</ion-label>
+        <ion-input type="text" style="text-align:left;" [(ngModel)]="selectedPurchOrder.InvoiceId">
+        </ion-input>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label text-left>Invoice Date</ion-label>
+        <ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="selectedPurchOrder.InvoiceDate"
+         placeholder="Select Date"></ion-datetime>
+      </ion-item>
+
       <ion-item lines="none">
         <ion-label text-left>Order Date</ion-label>
         <ion-label text-right> {{selectedPurchOrder.OrderDate | date: 'mediumDate'}} </ion-label>

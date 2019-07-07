@@ -32,7 +32,7 @@ export class ItemInformationPage implements OnInit {
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private router: Router,
     public loadingController: LoadingController, public storageServ: StorageService,
-    private changeDetectorref: ChangeDetectorRef) {
+    public changeDetectorref: ChangeDetectorRef) {
 
     let instance = this;
     (<any>window).plugins.intentShim.registerBroadcastReceiver({

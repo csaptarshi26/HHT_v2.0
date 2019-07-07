@@ -2,12 +2,14 @@ import { PurchLineModel } from './STPPurchTableLine.model';
 
 
 export class PurchTableModel {
+    InvoiceId: any;
+    InvoiceDate: any;
     PurchLines: PurchLineModel[];
     PurchId: any;
-    vendAccount: any;
+    VendorAccount: any;
     OrderDate: any;
-    scannedQty:any;
-    constructor(){
-        
+    scannedQty: any;
+    constructor() {
+
     }
 }

@@ -8,6 +8,7 @@ import { ParameterService } from 'src/app/providers/parameterService/parameter.s
 import { TransferOrderModel } from 'src/app/models/STPTransferOrder.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 
+declare var $: any;
 @Component({
   selector: 'app-transfer-header',
   templateUrl: './transfer-header.page.html',
@@ -27,7 +28,7 @@ export class TransferHeaderPage implements OnInit {
 
   toSotrageItemList: any[] = [];
   itemExistsInStorage: boolean;
-  
+
   constructor(public dataServ: DataService, public axService: AxService,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
     public router: Router, public loadingController: LoadingController,
@@ -38,13 +39,15 @@ export class TransferHeaderPage implements OnInit {
 
 
   ngOnInit() {
+    $('.ui.dropdown').dropdown({ fullTextSearch: true });
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
     this.currentLoc = this.paramService.Location;
     this.getWarehouse();
 
   }
-  async fromListSelected() {
+  async fromListSelected(warehouse: InventLocationLineModel) {
+    this.fromWarehouse = warehouse;
     const loading = await this.loadingController.create({
       message: 'Please Wait'
     });
@@ -119,9 +122,9 @@ export class TransferHeaderPage implements OnInit {
     await alert.present();
   }
 
-  toSelected(){
+  toSelected() {
     var toItem: TransferOrderModel;
-    if (this.toSotrageItemList != null || this.toSotrageItemList.length !=0) {
+    if (this.toSotrageItemList != null || this.toSotrageItemList.length != 0) {
       this.toSotrageItemList.forEach(el => {
         if (el.toNo == this.selectedTrans.JournalId && el.type == this.pageType) {
           this.itemExistsInStorage = true;
