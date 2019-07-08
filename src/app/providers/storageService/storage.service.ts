@@ -123,7 +123,22 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    this.storage.get('CustomerList').then((data) => {
+      this.parameterservice.customerList = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
+
+  setCustomerList(customerList: any) {
+    this.storage.set('CustomerList', customerList);
+    this.parameterservice.customerList = customerList;
+  }
+
   setSOItemList(SOItemList: any) {
     this.storage.set('SOItemList', SOItemList);
     this.parameterservice.SOItemList = SOItemList;

@@ -41,7 +41,6 @@ export class SalesOrderPage implements OnInit {
 
   customerSelected(cust: CustomerModel) {
     this.selectedCustomer = cust;
-    alert(this.selectedCustomer)
     if (this.pageType == "Sales-Order") {
       this.getSalesOrder();
     } else {
@@ -52,8 +51,8 @@ export class SalesOrderPage implements OnInit {
   soSelected(sales: SalesTable) {
     this.selectedSalesTable = sales;
     var soItem: SalesTable;
+    this.getSalesLine();
     if (this.soStorageItemList != null || this.soStorageItemList.length != 0) {
-      console.log(this.soStorageItemList != null)
       this.soStorageItemList.forEach(el => {
         if (el.soNo == this.selectedSalesTable.DocumentNo && el.type == this.pageType) {
           this.itemExistsInStorage = true;
@@ -72,11 +71,15 @@ export class SalesOrderPage implements OnInit {
     this.getcustomerList();
   }
   getcustomerList() {
+    if (this.paramService.customerList) {
+      this.customerList = this.paramService.customerList;
+    }
     this.axService.getCustomerList().subscribe(res => {
       this.customerList = res;
       this.customerList.forEach(el => {
         el.displayText = el.CustAccount + " - " + el.Name;
       })
+      this.storageService.setCustomerList(this.customerList);
     }, error => {
       console.log(error);
     })
@@ -154,5 +157,14 @@ export class SalesOrderPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  getSalesLine() {
+    this.axService.getSalesLine(this.selectedSalesTable.DocumentNo).subscribe(res => {
+      this.selectedSalesTable.SalesLine = res;
+      console.log(res);
+    }, error => {
+      console.log(error);
+    })
   }
 }

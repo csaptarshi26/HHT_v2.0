@@ -7,7 +7,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { TransferOrderModel } from 'src/app/models/STPTransferOrder.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
-
 declare var $: any;
 @Component({
   selector: 'app-transfer-header',
@@ -39,6 +38,7 @@ export class TransferHeaderPage implements OnInit {
 
 
   ngOnInit() {
+   
     $('.ui.dropdown').dropdown({ fullTextSearch: true });
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
@@ -46,8 +46,8 @@ export class TransferHeaderPage implements OnInit {
     this.getWarehouse();
 
   }
-  async fromListSelected(warehouse: InventLocationLineModel) {
-    this.fromWarehouse = warehouse;
+  async fromListSelected() {
+    //this.fromWarehouse = warehouse;
     const loading = await this.loadingController.create({
       message: 'Please Wait'
     });
@@ -122,8 +122,9 @@ export class TransferHeaderPage implements OnInit {
     await alert.present();
   }
 
-  toSelected() {
+  toNoSelected() {
     var toItem: TransferOrderModel;
+    this.getTransferOrderLine();
     if (this.toSotrageItemList != null || this.toSotrageItemList.length != 0) {
       this.toSotrageItemList.forEach(el => {
         if (el.toNo == this.selectedTrans.JournalId && el.type == this.pageType) {
@@ -147,5 +148,14 @@ export class TransferHeaderPage implements OnInit {
         this.toSotrageItemList = this.paramService.TOItemList;
       }
     });
+  }
+
+  getTransferOrderLine() {
+    this.axService.readTransOrdersLine(this.selectedTrans.JournalId).subscribe(res => {
+      this.selectedTrans.JournalLine = res;
+      console.log(res);
+    }, error => {
+      console.log(error)
+    })
   }
 }

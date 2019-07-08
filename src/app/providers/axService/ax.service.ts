@@ -10,17 +10,20 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 })
 export class AxService {
 
-  //public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
+  public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
 
   //MASSKAR URL
-  public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
+  //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
+
+  //NAIVAS URL
+  //public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
   }
 
   getCurrentDate() {
     let url = this.baseAddress + "getCurrentDate";
-    let body = { };
+    let body = {};
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -28,7 +31,7 @@ export class AxService {
     };
     return this.http.post(url, body, httpOptions);
   }
-  
+
   checkUser(userId: string, password: string): Observable<any> {
     let url = this.baseAddress + "checkuser";
     let body = {
@@ -67,7 +70,7 @@ export class AxService {
     };
     return this.http.post(url, body, httpOptions);
   }
-  
+
   getPurchOrdersLine(purchId: any): Observable<any> {
     let url = this.baseAddress + "readPurchOrdersLine";
     let body = {
@@ -114,6 +117,19 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
+  readTransOrdersLine(transferId: any): Observable<any> {
+    let url = this.baseAddress + "readTransOrdersLine";
+    let body = {
+      "DataAreaId": this.paramService.dataAreaId,
+      "TransferId": transferId
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
 
   readPOReturnList(vendAcc: any): Observable<any> {
     let url = this.baseAddress + "readPOReturnList";
@@ -121,6 +137,21 @@ export class AxService {
       "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId,
       "VendAccount": vendAcc
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  readPOReturnLineList(purchId: any): Observable<any> {
+    let url = this.baseAddress + "readPOReturnLineList";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "PurchId": purchId
     };
     let httpOptions = {
       headers: new HttpHeaders({
@@ -196,6 +227,21 @@ export class AxService {
       "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId,
       "CustAccount": custAcc,
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  getSalesLine(salesId): Observable<any> {
+    let url = this.baseAddress + "readSalesLine";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "SalesId": salesId,
     };
     let httpOptions = {
       headers: new HttpHeaders({

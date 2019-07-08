@@ -22,7 +22,6 @@
       </div>
     </div> -->
 
-
     <ion-item lines="none" class="ionItemInput">
       <ion-label position="stacked">From</ion-label>
       <ionic-selectable [(ngModel)]="fromWarehouse" [items]="warehouseList" itemValueField="LocationId"
@@ -39,7 +38,7 @@
     <ion-item lines="none" class="ionItemInput">
       <ion-label position="stacked">Transfer Order No.</ion-label>
       <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
-        itemTextField="JournalId" [canSearch]="true">
+        itemTextField="JournalId" [canSearch]="true" (onChange)="toNoSelected()">
       </ionic-selectable>
     </ion-item>
 
@@ -68,7 +67,7 @@
     <ion-item lines="none" class="ionItemInput">
       <ion-label position="stacked">Transfer Order No.</ion-label>
       <ionic-selectable [(ngModel)]="selectedTrans" [items]="transOrderList" itemValueField="JournalId"
-        itemTextField="JournalId" [canSearch]="true" (onChange)="toSelected()">
+        itemTextField="JournalId" [canSearch]="true" (onChange)="toNoSelected()">
       </ionic-selectable>
     </ion-item>
 

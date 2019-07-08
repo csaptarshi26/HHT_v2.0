@@ -120,6 +120,16 @@ export class PurchaseHeaderPage implements OnInit {
 
     })
   }
+
+  getPurchReturnOrdersLine() {
+    console.log(this.selectedPurchOrder.PurchId);
+    this.axService.readPOReturnLineList(this.selectedPurchOrder.PurchId).subscribe(res => {
+      this.selectedPurchOrder.PurchLines = res;
+      console.log(res);
+    }, error => {
+
+    })
+  }
   navigateToNext() {
     this.poLineList = this.selectedPurchOrder.PurchLines;
     console.log(this.selectedPurchOrder)
@@ -181,7 +191,11 @@ export class PurchaseHeaderPage implements OnInit {
   }
   poSelected(po: PurchTableModel) {
     this.selectedPurchOrder = po;
-    this.getPurchOrdersLine();
+    if (this.pageType == "Receive") {
+      this.getPurchOrdersLine();
+    } else {
+      this.getPurchReturnOrdersLine();
+    }
     var poItem: PurchTableModel;
     if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
       this.poSotrageItemList.forEach(el => {
