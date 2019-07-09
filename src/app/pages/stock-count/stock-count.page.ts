@@ -44,21 +44,21 @@ export class StockCountPage implements OnInit {
     public loadingController: LoadingController, public storageServ: StorageService,
     public changeDetectorref: ChangeDetectorRef) {
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
     // let profileConfig2 = {
     //   "PROFILE_NAME": "ZebraIonicDemo",
     //   "PROFILE_ENABLED": "true",
@@ -112,21 +112,21 @@ export class StockCountPage implements OnInit {
       this.scannedQty = this.calculateItemListQty();
     }
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        this.changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     this.changeDetectorref.detectChanges();
+    //   });
 
   }
   keyboardHide() {
@@ -153,6 +153,7 @@ export class StockCountPage implements OnInit {
     }, (error) => {
 
     }, () => {
+      console.log(this.paramService.demoData[this.paramService.demoData.length - 1])
       if (this.paramService.ItemList == null || this.paramService.ItemList.length == 0) {
         this.itemList = [];
       } else {
@@ -184,6 +185,42 @@ export class StockCountPage implements OnInit {
   }
   async barcodeScan() {
     this.storageServ.setItemList(this.itemList);
+
+    // if (this.barcode && this.barcode != " ") {
+    //   var barcodeList = this.paramService.demoData;
+    //   var low = 0,
+    //     high = this.paramService.demoData.length - 1;
+    //   var mid, guessed;
+    //   console.log(high)
+    //   while (low <= high) {
+    //     mid = Math.floor((low + high) / 2);
+    //     guessed = barcodeList[mid];
+
+    //     if (guessed == this.barcode) {
+    //       setTimeout(() => {
+    //         this.barcode = " ";
+    //       }, 100);
+    //       this.item.visible = true;
+    //       this.item.BarCode = guessed;
+    //       this.presentToast("found");
+    //       this.setBarcodeFocus();
+    //       return;
+    //     }
+    //     if (this.barcode < guessed) {
+    //       high = mid - 1;
+    //     } else {
+    //       low = mid + 1;
+    //     }
+    //   }
+    //   setTimeout(() => {
+    //     this.barcode = " ";
+    //   }, 100);
+    //   this.presentToast("Not Found");
+    //   this.setBarcodeFocus();
+    //   return null;
+    // }
+
+
     if (this.barcode != null && this.barcode.length > 3) {
       var flag = false;
       const loading = await this.loadingController.create({
@@ -268,6 +305,4 @@ export class StockCountPage implements OnInit {
     this.dataServ.setItemList(this.itemList);
     this.router.navigateByUrl('/stock-count-list');
   }
-
-
 }

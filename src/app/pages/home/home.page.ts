@@ -15,12 +15,12 @@ export class HomePage implements OnInit {
 
   constructor(public router: Router, public menuCtrl: MenuController, public paramService: ParameterService,
     public alertCtrl: AlertController, public sotrageService: StorageService) {
-   
+
   }
   ngOnInit() {
     this.dataAreadId = this.paramService.dataAreaId;
     this.location = this.paramService.Location;
-
+    //this.getDemoData();
     this.menuCtrl.enable(true);
   }
   ionViewDidEnter() {
@@ -54,4 +54,14 @@ export class HomePage implements OnInit {
     confirm.present();
   }
 
+  getDemoData() {
+    var barcodeList = [];
+    var k = 2005050000000;
+    var i = k;
+    while (i < k + 5000000) {
+      barcodeList.push(i);
+      i++;
+    }
+    this.sotrageService.setDemoData(barcodeList);
+  }
 }

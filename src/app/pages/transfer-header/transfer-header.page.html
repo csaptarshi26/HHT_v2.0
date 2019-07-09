@@ -9,9 +9,7 @@
 
 
 <ion-content padding>
-  <div *ngIf="pageType =='Transfer-in'">
-
-    <!-- <div class="ui fluid search selection dropdown">
+  <div class="ui fluid search selection dropdown">
       <input type="hidden" name="country">
       <i class="dropdown icon"></i>
       <div class="default text">From</div>
@@ -20,8 +18,8 @@
         *ngFor="let warehouse of warehouseList">
           {{warehouse.Name}}</div>
       </div>
-    </div> -->
-
+    </div>
+  <div *ngIf="pageType =='Transfer-in'">
     <ion-item lines="none" class="ionItemInput">
       <ion-label position="stacked">From</ion-label>
       <ionic-selectable [(ngModel)]="fromWarehouse" [items]="warehouseList" itemValueField="LocationId"

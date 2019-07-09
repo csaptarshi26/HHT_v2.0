@@ -132,7 +132,21 @@ export class StorageService {
         observer.complete();
       }
     });
+
+
+    this.storage.get('demoData').then((data) => {
+      this.parameterservice.demoData = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
+  setDemoData(demoData: any) {
+    this.storage.set('demoData', demoData);
+    this.parameterservice.demoData = demoData;
+  }
 
   setCustomerList(customerList: any) {
     this.storage.set('CustomerList', customerList);
@@ -205,11 +219,11 @@ export class StorageService {
     this.storage.clear();
   }
 
-  clearInventoryPOSItemList(){
+  clearInventoryPOSItemList() {
     this.storage.remove('InventoryPOSItemList');
   }
 
-  clearInventoryNEGItemList(){
+  clearInventoryNEGItemList() {
     this.storage.remove('InventoryNEGItemList');
   }
 

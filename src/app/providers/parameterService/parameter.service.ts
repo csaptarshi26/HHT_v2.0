@@ -36,7 +36,11 @@ export class ParameterService {
   public itemUpdated: boolean = false;
   public poItemUpdated: boolean = false;
 
-  public totalStorageVariables: Number = 13;
+  public demoData: any[] = [];
+
+  public totalStorageVariables: Number = 14;
+
+
   constructor() { }
 }
 

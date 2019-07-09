@@ -37,27 +37,31 @@
   <ion-card *ngIf="selectedPurchOrder.PurchId!=null">
     <ion-card-header>Purchase Order Details</ion-card-header>
     <ion-card-content>
+
+
+      <ion-item lines="none">
+        <ion-label text-left>Order Date</ion-label>
+        <ion-label text-right> {{selectedPurchOrder.OrderDate | date: 'mediumDate'}} </ion-label>
+      </ion-item>
+
       <ion-item lines="none">
         <ion-label text-left>Invoice No</ion-label>
-        <ion-input type="text" style="text-align:right;" [(ngModel)]="selectedPurchOrder.InvoiceId">
+        <ion-input type="text" style="text-align:right;" placeholder="Enter Invoice" [(ngModel)]="selectedPurchOrder.InvoiceId">
         </ion-input>
       </ion-item>
 
       <ion-item lines="none">
         <ion-label text-left>Invoice Date</ion-label>
         <ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="selectedPurchOrder.InvoiceDate"
-         placeholder="Select Date"></ion-datetime>
+          placeholder="Select Date"></ion-datetime>
       </ion-item>
 
-      <ion-item lines="none">
-        <ion-label text-left>Order Date</ion-label>
-        <ion-label text-right> {{selectedPurchOrder.OrderDate | date: 'mediumDate'}} </ion-label>
-      </ion-item>
     </ion-card-content>
   </ion-card>
 
 </ion-content>
 <ion-footer>
   <!-- [disabled]="selectedPurchOrder.PurchId==null" -->
+  <!-- [disabled]="!selectedPurchOrder.InvoiceId" -->
   <ion-button expand="block" (click)="navigateToNext()"> Next </ion-button>
 </ion-footer>
