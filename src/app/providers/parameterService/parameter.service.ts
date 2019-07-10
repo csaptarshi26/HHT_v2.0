@@ -9,6 +9,7 @@ import { CommonModel } from './../../models/STPCommon.model';
 import { Injectable } from '@angular/core';
 import { ItemModel } from 'src/app/models/STPItem.model';
 import { SalesTable } from 'src/app/models/STPSalesTable.model';
+import { RoleModel } from 'src/app/models/STPRole.model';
 
 @Injectable({
   providedIn: 'root'
@@ -35,10 +36,11 @@ export class ParameterService {
   public soLineUpdated: boolean;
   public itemUpdated: boolean = false;
   public poItemUpdated: boolean = false;
+  public userRole:RoleModel;
 
   public demoData: any[] = [];
 
-  public totalStorageVariables: Number = 14;
+  public totalStorageVariables: Number = 15;
 
 
   constructor() { }

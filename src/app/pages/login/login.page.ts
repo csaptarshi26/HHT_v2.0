@@ -10,6 +10,7 @@ import { MenuController, Events, AlertController } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
+import { RoleModel } from 'src/app/models/STPRole.model';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -17,8 +18,8 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 })
 export class LoginPage implements OnInit {
 
-  userId: string = "";
-  password: string = "";
+  userId: string = "Admin";
+  password: string = "admin";
   selectedInventory: InventLocationModel;
   selectedWarehouse: InventLocationLineModel;
 
@@ -26,7 +27,9 @@ export class LoginPage implements OnInit {
 
   inventList: InventLocationModel[] = [];
   currentDate: Date;
-  expirationDate:Date;
+  expirationDate: Date;
+
+  roleList: RoleModel = {} as RoleModel;
   constructor(public router: Router, public menuCtrl: MenuController, public events: Events,
     public toastController: ToastController, public axService: AxService, private uniqueDeviceID: UniqueDeviceID,
     public storageService: StorageService, public paramService: ParameterService,
@@ -46,8 +49,8 @@ export class LoginPage implements OnInit {
 
   getCurrentDate() {
     this.axService.getCurrentDate().subscribe(res => {
-      this.currentDate = new Date(res.toString());      
-      if(this.currentDate.toISOString().slice(0, 10) >= this.expirationDate.toISOString().slice(0, 10)){
+      this.currentDate = new Date(res.toString());
+      if (this.currentDate.toISOString().slice(0, 10) >= this.expirationDate.toISOString().slice(0, 10)) {
         this.presentAlertForExpiration();
       }
     }, error => {
@@ -88,20 +91,41 @@ export class LoginPage implements OnInit {
   logIn() {
     if (this.checkForm()) {
       this.axService.checkUser(this.userId, this.password).subscribe(res => {
-        if (res) {
-          this.storageService.setAuthenticated(res);
+        console.log(res);
+        var role = [];
+        role = res;
+        if (role.length < 1) {
+          this.presentToast("Role is not definned");
+          return;
+        } else if (role[0] == "False") {
+          this.presentToast("Invalid credentials");
+          return;
+        } else {
+          this.defineRole(role);
+          this.storageService.setRole(this.roleList);
+          this.storageService.setAuthenticated(true);
           this.storageService.setDataAreaId(this.selectedInventory.DataAreaId);
           this.storageService.setLocation(this.selectedWarehouse);
           this.storageService.setWarehouseForLegalEntity(this.warehouseList);
           this.router.navigateByUrl('/home');
-        } else {
-          this.presentToast("Invalid credentials");
         }
+
       }, error => {
         this.presentToast("Connection Error");
         console.log(error);
       })
     }
+  }
+
+  defineRole(role: any[]) {
+    role.forEach(el => {
+      if (el == "Administrator") this.roleList.Administrator = true;
+      if (el == "InvenoryAdj") this.roleList.InvenoryAdj = true;
+      if (el == "Purchase") this.roleList.Purchase = true;
+      if (el == "Sales") this.roleList.Sales = true;
+      if (el == "StockCount") this.roleList.StockCount = true;
+      if (el == "Transfer") this.roleList.Transfer = true;
+    })
   }
   legalEntitySelected() {
     this.warehouseList = this.selectedInventory.InventLocations;

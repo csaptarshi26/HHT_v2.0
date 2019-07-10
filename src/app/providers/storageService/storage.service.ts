@@ -142,7 +142,22 @@ export class StorageService {
         observer.complete();
       }
     });
+
+    
+    this.storage.get('Role').then((data) => {
+      this.parameterservice.userRole = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
   })
+
+  setRole(role: any) {
+    this.storage.set('Role', role);
+    this.parameterservice.userRole = role;
+  }
   setDemoData(demoData: any) {
     this.storage.set('demoData', demoData);
     this.parameterservice.demoData = demoData;

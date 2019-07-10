@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { IonInfiniteScroll } from '@ionic/angular';
+import { RoleModel } from 'src/app/models/STPRole.model';
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
@@ -13,11 +14,14 @@ export class HomePage implements OnInit {
   dataAreadId: any;
   location: any;
 
+  userRole: RoleModel = {} as RoleModel;
   constructor(public router: Router, public menuCtrl: MenuController, public paramService: ParameterService,
     public alertCtrl: AlertController, public sotrageService: StorageService) {
 
   }
   ngOnInit() {
+    console.log(this.paramService.userRole)
+    this.userRole = this.paramService.userRole;
     this.dataAreadId = this.paramService.dataAreaId;
     this.location = this.paramService.Location;
     //this.getDemoData();

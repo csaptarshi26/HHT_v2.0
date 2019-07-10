@@ -17,23 +17,23 @@
     {{dataAreadId}} - {{location.LocationId}}
   </div>
   <ion-item lines="none">
-    <ion-label [routerLink]="['/purchase']">
+    <ion-label [routerLink]="['/purchase']" *ngIf="userRole.Administrator || userRole.Purchase">
       <img src="./assets/imgs/purchase.png">
       <p>Purchase</p>
     </ion-label>
-    <ion-label [routerLink]="['/sales']">
+    <ion-label [routerLink]="['/sales']" *ngIf="userRole.Administrator || userRole.Sales">
       <img src="./assets/imgs/Picking2.jpg">
       <p>Sales</p>
     </ion-label>
   </ion-item>
 
   <ion-item lines="none">
-    <ion-label [routerLink]="['/transfer']">
+    <ion-label [routerLink]="['/transfer']" *ngIf="userRole.Administrator || userRole.Transfer">
       <img src="./assets/imgs/Receiving-2.jpg">
       <p text-wrap text-left>Transfer</p>
     </ion-label>
 
-    <ion-label [routerLink]="['/stock-count']">
+    <ion-label [routerLink]="['/stock-count']" *ngIf="userRole.Administrator || userRole.StockCount">
       <img src="./assets/imgs/stockCount.jpg">
       <p>Stock Count</p>
     </ion-label>
@@ -41,7 +41,7 @@
   </ion-item>
 
   <ion-item lines="none">
-    <ion-label [routerLink]="['/inventory']">
+    <ion-label [routerLink]="['/inventory']" *ngIf="userRole.Administrator || userRole.InvenoryAdj">
       <img src="./assets/imgs/Print Labels.png">
       <p>Inventory Adj</p>
     </ion-label>
