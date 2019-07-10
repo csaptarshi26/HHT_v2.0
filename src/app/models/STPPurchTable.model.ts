@@ -9,6 +9,7 @@ export class PurchTableModel {
     VendorAccount: any;
     OrderDate: any;
     scannedQty: any;
+    CountNumber:any;
     constructor() {
 
     }

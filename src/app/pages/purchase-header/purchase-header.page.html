@@ -9,8 +9,19 @@
 
 
 <ion-content padding>
+
+  <!-- <div class="ui toggle checkbox">
+    <input type="checkbox" [(ngModel)]="searchByPo" name="public">
+    <label>Search By PO</label>
+  </div> -->
+
+  <ion-item liens="none">
+    <ion-label>Search By PO</ion-label>
+    <ion-toggle [(ngModel)]="searchByPo" (ionChange)="searchByPoChange()"></ion-toggle>
+  </ion-item>
+
   <div class="ui fluid search selection dropdown">
-    <!-- <input type="hidden" name="country"> -->
+    <input type="hidden" name="country">
     <i class="dropdown icon"></i>
     <div class="default text">Vendor Name</div>
     <div class="menu" id="idDropDown">
@@ -29,10 +40,10 @@
     </div>
   </div>
 
-  <!-- <div class="ui fluid icon input inputMargin">
-    <input type="text" [(ngModel)]="poNo" placeholder="Scan By Po No">
+  <div class="ui fluid icon input inputMargin" *ngIf="searchByPo">
+    <input type="text" [(ngModel)]="poNo"  (keyup.enter)="getVendorByPO()" placeholder="Scan By Po No">
     <div class="ui button" (click)="getVendorByPO()">Search</div>
-  </div> -->
+  </div>
 
   <ion-card *ngIf="selectedPurchOrder.PurchId!=null">
     <ion-card-header>Purchase Order Details</ion-card-header>
@@ -46,7 +57,8 @@
 
       <ion-item lines="none">
         <ion-label text-left>Invoice No</ion-label>
-        <ion-input type="text" style="text-align:right;" placeholder="Enter Invoice" [(ngModel)]="selectedPurchOrder.InvoiceId">
+        <ion-input type="text" style="text-align:right;" placeholder="Enter Invoice"
+          [(ngModel)]="selectedPurchOrder.InvoiceId">
         </ion-input>
       </ion-item>
 
@@ -54,6 +66,14 @@
         <ion-label text-left>Invoice Date</ion-label>
         <ion-datetime displayFormat="MMM DD, YYYY" [(ngModel)]="selectedPurchOrder.InvoiceDate"
           placeholder="Select Date"></ion-datetime>
+      </ion-item>
+
+      <ion-item lines="none">
+        <ion-label>Count Number</ion-label>
+        <ion-select interface="action-sheet" [(ngModel)]="selectedPurchOrder.CountNumber">
+          <ion-select-option value="1">First</ion-select-option>
+          <ion-select-option value="2">Second</ion-select-option>
+        </ion-select>
       </ion-item>
 
     </ion-card-content>

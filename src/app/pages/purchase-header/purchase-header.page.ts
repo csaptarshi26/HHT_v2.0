@@ -18,7 +18,7 @@ export class PurchaseHeaderPage implements OnInit {
 
   pageType: any;
   vendorList: VendorsModel[] = [];
-  selectedVendor: VendorsModel;
+  selectedVendor: VendorsModel = {} as VendorsModel;
 
   purchaseList: PurchTableModel[] = [];
   selectedPurchOrder: PurchTableModel = {} as PurchTableModel;
@@ -26,7 +26,7 @@ export class PurchaseHeaderPage implements OnInit {
   poLineList: PurchLineModel[] = [];
   poSotrageItemList: any[] = [];
   itemExistsInStorage: boolean;
-
+  searchByPo: boolean = false;
   poNo: any = "";
 
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
@@ -42,6 +42,7 @@ export class PurchaseHeaderPage implements OnInit {
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
     this.getVendorList();
+    this.selectedVendor.displayText = "";
   }
   vendorSelected(vend: VendorsModel) {
     this.selectedVendor = vend;
@@ -131,15 +132,34 @@ export class PurchaseHeaderPage implements OnInit {
     })
   }
   navigateToNext() {
-    this.poLineList = this.selectedPurchOrder.PurchLines;
-    console.log(this.selectedPurchOrder)
-    if (this.pageType == "Receive") {
-      this.dataServ.setPO(this.selectedPurchOrder);
+    if (!this.selectedPurchOrder.InvoiceId) {
+      this.presentAlertError();
     } else {
-      this.dataServ.setPOReturn(this.selectedPurchOrder);
+      this.poLineList = this.selectedPurchOrder.PurchLines;
+      console.log(this.selectedPurchOrder)
+      if (this.pageType == "Receive") {
+        this.dataServ.setPO(this.selectedPurchOrder);
+      } else {
+        this.dataServ.setPOReturn(this.selectedPurchOrder);
+      }
+      this.router.navigateByUrl('/purchase-line/' + this.pageType);
     }
-    this.router.navigateByUrl('/purchase-line/' + this.pageType);
+  }
+  async presentAlertError() {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: 'Please Enter Invoice No.',
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
 
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   async presentAlert(poItem: PurchTableModel) {
@@ -177,11 +197,13 @@ export class PurchaseHeaderPage implements OnInit {
   getVendorByPO() {
     this.axService.getVendorByPO(this.poNo).subscribe(res => {
       this.selectedPurchOrder = res;
+      this.selectedPurchOrder.CountNumber = "1";
       console.log(this.selectedPurchOrder.VendorAccount)
       this.vendorList.forEach(el => {
         if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
           this.selectedVendor = el;
           $('.ui.fluid.dropdown').dropdown('set selected', [this.selectedVendor.displayText]);
+          $('.ui.dropdown').addClass("disabled");
           console.log(el)
         }
       })
@@ -191,6 +213,8 @@ export class PurchaseHeaderPage implements OnInit {
   }
   poSelected(po: PurchTableModel) {
     this.selectedPurchOrder = po;
+    this.selectedPurchOrder.CountNumber = "1";
+    console.log(this.selectedPurchOrder)
     if (this.pageType == "Receive") {
       this.getPurchOrdersLine();
     } else {
@@ -208,5 +232,14 @@ export class PurchaseHeaderPage implements OnInit {
         this.presentAlert(poItem);
       }
     }
+  }
+  searchByPoChange() {
+    this.selectedVendor = {} as VendorsModel;
+    if (this.searchByPo) {
+      $('.ui.dropdown').addClass("disabled");
+    } else {
+      $('.ui.dropdown').removeClass("disabled");
+    }
+    //this.selectedVendor.displayText = "";
   }
 }

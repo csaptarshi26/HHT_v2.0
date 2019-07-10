@@ -8,6 +8,7 @@ export class STPLogSyncDetailsModel {
 	DocumentNum: any;
 	DocumentType: any;
 	InvoiceId: any;
+	InvoiceDate:any;
 	ItemId: any;
 	ItemLocation: any;
 	JournalName: any;
@@ -22,7 +23,7 @@ export class STPLogSyncDetailsModel {
 	VariantId: any;
 	FromWMSLocationId: any;
 	ToWMSLocationId: any;
-
+	CountNumber:any;
 	constructor() {
 
 	}

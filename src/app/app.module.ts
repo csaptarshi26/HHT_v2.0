@@ -2,7 +2,7 @@ import { DataService } from './providers/dataService/data.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -29,7 +29,7 @@ import { ModPipe } from './pipes/mod.pipe';
     BrowserModule,
     BrowserAnimationsModule,
     IonicModule.forRoot({hardwareBackButton: false}),
-    IonicStorageModule.forRoot(),    
+    IonicStorageModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
     IonicSelectableModule,
@@ -50,4 +50,4 @@ import { ModPipe } from './pipes/mod.pipe';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

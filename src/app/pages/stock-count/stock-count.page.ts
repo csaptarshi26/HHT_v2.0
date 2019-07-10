@@ -44,21 +44,21 @@ export class StockCountPage implements OnInit {
     public loadingController: LoadingController, public storageServ: StorageService,
     public changeDetectorref: ChangeDetectorRef) {
 
-    // let instance = this;
-    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
-    //   filterActions: ['com.steeples.hht.ACTION'
-    //     // 'com.zebra.ionicdemo.ACTION',
-    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
-    //   ],
-    //   filterCategories: ['android.intent.category.DEFAULT']
-    // },
-    //   function (intent) {
-    //     //  Broadcast received
-    //     instance.barcode = "";
-    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
-    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-    //     changeDetectorref.detectChanges();
-    //   });
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
     // let profileConfig2 = {
     //   "PROFILE_NAME": "ZebraIonicDemo",
     //   "PROFILE_ENABLED": "true",
@@ -111,23 +111,6 @@ export class StockCountPage implements OnInit {
     else {
       this.scannedQty = this.calculateItemListQty();
     }
-
-    // let instance = this;
-    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
-    //   filterActions: ['com.steeples.hht.ACTION'
-    //     // 'com.zebra.ionicdemo.ACTION',
-    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
-    //   ],
-    //   filterCategories: ['android.intent.category.DEFAULT']
-    // },
-    //   function (intent) {
-    //     //  Broadcast received
-    //     instance.barcode = "";
-    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
-    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-    //     this.changeDetectorref.detectChanges();
-    //   });
-
   }
   keyboardHide() {
     this.keyboard.hide();

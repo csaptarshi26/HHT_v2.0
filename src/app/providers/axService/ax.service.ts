@@ -10,13 +10,13 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 })
 export class AxService {
 
-  public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
+  //public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
 
   //MASSKAR URL
   //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
 
   //NAIVAS URL
-  //public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
+  public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
   }
