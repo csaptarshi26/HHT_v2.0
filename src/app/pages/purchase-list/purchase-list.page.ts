@@ -40,9 +40,14 @@ export class PurchaseListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.user = this.paramService.userId;
+    console.log(this.user)
     this.getPoLineData();
   }
 
+  ionViewWillEnter(){
+    this.dataUpdatedToServer = false;
+  }
   getPoLineData() {
     if (this.pageType == "Receive") {
       this.dataServ.getPOReceiveList$.subscribe(res => {
@@ -80,7 +85,7 @@ export class PurchaseListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
+        dataTable.DeviceId = "123456789"// this.paramService.deviceID;
         dataTable.DocumentDate = this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
         dataTable.DocumentNum = this.poHeader.PurchId;
@@ -166,13 +171,24 @@ export class PurchaseListPage implements OnInit {
       if (this.dataUpdatedToServer) {
         this.removeElementFromStorageList();
       } else {
-        this.poItemSotrageList.push(
-          {
-            type: this.pageType,
-            poNo: this.poHeader.PurchId,
-            poHeader: this.poHeader
+        var flag = 0;
+        this.poItemSotrageList.forEach(el => {
+          if (el.poNo == this.poHeader.PurchId) {
+            el.type = this.pageType;
+            el.poNo = this.poHeader.PurchId;
+            el.poHeader = this.poHeader;
+            flag = 1;
           }
-        )
+        });
+        if (flag == 0) {
+          this.poItemSotrageList.push(
+            {
+              type: this.pageType,
+              poNo: this.poHeader.PurchId,
+              poHeader: this.poHeader
+            }
+          )
+        }
         this.storeDataInStorage();
         this.paramService.POItemList = this.poItemSotrageList;
       }

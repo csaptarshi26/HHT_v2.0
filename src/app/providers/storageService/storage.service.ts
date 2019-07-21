@@ -16,6 +16,16 @@ export class StorageService {
   getAllValuesFromStorage = Observable.create((observer) => {
     let variables = 0;
 
+
+    this.storage.get('UserId').then((data) => {
+      this.parameterservice.userId = data;
+      observer.next(data);
+      variables++;
+      if (variables == this.parameterservice.totalStorageVariables) {
+        observer.complete();
+      }
+    });
+
     this.storage.get('authenticated').then((data) => {
       this.parameterservice.authenticated = data;
       observer.next(data);
@@ -143,7 +153,7 @@ export class StorageService {
       }
     });
 
-    
+
     this.storage.get('Role').then((data) => {
       this.parameterservice.userRole = data;
       observer.next(data);
@@ -153,6 +163,11 @@ export class StorageService {
       }
     });
   })
+
+  setUserId(userId: any) {
+    this.storage.set('UserId', userId);
+    this.parameterservice.userId = userId;
+  }
 
   setRole(role: any) {
     this.storage.set('Role', role);

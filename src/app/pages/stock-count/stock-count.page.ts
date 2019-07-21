@@ -28,6 +28,7 @@ export class StockCountPage implements OnInit {
   itemList: ItemModel[] = [];
   scannedQty: any = 0;
   user: any;
+  CountNumber:any;
 
   qtyList: any[] = [];
 
@@ -44,21 +45,23 @@ export class StockCountPage implements OnInit {
     public loadingController: LoadingController, public storageServ: StorageService,
     public changeDetectorref: ChangeDetectorRef) {
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
+
+
     // let profileConfig2 = {
     //   "PROFILE_NAME": "ZebraIonicDemo",
     //   "PROFILE_ENABLED": "true",
@@ -86,7 +89,7 @@ export class StockCountPage implements OnInit {
   }
   ngOnInit() {
     this.getStorageData();
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
     this.currentLoc = this.paramService.Location;
   }
 
@@ -136,7 +139,6 @@ export class StockCountPage implements OnInit {
     }, (error) => {
 
     }, () => {
-      console.log(this.paramService.demoData[this.paramService.demoData.length - 1])
       if (this.paramService.ItemList == null || this.paramService.ItemList.length == 0) {
         this.itemList = [];
       } else {
@@ -202,58 +204,63 @@ export class StockCountPage implements OnInit {
     //   this.setBarcodeFocus();
     //   return null;
     // }
-
-
     if (this.barcode != null && this.barcode.length > 3) {
-      var flag = false;
-      const loading = await this.loadingController.create({
-        message: 'Please Wait',
+      if (!this.CountNumber) {
+        this.presentAlertForCount();
+      } else {
+        this.searchBarcode();
+      }
+    }
+  }
+  async searchBarcode() {
+    var flag = false;
+    const loading = await this.loadingController.create({
+      message: 'Please Wait',
 
-      });
-      await loading.present();
-      this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
-        this.item = res;
-        if (this.item.ItemId == null || this.item.ItemId == "") {
-          flag = true;
-          this.presentToast("This item barcode not in order list");
-          this.setBarcodeFocus();
-        } else {
-          this.count++;
-          this.item.visible = true;
-          if (this.editField) {
-            this.item.quantity = 0;
-            this.item.isEditable = true;
-            setTimeout(() => {
-              this.qtyInput.setFocus();
-              this.barcode = "";
-            }, 100);
-          } else {
-            this.item.quantity = 1;
-            this.scannedQty = this.scannedQty + 1;
-            this.item.isEditable = false;
-            this.item.isSaved = true;
-            this.barcode = "";
-            this.setBarcodeFocus();
-          }
-          loading.dismiss();
-
-          this.itemList.push(this.item);
-          this.itemList.reverse();
-
-
-          // this.itemList.push(this.item);
-          console.log(this.itemList)
-        }
-        loading.dismiss();
-      }, error => {
-        loading.dismiss();
+    });
+    await loading.present();
+    this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
+      this.item = res;
+      if (this.item.ItemId == null || this.item.ItemId == "") {
         flag = true;
-        this.presentToast("Connection Error");
-      });
-      if (flag) {
         this.presentToast("This item barcode not in order list");
         this.setBarcodeFocus();
+      } else {
+        this.count++;
+        this.item.visible = true;
+        if (this.editField) {
+          this.item.quantity = 0;
+          this.item.isEditable = true;
+          setTimeout(() => {
+            this.qtyInput.setFocus();
+            this.barcode = "";
+          }, 100);
+        } else {
+          this.item.quantity = 1;
+          this.scannedQty = this.scannedQty + 1;
+          this.item.isEditable = false;
+          this.item.isSaved = true;
+          this.barcode = "";
+          this.setBarcodeFocus();
+        }
+        loading.dismiss();
+        this.item.CountNumber = this.CountNumber;
+        this.itemList.push(this.item);
+        this.itemList.reverse();
+
+
+        // this.itemList.push(this.item);
+        console.log(this.itemList)
       }
+      loading.dismiss();
+    }, error => {
+      loading.dismiss();
+      flag = true;
+      this.presentToast("Connection Error");
+    });
+    if (flag) {
+      this.presentToast("This item barcode not in order list");
+      this.setBarcodeFocus();
     }
   }
   async presentToast(msg) {
@@ -287,5 +294,20 @@ export class StockCountPage implements OnInit {
   showList() {
     this.dataServ.setItemList(this.itemList);
     this.router.navigateByUrl('/stock-count-list');
+  }
+  async presentAlertForCount() {
+    const alert = await this.alertController.create({
+      header: 'Information',
+      message: `Please Select Count Number `,
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+            this.setBarcodeFocus();
+          }
+        }]
+    });
+
+    await alert.present();
   }
 }

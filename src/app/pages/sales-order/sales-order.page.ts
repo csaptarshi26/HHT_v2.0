@@ -50,6 +50,7 @@ export class SalesOrderPage implements OnInit {
 
   soSelected(sales: SalesTable) {
     this.selectedSalesTable = sales;
+    this.selectedSalesTable.CountNumber = "1";
     var soItem: SalesTable;
     this.getSalesLine();
     if (this.soStorageItemList != null || this.soStorageItemList.length != 0) {

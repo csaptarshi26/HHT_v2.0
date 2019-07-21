@@ -20,7 +20,6 @@ export class HomePage implements OnInit {
 
   }
   ngOnInit() {
-    console.log(this.paramService.userRole)
     this.userRole = this.paramService.userRole;
     this.dataAreadId = this.paramService.dataAreaId;
     this.location = this.paramService.Location;
@@ -49,6 +48,7 @@ export class HomePage implements OnInit {
           text: 'Agree',
           handler: () => {
             this.paramService.wareHouseList = [];
+            this.paramService.userRole = {} as RoleModel;
             this.sotrageService.clearStorageValues();
             this.router.navigateByUrl("/")
           }

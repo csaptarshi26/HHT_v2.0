@@ -34,7 +34,7 @@ export class SalesListPage implements OnInit {
 
   ngOnInit() {
     this.getsalesLineList();
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
     //this.getItemsFromStorage()
   }
   ngOnDestroy() {
@@ -123,10 +123,11 @@ export class SalesListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
+        dataTable.DeviceId =  this.paramService.deviceID;
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
         dataTable.DocumentNum = el.DocumentNo;
         dataTable.ItemId = el.ItemNumber;
+        dataTable.CountNumber = this.soHeader.CountNumber;
         if (this.pageType == "Sales-Order") {
           dataTable.DocumentType = 1;
         } else {

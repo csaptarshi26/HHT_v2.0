@@ -6,7 +6,6 @@ import { BehaviorSubject} from 'rxjs';
 })
 export class DataService {
   
-  public userId:any;
   public ScScannedQty:any;
 
   private purchaseSub = new BehaviorSubject<any>(0);

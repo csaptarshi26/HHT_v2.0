@@ -1,5 +1,6 @@
 import { SalesLineModel } from './STPSalesLine.model';
 export class SalesTable {
+    CountNumber:any;
     CustomerNo: any;
     DocumentDate: any;
     DocumentNo: any;

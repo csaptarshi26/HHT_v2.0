@@ -39,9 +39,10 @@
         {{po.PurchId}}</div>
     </div>
   </div>
-
+  
   <div class="ui fluid icon input inputMargin" *ngIf="searchByPo">
-    <input type="text" [(ngModel)]="poNo"  (keyup.enter)="getVendorByPO()" placeholder="Scan By Po No">
+    <input type="text" [(ngModel)]="poNo" autofocus="true" (keyup.enter)="getVendorByPO()" placeholder="Scan By Po No"
+      autofocus>
     <div class="ui button" (click)="getVendorByPO()">Search</div>
   </div>
 

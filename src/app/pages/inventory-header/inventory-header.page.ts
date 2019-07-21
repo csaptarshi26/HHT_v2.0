@@ -66,7 +66,7 @@ export class InventoryHeaderPage implements OnInit {
 
   ngOnInit() {
     this.getStorageData();
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
     this.currentLoc = this.paramService.Location;
   }
   setBarcodeFocus() {

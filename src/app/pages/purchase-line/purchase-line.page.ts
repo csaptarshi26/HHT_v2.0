@@ -26,7 +26,7 @@ export class PurchaseLinePage implements OnInit {
 
   itemBarcode: any = "";
 
-
+  poItemSotrageList: any = [];
   qtyList: any[] = [];
 
   poLine: PurchLineModel = {} as PurchLineModel;
@@ -44,21 +44,21 @@ export class PurchaseLinePage implements OnInit {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -66,7 +66,7 @@ export class PurchaseLinePage implements OnInit {
   ngOnInit() {
     this.getPoLineData();
     //this.getStorageData();
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
   }
 
   getPoLineData() {
@@ -127,7 +127,6 @@ export class PurchaseLinePage implements OnInit {
             }
           });
 
-          console.log(this.poLine);
           if (!flag) {
             this.barcode = "";
             this.setBarcodeFocus();
@@ -145,7 +144,7 @@ export class PurchaseLinePage implements OnInit {
             if (el.ItemId == res.ItemId) {
               this.count++;
               flag = true;
-              
+
               el.inputQty = 0;
               // el.isVisible = true;
               el.QtyReceivedServer = el.QtyReceived;
@@ -157,7 +156,6 @@ export class PurchaseLinePage implements OnInit {
             }
           });
 
-          console.log(this.poLine);
           if (!flag) {
             this.barcode = "";
             this.setBarcodeFocus();
@@ -199,10 +197,6 @@ export class PurchaseLinePage implements OnInit {
       poLine.isSaved = false;
       poLine.toggle = false;
     }
-
-    console.log(poLine);
-    console.log(this.poLineList)
-    this.storageServ.setPOItemList(this.poLineList);
     var sum = 0;
     this.qtyList.forEach(data => {
       sum += data;
@@ -319,10 +313,62 @@ export class PurchaseLinePage implements OnInit {
           handler: (data: PurchLineModel) => {
             data.isVisible = true;
             this.poLine = data;
-            console.log(data);
             // setTimeout(() => {
             //   this.qtyInput.setFocus();
             // }, 150);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  backBtn() {
+    if (this.count >= 0) {
+      this.presentAlertForstoragebckUp();
+    }
+  }
+
+  async presentAlertForstoragebckUp() {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Do you want to Keep the unprocessed data?`,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.paramService.POItemList != null) {
+              this.poItemSotrageList = this.paramService.POItemList;
+            } else {
+              this.poItemSotrageList = [];
+            }
+            var flag = 0;
+            this.poItemSotrageList.forEach(el => {
+              if (el.poNo == this.poHeader.PurchId) {
+                el.type = this.pageType;
+                el.poNo = this.poHeader.PurchId;
+                el.poHeader = this.poHeader;
+                flag = 1;
+              }
+            });
+            if (flag == 0) {
+              this.poItemSotrageList.push(
+                {
+                  type: this.pageType,
+                  poNo: this.poHeader.PurchId,
+                  poHeader: this.poHeader
+                }
+              )
+            }
+            this.storageServ.setPOItemList(this.poItemSotrageList);
+            this.paramService.POItemList = this.poItemSotrageList;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+
           }
         }
       ]

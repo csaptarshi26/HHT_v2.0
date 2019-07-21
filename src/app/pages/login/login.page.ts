@@ -18,8 +18,8 @@ import { RoleModel } from 'src/app/models/STPRole.model';
 })
 export class LoginPage implements OnInit {
 
-  userId: string = "Admin";
-  password: string = "admin";
+  userId: string = "";
+  password: string = "";
   selectedInventory: InventLocationModel;
   selectedWarehouse: InventLocationLineModel;
 
@@ -47,6 +47,13 @@ export class LoginPage implements OnInit {
     this.menuCtrl.enable(false);
   }
 
+  ionViewWillEnter() {
+    this.roleList =  {} as RoleModel ;
+    this.userId = "";
+    this.password = "";
+    this.selectedInventory = {} as InventLocationModel;
+    this.selectedWarehouse = {} as InventLocationLineModel
+  }
   getCurrentDate() {
     this.axService.getCurrentDate().subscribe(res => {
       this.currentDate = new Date(res.toString());
@@ -81,7 +88,8 @@ export class LoginPage implements OnInit {
     } else if (this.password == "") {
       this.presentToast("Password is required");
       return false;
-    } else if (this.selectedInventory == null) {
+    } else if (Object.entries(this.selectedWarehouse).length === 0 &&
+      this.selectedWarehouse.constructor === Object) {
       this.presentToast("Please select warehouse");
       return false;
     } else {
@@ -101,13 +109,12 @@ export class LoginPage implements OnInit {
           this.presentToast("Invalid credentials");
           return;
         } else {
-          this.defineRole(role);
-          this.storageService.setRole(this.roleList);
+          this.storageService.setUserId(this.userId);
           this.storageService.setAuthenticated(true);
           this.storageService.setDataAreaId(this.selectedInventory.DataAreaId);
           this.storageService.setLocation(this.selectedWarehouse);
           this.storageService.setWarehouseForLegalEntity(this.warehouseList);
-          this.router.navigateByUrl('/home');
+          this.defineRole(role);
         }
 
       }, error => {
@@ -126,8 +133,11 @@ export class LoginPage implements OnInit {
       if (el == "StockCount") this.roleList.StockCount = true;
       if (el == "Transfer") this.roleList.Transfer = true;
     })
+    this.storageService.setRole(this.roleList);
+    this.navigatingToHome();
   }
   legalEntitySelected() {
+    this.selectedWarehouse = {} as InventLocationLineModel;
     this.warehouseList = this.selectedInventory.InventLocations;
     this.paramService.wareHouseList = this.warehouseList;
   }
@@ -158,6 +168,7 @@ export class LoginPage implements OnInit {
       } else {
         this.events.publish('loggedOut');
       }
+      console.log("Device Id" + this.paramService.deviceID)
       if (this.paramService.deviceID == null) {
         this.uniqueDeviceID.get().then((uuid: any) => {
           this.paramService.deviceID = uuid;
@@ -171,8 +182,8 @@ export class LoginPage implements OnInit {
   }
 
   navigatingToHome() {
-    this.dataService.userId = this.userId;
     this.router.navigateByUrl('/home');
+
   }
   async presentToast(msg: any) {
     const toast = await this.toastController.create({

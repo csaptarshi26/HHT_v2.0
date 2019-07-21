@@ -77,7 +77,7 @@ export class TransferLinePage implements OnInit {
   }
 
   ngOnInit() {
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
     this.getToLineData();
   }
 
@@ -192,7 +192,7 @@ export class TransferLinePage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
+        dataTable.DeviceId = this.paramService.deviceID;
         dataTable.DocumentDate = this.toHeader.ReceiveDate;
         dataTable.ItemId = el.ItemNo;
         dataTable.DocumentNum = this.toHeader.JournalId;

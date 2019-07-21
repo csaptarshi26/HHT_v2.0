@@ -74,7 +74,7 @@ export class SalesLinePage implements OnInit {
   }
   ngOnInit() {
 
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
     this.getSoLineData();
   }
 

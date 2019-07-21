@@ -29,7 +29,7 @@ export class InventoryLinePage implements OnInit {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
   ngOnInit() {
-    this.user = this.dataServ.userId
+    this.user = this.paramService.userId
     //this.getItemsFromStorage()
     this.getItemList();
   }
@@ -59,7 +59,7 @@ export class InventoryLinePage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList && el.quantity > 0) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
+        dataTable.DeviceId =  this.paramService.deviceID;
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
         if (this.pageType == "Positive-adj") {

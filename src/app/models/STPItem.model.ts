@@ -4,7 +4,7 @@ export class ItemModel {
     ItemId: any;
     Unit: any;
     UnitFactor: any;
-
+    CountNumber:any;
     quantity: any;
 
     visible: boolean;

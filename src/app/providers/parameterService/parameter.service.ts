@@ -26,6 +26,7 @@ export class ParameterService {
   public customerList: CustomerModel[];
 
   public deviceID: any;
+  public userId:any;
 
   public inventoryPOSItemList: any[] = [];
   public inventoryNEGItemList: any[] = [];
@@ -40,7 +41,7 @@ export class ParameterService {
 
   public demoData: any[] = [];
 
-  public totalStorageVariables: Number = 15;
+  public totalStorageVariables: Number = 16;
 
 
   constructor() { }

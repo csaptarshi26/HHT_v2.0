@@ -38,7 +38,7 @@ export class StockCountListPage implements OnInit {
   }
 
   ngOnInit() {
-    this.user = this.dataServ.userId
+   console.log(this.paramService.userId); this.user = this.paramService.userId
     //this.getItemsFromStorage()
     this.getItemList();
   }
@@ -105,13 +105,14 @@ export class StockCountListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "52545f17-74ca-e75e-3518-990821491968";
+        dataTable.DeviceId =  this.paramService.deviceID;
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
         dataTable.DocumentType = 7;
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = lineNum;
+        dataTable.CountNumber = el.CountNumber;
 
         if (el.quantity == 0 || el.quantity < 0 || el.quantity == "") {
           this.presentAlert("Qty can't be blank");
@@ -133,6 +134,7 @@ export class StockCountListPage implements OnInit {
         message: 'Please Wait'
       });
       await loading.present();
+      console.log(this.updateDataTableList);
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
           this.presentToast("Line Updated successfully");
