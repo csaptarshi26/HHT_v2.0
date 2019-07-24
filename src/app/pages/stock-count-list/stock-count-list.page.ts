@@ -1,6 +1,6 @@
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { AxService } from './../../providers/axService/ax.service';
-import { AlertController, ToastController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, ToastController, LoadingController, ModalController, Events } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,7 +32,7 @@ export class StockCountListPage implements OnInit {
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
-    public router: Router, public alertController: AlertController,
+    public router: Router, public alertController: AlertController, public events: Events,
     public modalController: ModalController) {
 
   }
@@ -143,6 +143,7 @@ export class StockCountListPage implements OnInit {
           this.valueUpdated = true;
           this.storageService.clearItemList();
           console.log(this.itemList)
+          this.router.navigateByUrl('/home');
 
         } else {
           this.presentToast("Error Updating Line");
@@ -171,8 +172,9 @@ export class StockCountListPage implements OnInit {
       this.paramService.itemUpdated = true;
     } else {
       this.paramService.itemUpdated = false;
-      this.storageService.setItemList(this.itemList);
+     //this.storageService.setItemList(this.itemList);
     }
+    
   }
 
   deleteLine(item: ItemModel, i) {
@@ -189,6 +191,8 @@ export class StockCountListPage implements OnInit {
           handler: () => {
             this.itemList.splice(i, 1);
             this.itemList = [...this.itemList];
+            this.paramService.itemChanged = true;
+            //this.storageService.setItemList(this.itemList);
           }
         },
         {
@@ -219,4 +223,5 @@ export class StockCountListPage implements OnInit {
       $('.ui.modal').modal('hide');
     }
   }
+  
 }

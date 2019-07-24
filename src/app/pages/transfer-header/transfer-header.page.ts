@@ -124,6 +124,7 @@ export class TransferHeaderPage implements OnInit {
 
   toNoSelected() {
     var toItem: TransferOrderModel;
+    this.selectedTrans.CountNumber = "1";
     this.getTransferOrderLine();
     if (this.toSotrageItemList != null || this.toSotrageItemList.length != 0) {
       this.toSotrageItemList.forEach(el => {

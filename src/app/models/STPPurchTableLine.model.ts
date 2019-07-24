@@ -10,6 +10,7 @@ export class PurchLineModel {
     UnitAmt: any;
     NetAmt: any;
     qtyDesc: any;
+    CountNumber:any;
 
     QtyReceivedServer: any;
     inputQty: any;

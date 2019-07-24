@@ -7,4 +7,5 @@ export class TransferOrderModel {
     TransferFrom: any;
     TransferTo: any;
     scannedQty:any;
+    CountNumber:any;
 }

@@ -115,7 +115,7 @@ export class PurchaseHeaderPage implements OnInit {
   getPurchOrdersLine() {
     this.axService.getPurchOrdersLine(this.selectedPurchOrder.PurchId).subscribe(res => {
       this.selectedPurchOrder.PurchLines = res;
-
+      console.log(res);
     }, error => {
 
     })

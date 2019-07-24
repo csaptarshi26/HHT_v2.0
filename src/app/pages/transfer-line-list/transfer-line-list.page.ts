@@ -91,6 +91,7 @@ export class TransferLineListPage implements OnInit {
         dataTable.DocumentDate = this.toHeader.ReceiveDate;
         dataTable.ItemId = el.ItemNo;
         dataTable.DocumentNum = this.toHeader.JournalId;
+        dataTable.CountNumber = this.toHeader.CountNumber;
         if (this.pageType == "Transfer-out") {
           dataTable.DocumentType = 4;
         } else {

@@ -8,9 +8,10 @@ import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Component, OnInit, Input, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
+import { ToastController, IonInput, AlertController, LoadingController, Events } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { ItemModel } from 'src/app/models/STPItem.model';
+import { Network } from '@ionic-native/network/ngx';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 declare var $: any;
 @Component({
@@ -28,23 +29,47 @@ export class StockCountPage implements OnInit {
   itemList: ItemModel[] = [];
   scannedQty: any = 0;
   user: any;
-  CountNumber:any;
+  CountNumber: any;
 
   qtyList: any[] = [];
 
   editField: boolean = false;
-  count: any = -1;
+  count: any;
+  exitingPage: boolean;
 
   @ViewChild("input") barcodeInput: IonInput;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
 
-  constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
+  constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService,
+    public alertController: AlertController, public events: Events,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private router: Router,
     public loadingController: LoadingController, public storageServ: StorageService,
-    public changeDetectorref: ChangeDetectorRef) {
+    public changeDetectorref: ChangeDetectorRef,private network: Network) {
 
+
+      let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+        console.log('network was disconnected :-(');
+        this.storageServ.setItemList(this.itemList);
+      });
+      
+      // stop disconnect watch
+      disconnectSubscription.unsubscribe();
+      
+      
+      // watch network for a connection
+      let connectSubscription = this.network.onConnect().subscribe(() => {
+        console.log('network connected!');
+        setTimeout(() => {
+          if (this.network.type === 'wifi') {
+            console.log('we got a wifi connection, woohoo!');
+          }
+        }, 3000);
+      });
+      
+      // stop connect watch
+      connectSubscription.unsubscribe();
     // let instance = this;
     // (<any>window).plugins.intentShim.registerBroadcastReceiver({
     //   filterActions: ['com.steeples.hht.ACTION'
@@ -88,9 +113,11 @@ export class StockCountPage implements OnInit {
     // );
   }
   ngOnInit() {
+    this.count = -1;
     this.getStorageData();
     this.user = this.paramService.userId
     this.currentLoc = this.paramService.Location;
+
   }
 
   setBarcodeFocus() {
@@ -105,7 +132,6 @@ export class StockCountPage implements OnInit {
 
   ionViewWillEnter() {
     this.setBarcodeFocus();
-    console.log(this.paramService.itemUpdated)
     if (this.paramService.itemUpdated) {
       this.item = {} as ItemModel;
       this.itemList = [];
@@ -151,6 +177,7 @@ export class StockCountPage implements OnInit {
   calculateItemListQty() {
     var sum = 0;
     this.qtyList = [];
+    console.log(this.itemList)
     this.itemList.forEach(el => {
       this.qtyList.push(el.quantity);
       sum = sum + el.quantity;
@@ -169,7 +196,7 @@ export class StockCountPage implements OnInit {
     return sum;
   }
   async barcodeScan() {
-    this.storageServ.setItemList(this.itemList);
+    // this.storageServ.setItemList(this.itemList);
 
     // if (this.barcode && this.barcode != " ") {
     //   var barcodeList = this.paramService.demoData;
@@ -229,7 +256,7 @@ export class StockCountPage implements OnInit {
         this.count++;
         this.item.visible = true;
         if (this.editField) {
-          this.item.quantity = 0;
+          this.item.quantity = "";
           this.item.isEditable = true;
           setTimeout(() => {
             this.qtyInput.setFocus();
@@ -285,10 +312,14 @@ export class StockCountPage implements OnInit {
         item.isSaved = true;
       }
     }
-    this.qtyList[this.count] = this.item.quantity;
+    if (this.item.quantity == "") {
+      this.qtyList[this.itemList.length - 1] = 0;
+    } else {
+      this.qtyList[this.itemList.length - 1] = this.item.quantity;
+    }
     console.log(this.count + "   " + this.qtyList)
     this.scannedQty = this.calculateSum();
-    this.storageServ.setItemList(this.itemList);
+    //this.storageServ.setItemList(this.itemList);
   }
 
   showList() {
@@ -306,6 +337,37 @@ export class StockCountPage implements OnInit {
             this.setBarcodeFocus();
           }
         }]
+    });
+
+    await alert.present();
+  }
+  backBtn() {
+
+    if ((this.count >= 0 && !this.paramService.itemUpdated) || this.paramService.itemChanged) {
+      this.presentAlertForExit();
+    }
+  }
+
+  async presentAlertForExit() {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Do you want to Keep the unprocessed data?`,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            console.log(this.itemList);
+            this.storageServ.setItemList(this.itemList);
+          }
+        },
+        {
+          text: 'no',
+          handler: () => {
+
+          }
+        }
+
+      ]
     });
 
     await alert.present();

@@ -8,6 +8,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { StockCountPage } from './stock-count.page';
+import { Network } from '@ionic-native/network/ngx';
 
 const routes: Routes = [
   {

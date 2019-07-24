@@ -1,3 +1,4 @@
+import { Network } from '@ionic-native/network/ngx';
 import { DataService } from './providers/dataService/data.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -28,7 +29,9 @@ import { ModPipe } from './pipes/mod.pipe';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    IonicModule.forRoot({hardwareBackButton: false}),
+    IonicModule.forRoot({
+      hardwareBackButton: false
+    }),
     IonicStorageModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
@@ -45,7 +48,7 @@ import { ModPipe } from './pipes/mod.pipe';
     ParameterService,
     StorageService,
     DataService,
-    HTTP,
+    HTTP,Network,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

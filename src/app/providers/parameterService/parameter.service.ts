@@ -36,6 +36,7 @@ export class ParameterService {
 
   public soLineUpdated: boolean;
   public itemUpdated: boolean = false;
+  public itemChanged: boolean = false;
   public poItemUpdated: boolean = false;
   public userRole:RoleModel;
 

@@ -10,15 +10,15 @@
 
 <ion-content padding>
   <div class="ui fluid search selection dropdown">
-      <input type="hidden" name="country">
-      <i class="dropdown icon"></i>
-      <div class="default text">From</div>
-      <div class="menu" id="idDropDown">
-        <div class="item" data-value="warehouse.LocationId" (click)="fromListSelected(warehouse)"
+    <input type="hidden" name="country">
+    <i class="dropdown icon"></i>
+    <div class="default text">From</div>
+    <div class="menu" id="idDropDown">
+      <div class="item" data-value="warehouse.LocationId" (click)="fromListSelected(warehouse)"
         *ngFor="let warehouse of warehouseList">
-          {{warehouse.Name}}</div>
-      </div>
+        {{warehouse.Name}}</div>
     </div>
+  </div>
   <div *ngIf="pageType =='Transfer-in'">
     <ion-item lines="none" class="ionItemInput">
       <ion-label position="stacked">From</ion-label>
@@ -72,6 +72,14 @@
     <ion-item lines="none" class="ionItemInput">
       <ion-label>Shipment Date</ion-label>
       <ion-label> {{selectedTrans.ReceiveDate | date: 'mediumDate'}} </ion-label>
+    </ion-item>
+
+    <ion-item lines="none">
+      <ion-label>Count Number</ion-label>
+      <ion-select interface="action-sheet" [(ngModel)]="selectedTrans.CountNumber">
+        <ion-select-option value="1">First</ion-select-option>
+        <ion-select-option value="2">Second</ion-select-option>
+      </ion-select>
     </ion-item>
   </div>
 </ion-content>

@@ -44,21 +44,21 @@ export class PurchaseLinePage implements OnInit {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
-    // let instance = this;
-    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
-    //   filterActions: ['com.steeples.hht.ACTION'
-    //     // 'com.zebra.ionicdemo.ACTION',
-    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
-    //   ],
-    //   filterCategories: ['android.intent.category.DEFAULT']
-    // },
-    //   function (intent) {
-    //     //  Broadcast received
-    //     instance.barcode = "";
-    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
-    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-    //     changeDetectorref.detectChanges();
-    //   });
+    let instance = this;
+    (<any>window).plugins.intentShim.registerBroadcastReceiver({
+      filterActions: ['com.steeples.hht.ACTION'
+        // 'com.zebra.ionicdemo.ACTION',
+        // 'com.symbol.datawedge.api.RESULT_ACTION'
+      ],
+      filterCategories: ['android.intent.category.DEFAULT']
+    },
+      function (intent) {
+        //  Broadcast received
+        instance.barcode = "";
+        console.log('Received Intent: ' + JSON.stringify(intent.extras));
+        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+        changeDetectorref.detectChanges();
+      });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -218,6 +218,10 @@ export class PurchaseLinePage implements OnInit {
   }
   qtyRecCheck(poLine: PurchLineModel) {
     poLine.isSaved = false;
+    if(poLine.inputQty < 0 ){
+      this.presentToast("Qty Cann't be Negative");
+      return false;
+    }
     if (this.pageType == "Receive") {
       if ((poLine.QtyReceived + poLine.inputQty) > poLine.Qty) {
         this.presentToast("Rec item cannot be greater than Qty");
@@ -368,7 +372,6 @@ export class PurchaseLinePage implements OnInit {
         {
           text: 'No',
           handler: () => {
-
           }
         }
       ]
