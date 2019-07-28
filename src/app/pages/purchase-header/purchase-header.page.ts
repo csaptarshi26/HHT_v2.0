@@ -54,8 +54,6 @@ export class PurchaseHeaderPage implements OnInit {
       this.getPurchaseOrderReturn();
     }
   }
-
-
   getItemsFromStorage() {
     this.storageService.getAllValuesFromStorage.subscribe((res) => {
 
@@ -115,7 +113,6 @@ export class PurchaseHeaderPage implements OnInit {
   getPurchOrdersLine() {
     this.axService.getPurchOrdersLine(this.selectedPurchOrder.PurchId).subscribe(res => {
       this.selectedPurchOrder.PurchLines = res;
-      console.log(res);
     }, error => {
 
     })
@@ -207,13 +204,16 @@ export class PurchaseHeaderPage implements OnInit {
         })
 
         var poItem: PurchTableModel;
+        var flag = false;
         if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
           this.poSotrageItemList.forEach(el => {
             if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
               this.itemExistsInStorage = true;
               poItem = el.poHeader;
+              flag = true;
             }
           })
+          this.itemExistsInStorage = flag;
           if (this.itemExistsInStorage) {
             this.presentAlert(poItem);
           }
@@ -234,13 +234,16 @@ export class PurchaseHeaderPage implements OnInit {
       this.getPurchReturnOrdersLine();
     }
     var poItem: PurchTableModel;
+    var flag = false;
     if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
       this.poSotrageItemList.forEach(el => {
         if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
           this.itemExistsInStorage = true;
           poItem = el.poHeader;
+          flag = true;
         }
       })
+      this.itemExistsInStorage = flag;
       if (this.itemExistsInStorage) {
         this.presentAlert(poItem);
       }

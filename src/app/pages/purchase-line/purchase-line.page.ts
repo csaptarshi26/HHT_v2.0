@@ -7,7 +7,7 @@ import { PurchTableModel } from './../../models/STPPurchTable.model';
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
-import { ToastController, LoadingController, AlertController, IonInput } from '@ionic/angular';
+import { ToastController, LoadingController, AlertController, IonInput, IonSearchbar } from '@ionic/angular';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 
 declare var $: any;
@@ -33,7 +33,7 @@ export class PurchaseLinePage implements OnInit {
   count: any = -1;
 
 
-  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
 
   constructor(public dataServ: DataService, public alertController: AlertController, private activateRoute: ActivatedRoute,
@@ -44,21 +44,21 @@ export class PurchaseLinePage implements OnInit {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -89,10 +89,10 @@ export class PurchaseLinePage implements OnInit {
     this.barcode = "";
     setTimeout(() => {
       this.barcodeInput.setFocus();
-    }, 150);
+    }, 100);
     setTimeout(() => {
-      this.keyboard.hide();
-    }, 150);
+      this.keyboard.show();
+    }, 100);
   }
 
   setBarcodeFocus() {
@@ -103,8 +103,10 @@ export class PurchaseLinePage implements OnInit {
       this.keyboard.hide();
     }, 150);
   }
-
-  searchBarcode() {
+  onPressEnter() {
+    this.searchBarcode(true);
+  }
+  searchBarcode(keyboardPressed = false) {
     if (this.barcode != null && this.barcode.length > 1) {
 
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
@@ -114,27 +116,36 @@ export class PurchaseLinePage implements OnInit {
           this.poLineList.forEach(el => {
             counter++;
             if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
+              
               this.count++
-              el.inputQty = 0;
-              el.isVisible = true;
+              el.inputQty = "";
               el.toggle = false;
-              el.QtyReceivedServer = el.QtyReceived;
+              if(el.QtyReceived){
+                el.QtyReceivedServer = el.QtyReceived;
+              }
               flag = true;
               el.qtyDesc = res.Description;
               el.BarCode = res.BarCode;
-              this.poLine = el;
+              this.poLine = this.chechCountNumber(el);
+              this.barcode = "";
+              setTimeout(() => {
+                this.qtyInput.setFocus();
+              }, 100);
               return;
             }
           });
 
-          if (!flag) {
-            this.barcode = "";
-            this.setBarcodeFocus();
-            this.presentToast("This item barcode not in order list");
-          } else {
+          if (flag) {
             setTimeout(() => {
+              this.barcode = "";
               this.qtyInput.setFocus();
             }, 150);
+          } else {
+            if (keyboardPressed) {
+              this.barcode = "";
+              this.setBarcodeFocus();
+              this.presentToast("This item barcode not in order list");
+            }
           }
         } else {
           var multiple = 0;
@@ -145,21 +156,25 @@ export class PurchaseLinePage implements OnInit {
               this.count++;
               flag = true;
 
-              el.inputQty = 0;
+              el.inputQty = "";
               // el.isVisible = true;
-              el.QtyReceivedServer = el.QtyReceived;
+              if(el.QtyReceived){
+                el.QtyReceivedServer = el.QtyReceived;
+              }
 
               el.qtyDesc = res.Description;
               el.BarCode = res.BarCode;
-              multiPoLineList.push(el);
+              multiPoLineList.push(this.chechCountNumber(el));
               // this.poLine = el;
             }
           });
 
           if (!flag) {
-            this.barcode = "";
-            this.setBarcodeFocus();
-            this.presentToast("This item barcode not in order list");
+            if (keyboardPressed) {
+              this.barcode = "";
+              this.setBarcodeFocus();
+              this.presentToast("This item barcode not in order list");
+            }
           } else {
             if (multiPoLineList.length == 1) {
               this.poLine = multiPoLineList.pop();
@@ -177,6 +192,23 @@ export class PurchaseLinePage implements OnInit {
         this.presentToast("Connection Error");
       })
     }
+  }
+
+  chechCountNumber(poLine: PurchLineModel) {
+    if (this.poHeader.CountNumber == "1") {
+      if (poLine.CountNumber == 1){
+        poLine.isVisible = true;
+        poLine.QtyToReceive = poLine.Qty - poLine.QtyReceivedServer;
+        poLine.QtyReceived = poLine.QtyReceivedServer;
+      }
+    } else if (this.poHeader.CountNumber == "2") {
+      if (poLine.CountNumber == 1){
+        poLine.isVisible = true;
+        poLine.QtyToReceive = poLine.Qty;
+        poLine.QtyReceived = 0;
+      }
+    }
+    return poLine;
   }
   async presentToast(msg) {
     const toast = await this.toastController.create({
@@ -202,7 +234,7 @@ export class PurchaseLinePage implements OnInit {
       sum += data;
     })
     this.scannedQty = sum;
-    this.clearBarcode();
+    this.setBarcodeFocus();
   }
   calculateSum() {
     var sum = 0;
@@ -214,12 +246,16 @@ export class PurchaseLinePage implements OnInit {
   }
 
   clearQtyToRec(poLine: PurchLineModel) {
-    poLine.inputQty = 0;
+    poLine.inputQty = "";
   }
   qtyRecCheck(poLine: PurchLineModel) {
     poLine.isSaved = false;
-    if(poLine.inputQty < 0 ){
+    if (poLine.inputQty < 0) {
       this.presentToast("Qty Cann't be Negative");
+      return false;
+    }
+    if (poLine.inputQty == "") {
+      this.presentToast("Qty Cann't be Blank");
       return false;
     }
     if (this.pageType == "Receive") {
@@ -232,7 +268,7 @@ export class PurchaseLinePage implements OnInit {
         poLine.QtyReceived += poLine.inputQty;
         poLine.updatableQty += poLine.inputQty;
         this.qtyList[this.count] = poLine.updatableQty;
-        poLine.inputQty = 0;
+        poLine.inputQty = "";
         return true;
       }
     } else {
@@ -245,7 +281,7 @@ export class PurchaseLinePage implements OnInit {
         poLine.QtyReceived += -poLine.inputQty;
         poLine.updatableQty += poLine.inputQty;
         this.qtyList[this.count] = poLine.updatableQty;
-        poLine.inputQty = 0;
+        poLine.inputQty = "";
         return true;
       }
     }

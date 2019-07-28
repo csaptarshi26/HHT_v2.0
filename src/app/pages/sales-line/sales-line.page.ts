@@ -43,21 +43,21 @@ export class SalesLinePage implements OnInit {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
   }
 
   ionViewWillEnter() {

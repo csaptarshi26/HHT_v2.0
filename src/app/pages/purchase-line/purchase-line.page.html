@@ -11,11 +11,16 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <ion-item lines="none" class="ionItemInput">
+      <ion-searchbar [(ngModel)]="barcode" 
+      (ionChange)="searchBarcode()"
+       #input id="barcodeInput" (click)="clearBarcode()"
+        (search)="onPressEnter()"></ion-searchbar>
+
+      <!-- <ion-item lines="none" class="ionItemInput">
         <ion-input type="text" hideKeyboard #input id="barcodeInput"  placeholder="Scan" 
           [(ngModel)]="barcode" (ionChange)="searchBarcode()" (click)="clearBarcode()" >
         </ion-input>
-      </ion-item>
+      </ion-item> -->
       Total Scan Qty: {{scannedQty}}
     </ion-card-content>
   </ion-card>
@@ -44,8 +49,7 @@
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left class="ion-text-wrap">Qty To Receive</ion-label>
           <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
-           [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)"
-            (click)="clearQtyToRec(poLine)" [min]="0">
+            [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
           </ion-input>
         </ion-item>
 
@@ -71,9 +75,8 @@
       <div *ngIf="pageType == 'Return'">
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left class="ion-text-wrap">Qty To Return</ion-label>
-          <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty"  #Recinput id="Recinput"
-           [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)"
-            (click)="clearQtyToRec(poLine)" [min]="0">
+          <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
+            [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
           </ion-input>
         </ion-item>
 

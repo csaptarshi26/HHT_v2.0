@@ -1,3 +1,4 @@
+import { AxService } from 'src/app/providers/axService/ax.service';
 import { Router } from '@angular/router';
 import { MenuController, AlertController } from '@ionic/angular';
 import { Component, OnInit, ViewChild } from '@angular/core';
@@ -16,7 +17,8 @@ export class HomePage implements OnInit {
 
   userRole: RoleModel = {} as RoleModel;
   constructor(public router: Router, public menuCtrl: MenuController, public paramService: ParameterService,
-    public alertCtrl: AlertController, public sotrageService: StorageService) {
+    public alertCtrl: AlertController, public sotrageService: StorageService,
+    public axservice: AxService) {
 
   }
   ngOnInit() {
@@ -25,6 +27,17 @@ export class HomePage implements OnInit {
     this.location = this.paramService.Location;
     //this.getDemoData();
     this.menuCtrl.enable(true);
+
+    // this.axservice.getToken().subscribe(res => {
+    //   console.log('Token ' + res);
+     
+    // })
+
+    // this.axservice.testApi("").subscribe(res => {
+    //   console.log(res);
+    // },error=>{
+    //   console.log(error)
+    // })
   }
   ionViewDidEnter() {
     document.addEventListener("backbutton", function (e) {

@@ -8,7 +8,7 @@ import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Component, OnInit, Input, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { ToastController, IonInput, AlertController, LoadingController, Events } from '@ionic/angular';
+import { ToastController, IonInput, AlertController, LoadingController, Events, IonSearchbar } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { ItemModel } from 'src/app/models/STPItem.model';
 import { Network } from '@ionic-native/network/ngx';
@@ -37,7 +37,7 @@ export class StockCountPage implements OnInit {
   count: any;
   exitingPage: boolean;
 
-  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
 
@@ -46,30 +46,28 @@ export class StockCountPage implements OnInit {
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private router: Router,
     public loadingController: LoadingController, public storageServ: StorageService,
-    public changeDetectorref: ChangeDetectorRef,private network: Network) {
+    public changeDetectorref: ChangeDetectorRef, private network: Network) {
 
 
-      let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
-        console.log('network was disconnected :-(');
-        this.storageServ.setItemList(this.itemList);
-      });
-      
-      // stop disconnect watch
-      disconnectSubscription.unsubscribe();
-      
-      
-      // watch network for a connection
-      let connectSubscription = this.network.onConnect().subscribe(() => {
-        console.log('network connected!');
-        setTimeout(() => {
-          if (this.network.type === 'wifi') {
-            console.log('we got a wifi connection, woohoo!');
-          }
-        }, 3000);
-      });
-      
-      // stop connect watch
-      connectSubscription.unsubscribe();
+    let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+      console.log('network was disconnected :-(');
+      this.storageServ.setItemList(this.itemList);
+    });
+
+    // stop disconnect watch
+    disconnectSubscription.unsubscribe();
+
+    let connectSubscription = this.network.onConnect().subscribe(() => {
+      console.log('network connected!');
+      setTimeout(() => {
+        if (this.network.type === 'wifi') {
+          console.log('we got a wifi connection, woohoo!');
+        }
+      }, 3000);
+    });
+
+    // stop connect watch
+    connectSubscription.unsubscribe();
     // let instance = this;
     // (<any>window).plugins.intentShim.registerBroadcastReceiver({
     //   filterActions: ['com.steeples.hht.ACTION'
@@ -146,7 +144,12 @@ export class StockCountPage implements OnInit {
   }
   clearBarcode() {
     this.barcode = "";
-    this.setBarcodeFocus();
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 100);
+    setTimeout(() => {
+      this.keyboard.show();
+    }, 100);
   }
 
 
@@ -195,6 +198,9 @@ export class StockCountPage implements OnInit {
 
     return sum;
   }
+  onPressEnter() {
+    this.searchBarcode(true);
+  }
   async barcodeScan() {
     // this.storageServ.setItemList(this.itemList);
 
@@ -239,20 +245,20 @@ export class StockCountPage implements OnInit {
       }
     }
   }
-  async searchBarcode() {
-    var flag = false;
-    const loading = await this.loadingController.create({
-      message: 'Please Wait',
-
-    });
-    await loading.present();
+  async searchBarcode(flag = false) {
     this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
       this.item = res;
+      console.log(res)
       if (this.item.ItemId == null || this.item.ItemId == "") {
-        flag = true;
-        this.presentToast("This item barcode not in order list");
-        this.setBarcodeFocus();
+        // flag = true;
+        // this.presentToast("This item barcode not in order list");
+        // this.setBarcodeFocus();
+        if (flag) {
+          this.presentToast("Item not found");
+          this.setBarcodeFocus();
+        }
       } else {
+        this.barcode = "";
         this.count++;
         this.item.visible = true;
         if (this.editField) {
@@ -270,25 +276,16 @@ export class StockCountPage implements OnInit {
           this.barcode = "";
           this.setBarcodeFocus();
         }
-        loading.dismiss();
         this.item.CountNumber = this.CountNumber;
         this.itemList.push(this.item);
         this.itemList.reverse();
-
-
         // this.itemList.push(this.item);
         console.log(this.itemList)
       }
-      loading.dismiss();
     }, error => {
-      loading.dismiss();
-      flag = true;
       this.presentToast("Connection Error");
-    });
-    if (flag) {
-      this.presentToast("This item barcode not in order list");
       this.setBarcodeFocus();
-    }
+    });
   }
   async presentToast(msg) {
     const toast = await this.toastController.create({
