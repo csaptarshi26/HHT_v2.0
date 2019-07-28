@@ -55,10 +55,17 @@ export class DataService {
   private POReturnListSub = new BehaviorSubject<any>(0);
   getPOReturnList$ = this.POReturnListSub.asObservable();
 
+  private stockCountNumber = new BehaviorSubject<any>(0);
+  getStockCountNumber$ = this.stockCountNumber.asObservable();
+
   constructor() { }
 
   setPO(data) {
     this.purchaseSub.next(data);
+  }
+
+  setStockCountNumber(data) {
+    this.stockCountNumber.next(data);
   }
 
   

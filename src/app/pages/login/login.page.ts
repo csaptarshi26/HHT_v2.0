@@ -168,7 +168,7 @@ export class LoginPage implements OnInit {
       } else {
         this.events.publish('loggedOut');
       }
-      console.log("Device Id" + this.paramService.deviceID)
+      console.log("Device Id " + this.paramService.deviceID)
       if (this.paramService.deviceID == null) {
         this.uniqueDeviceID.get().then((uuid: any) => {
           this.paramService.deviceID = uuid;

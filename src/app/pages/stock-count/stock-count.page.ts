@@ -180,7 +180,6 @@ export class StockCountPage implements OnInit {
   calculateItemListQty() {
     var sum = 0;
     this.qtyList = [];
-    console.log(this.itemList)
     this.itemList.forEach(el => {
       this.qtyList.push(el.quantity);
       sum = sum + el.quantity;
@@ -320,8 +319,14 @@ export class StockCountPage implements OnInit {
   }
 
   showList() {
-    this.dataServ.setItemList(this.itemList);
-    this.router.navigateByUrl('/stock-count-list');
+    if (!this.CountNumber) {
+      this.presentAlertForCount();
+    } else {
+      this.dataServ.setItemList(this.itemList);
+      this.dataServ.setStockCountNumber(this.CountNumber);
+      this.router.navigateByUrl('/stock-count-list');
+    }
+
   }
   async presentAlertForCount() {
     const alert = await this.alertController.create({

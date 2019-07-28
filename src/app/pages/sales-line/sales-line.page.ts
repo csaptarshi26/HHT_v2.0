@@ -39,7 +39,7 @@ export class SalesLinePage implements OnInit {
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute, private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController,
-    public loadingController: LoadingController,  public changeDetectorref: ChangeDetectorRef) {
+    public loadingController: LoadingController, public changeDetectorref: ChangeDetectorRef) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
@@ -114,21 +114,24 @@ export class SalesLinePage implements OnInit {
         this.soLineList.forEach(el => {
           counter++;
           if (el.ItemNumber == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
-            el.isVisible = true;
             this.count++
             el.inputQty = 0;
             el.DocumentNo = this.soHeader.DocumentNo;
             flag = true;
             if (this.pageType == "Sales-Order") {
-              el.QtyReceivedServer = el.QtyShipped;
+              if (el.QtyShipped) {
+                el.QtyReceivedServer = el.QtyShipped;
+              }
             } else {
-              el.QtyReceivedServer = el.QtyReceived;
+              if (el.QtyReceived) {
+                el.QtyReceivedServer = el.QtyReceived;
+              }
             }
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
 
             visibleLine.push(counter);
-            this.salesDetails = el;
+            this.salesDetails = this.chechCountNumber(el);
 
           }
         });
@@ -147,6 +150,23 @@ export class SalesLinePage implements OnInit {
         this.presentToast("Connection error");
       })
     }
+  }
+
+  chechCountNumber(soLine: SalesLineModel) {
+    if (this.soHeader.CountNumber == "1") {
+      if (soLine.CountNumber == 1) {
+        soLine.isVisible = true;
+        soLine.QtyToReceive = soLine.Quantity - soLine.QtyReceivedServer;
+        soLine.QtyReceived = soLine.QtyReceivedServer;
+      }
+    } else if (this.soHeader.CountNumber == "2") {
+      if (soLine.CountNumber == 1) {
+        soLine.isVisible = true;
+        soLine.QtyToReceive = soLine.Quantity;
+        soLine.QtyReceived = 0;
+      }
+    }
+    return soLine;
   }
   async presentToast(msg) {
     const toast = await this.toastController.create({

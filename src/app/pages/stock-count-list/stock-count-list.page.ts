@@ -27,6 +27,7 @@ export class StockCountListPage implements OnInit {
   valueUpdated: boolean = false;
   index: any = 0;
   errMsg: any = "";
+  countNumber:any;
 
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
@@ -58,9 +59,17 @@ export class StockCountListPage implements OnInit {
   getItemList() {
     this.dataServ.getItemList$.subscribe(res => {
       this.itemList = res;
+      console.log(this.itemList)
     }, error => {
 
     })
+    this.dataServ.getStockCountNumber$.subscribe(res => {
+      this.countNumber = res;
+      console.log(this.countNumber);
+    }, error => {
+
+    })
+
   }
   qtyCheck(item: ItemModel) {
     if (item.quantity > 9999) {

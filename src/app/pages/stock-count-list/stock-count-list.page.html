@@ -16,7 +16,7 @@
   <div *ngIf="itemList.length; else noItem">
     <ion-virtual-scroll [items]="itemList">
       <ion-list *virtualItem="let item; let i=index">
-        <ion-card *ngIf="item.isSaved">
+        <ion-card *ngIf="item.isSaved && item.CountNumber == countNumber;else noItem">
           <ion-card-header>
             <span class="iconPos">
               <ion-icon name="close" (click)="deleteLine(item,i)"></ion-icon>

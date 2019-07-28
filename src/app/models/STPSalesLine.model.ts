@@ -10,6 +10,7 @@ export class SalesLineModel {
     Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
+    CountNumber:any;
 
     QtyReceivedServer: any;
     inputQty: number;
