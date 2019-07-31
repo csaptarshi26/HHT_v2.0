@@ -4,7 +4,11 @@
       <ion-back-button (click)="backBtn()"></ion-back-button>
     </ion-buttons>
     <ion-title>Stock Count</ion-title>
-
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="scanByCamera()">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -22,7 +26,7 @@
 
       <ion-item lines="none" class="barcode">
         <ion-label>Count Number</ion-label>
-        <ion-select interface="action-sheet" [(ngModel)]="CountNumber">
+        <ion-select interface="action-sheet" [(ngModel)]="CountNumber" (ionChange)="countNumberChanged()">
           <ion-select-option value="1" selected>First</ion-select-option>
           <ion-select-option value="2">Second</ion-select-option>
         </ion-select>
@@ -42,7 +46,8 @@
       </ion-item> -->
 
       <ion-item lines="none" class="twoItems item-text-wrap">
-        <ion-label>Total Scan Qty: {{scannedQty}}</ion-label>
+        <ion-label *ngIf="CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</ion-label>
+        <ion-label *ngIf="CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</ion-label>
       </ion-item>
 
       <ion-item lines="none" class="twoItems">

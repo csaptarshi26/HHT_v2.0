@@ -26,7 +26,7 @@ export class ParameterService {
   public customerList: CustomerModel[];
 
   public deviceID: any;
-  public userId:any;
+  public userId: any;
 
   public inventoryPOSItemList: any[] = [];
   public inventoryNEGItemList: any[] = [];
@@ -35,10 +35,10 @@ export class ParameterService {
   public TOItemList: any[] = [];
 
   public soLineUpdated: boolean;
-  public itemUpdated: boolean = false;
+  public itemUpdated: boolean= false;
   public itemChanged: boolean = false;
   public poItemUpdated: boolean = false;
-  public userRole:RoleModel;
+  public userRole: RoleModel;
 
   public demoData: any[] = [];
 

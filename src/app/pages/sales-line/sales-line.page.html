@@ -4,6 +4,11 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title> {{pageType}} </ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="scanByCamera()">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -32,7 +37,7 @@
         <span style="width: 50%">
           <b><span>Id : {{salesDetails.ItemNumber}}</span>
             <span style="margin-left: 15px;">UOM : {{salesDetails.UnitOfMeasure}}</span><br>
-             {{salesDetails.qtyDesc}}</b>
+            {{salesDetails.qtyDesc}}</b>
         </span>
       </ion-card-header>
       <ion-card-content class="itemLineContent">

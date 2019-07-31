@@ -45,7 +45,7 @@ export class PurchaseListPage implements OnInit {
     this.getPoLineData();
   }
 
-  ionViewWillEnter(){
+  ionViewWillEnter() {
     this.dataUpdatedToServer = false;
   }
   getPoLineData() {
@@ -67,7 +67,12 @@ export class PurchaseListPage implements OnInit {
     }
 
     this.poLineList.forEach(el => {
-      el.inputQty = el.updatableQty;
+      if (this.poHeader.CountNumber == "1") {
+        el.inputQty = el.updatableCount1Qty;
+      } else if (this.poHeader.CountNumber == "2") {
+        el.inputQty = el.updatableCount2Qty;
+      }
+
     })
   }
 
@@ -100,7 +105,11 @@ export class PurchaseListPage implements OnInit {
         } else {
           dataTable.DocumentType = 2;
         }
-        dataTable.Quantity = el.updatableQty;
+        if (this.poHeader.CountNumber == "1") {
+          dataTable.Quantity = el.updatableCount1Qty;
+        } else if (this.poHeader.CountNumber == "2") {
+          dataTable.Quantity = el.updatableCount2Qty;
+        }
         dataTable.TransactionType = 2;
         dataTable.UnitId = el.UnitId;
         dataTable.User = this.user;
@@ -132,7 +141,7 @@ export class PurchaseListPage implements OnInit {
           console.log(error.message);
         })
       } catch (e) {
-        this.storageServ.setPOItemList(this.poHeader);
+
       }
 
     } else {
@@ -227,7 +236,7 @@ export class PurchaseListPage implements OnInit {
     }
     console.log(this.poLineList);
 
-    this.storageServ.setPOItemList(this.poHeader);
+
   }
 
   clearQtyToRec(poLine: PurchLineModel) {
@@ -236,29 +245,59 @@ export class PurchaseListPage implements OnInit {
   qtyRecCheck(poLine: PurchLineModel) {
     poLine.isSaved = false;
     if (this.pageType == "Receive") {
-      if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableQty) > poLine.Qty) {
-        this.presentToast("Rec item cannot be greater than Qty");
-        //poLine.btnDisable = true;
-        return false;
-      } else {
-        poLine.QtyToReceive = poLine.QtyToReceive + poLine.updatableQty - poLine.inputQty;
-        poLine.QtyReceived = poLine.QtyReceived - poLine.updatableQty + poLine.inputQty;
-        poLine.updatableQty = poLine.inputQty;
-        this.qtyList[this.count] = poLine.updatableQty;
-        return true;
+      if (this.poHeader.CountNumber == "1") {
+        if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableCount1Qty) > poLine.Qty) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          //poLine.btnDisable = true;
+          return false;
+        } else {
+          poLine.QtyToReceive = poLine.QtyToReceive + poLine.updatableCount1Qty - poLine.inputQty;
+          poLine.QtyReceived = poLine.QtyReceived - poLine.updatableCount1Qty + poLine.inputQty;
+          poLine.updatableCount1Qty = poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount1Qty;
+          return true;
+        }
+      } else if (this.poHeader.CountNumber == "2") {
+        if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableCount2Qty) > poLine.Qty) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          //poLine.btnDisable = true;
+          return false;
+        } else {
+          poLine.QtyToReceive = poLine.QtyToReceive + poLine.updatableCount2Qty - poLine.inputQty;
+          poLine.QtyReceived = poLine.QtyReceived - poLine.updatableCount2Qty + poLine.inputQty;
+          poLine.updatableCount2Qty = poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount2Qty;
+          return true;
+        }
       }
+
     } else {
-      if ((-poLine.QtyReceived + poLine.inputQty - poLine.updatableQty) > (-poLine.Qty)) {
-        this.presentToast("Rec item cannot be greater than Qty");
-        //poLine.btnDisable = true;
-        return false;
-      } else {
-        poLine.QtyToReceive = poLine.QtyToReceive - poLine.updatableQty + poLine.inputQty;
-        poLine.QtyReceived = poLine.QtyReceived + poLine.updatableQty - poLine.inputQty;
-        poLine.updatableQty = poLine.inputQty;
-        this.qtyList[this.count] = poLine.updatableQty;
-        return true;
+      if (this.poHeader.CountNumber == "1") {
+        if ((-poLine.QtyReceived + poLine.inputQty - poLine.updatableCount1Qty) > (-poLine.Qty)) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          //poLine.btnDisable = true;
+          return false;
+        } else {
+          poLine.QtyToReceive = poLine.QtyToReceive - poLine.updatableCount1Qty + poLine.inputQty;
+          poLine.QtyReceived = poLine.QtyReceived + poLine.updatableCount1Qty - poLine.inputQty;
+          poLine.updatableCount1Qty = poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount1Qty;
+          return true;
+        }
+      } else if (this.poHeader.CountNumber == "2") {
+        if ((-poLine.QtyReceived + poLine.inputQty - poLine.updatableCount2Qty) > (-poLine.Qty)) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          //poLine.btnDisable = true;
+          return false;
+        } else {
+          poLine.QtyToReceive = poLine.QtyToReceive - poLine.updatableCount2Qty + poLine.inputQty;
+          poLine.QtyReceived = poLine.QtyReceived + poLine.updatableCount2Qty - poLine.inputQty;
+          poLine.updatableCount2Qty = poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount2Qty;
+          return true;
+        }
       }
+
     }
   }
   async presentAlertForCancel(poLine: PurchLineModel) {
@@ -270,13 +309,27 @@ export class PurchaseListPage implements OnInit {
           text: 'Yes',
           handler: () => {
             if (this.pageType == "Receive") {
-              poLine.QtyReceived -= poLine.updatableQty;
-              poLine.QtyToReceive += poLine.updatableQty;
+              if (this.poHeader.CountNumber == "1") {
+                poLine.QtyReceived -= poLine.updatableCount1Qty;
+                poLine.QtyToReceive += poLine.updatableCount1Qty;
+              } else if (this.poHeader.CountNumber == "2") {
+                poLine.QtyReceived -= poLine.updatableCount2Qty;
+                poLine.QtyToReceive += poLine.updatableCount2Qty;
+              }
             } else {
-              poLine.QtyReceived -= -poLine.updatableQty;
-              poLine.QtyToReceive -= poLine.updatableQty;
+              if (this.poHeader.CountNumber == "1") {
+                poLine.QtyReceived -= -poLine.updatableCount1Qty;
+                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+              } else if (this.poHeader.CountNumber == "2") {
+                poLine.QtyReceived -= -poLine.updatableCount1Qty;
+                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+              }
             }
-            poLine.updatableQty = 0;
+            if (this.poHeader.CountNumber == "1") {
+              poLine.updatableCount1Qty = 0;
+            } else if (this.poHeader.CountNumber == "2") {
+              poLine.updatableCount2Qty = 0;
+            }
             poLine.inputQty = 0;
           }
         },

@@ -1,3 +1,4 @@
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { DataService } from './../../providers/dataService/data.service';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { InventLocationModel } from './../../models/STPInventLocation.model';
@@ -11,6 +12,7 @@ import { ToastController } from '@ionic/angular';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { RoleModel } from 'src/app/models/STPRole.model';
+import { Uid } from '@ionic-native/uid/ngx';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -28,17 +30,19 @@ export class LoginPage implements OnInit {
   inventList: InventLocationModel[] = [];
   currentDate: Date;
   expirationDate: Date;
+  imei: string;
 
   roleList: RoleModel = {} as RoleModel;
   constructor(public router: Router, public menuCtrl: MenuController, public events: Events,
-    public toastController: ToastController, public axService: AxService, private uniqueDeviceID: UniqueDeviceID,
+    public toastController: ToastController, public axService: AxService,
     public storageService: StorageService, public paramService: ParameterService,
-    public dataService: DataService, public alertController: AlertController) {
-
-
+    public dataService: DataService, public alertController: AlertController,
+    private uniqueDeviceID: UniqueDeviceID,
+    public uid: Uid, public androidPermissions: AndroidPermissions) {
   }
 
   ngOnInit() {
+    this.setDeviceId();
     this.expirationDate = new Date('07-31-2019');
     console.log(this.expirationDate);
     this.getCurrentDate();
@@ -48,7 +52,7 @@ export class LoginPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.roleList =  {} as RoleModel ;
+    this.roleList = {} as RoleModel;
     this.userId = "";
     this.password = "";
     this.selectedInventory = {} as InventLocationModel;
@@ -58,7 +62,7 @@ export class LoginPage implements OnInit {
     this.axService.getCurrentDate().subscribe(res => {
       this.currentDate = new Date(res.toString());
       if (this.currentDate.toISOString().slice(0, 10) >= this.expirationDate.toISOString().slice(0, 10)) {
-        this.presentAlertForExpiration();
+       // this.presentAlertForExpiration();
       }
     }, error => {
       console.log(error);
@@ -168,16 +172,6 @@ export class LoginPage implements OnInit {
       } else {
         this.events.publish('loggedOut');
       }
-      console.log("Device Id " + this.paramService.deviceID)
-      if (this.paramService.deviceID == null) {
-        this.uniqueDeviceID.get().then((uuid: any) => {
-          this.paramService.deviceID = uuid;
-          this.storageService.setDeviceID(uuid);
-          console.log(uuid)
-        }).catch((error: any) => {
-          console.log(error)
-        });
-      }
     });
   }
 
@@ -192,5 +186,16 @@ export class LoginPage implements OnInit {
       position: "top"
     });
     toast.present();
+  }
+
+  setDeviceId() {
+    this.uniqueDeviceID.get().then((uuid: any) => {
+      console.log(uuid)
+    }).catch((error: any) => {
+      console.log(error)
+    });
+    this.storageService.setDeviceID(this.uid.IMEI);
+    this.paramService.deviceID = this.uid.IMEI;
+    console.log(this.uid.IMEI)
   }
 }

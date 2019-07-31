@@ -1,3 +1,4 @@
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { SalesLineModel } from './../../models/STPSalesLine.model';
 import { SalesTable } from './../../models/STPSalesTable.model';
@@ -36,7 +37,7 @@ export class SalesLinePage implements OnInit {
   @ViewChild("input") barcodeInput: IonInput;
   @ViewChild("Recinput") qtyInput: IonInput;
 
-  constructor(public dataServ: DataService, public axService: AxService, public router: Router,
+  constructor(public barcodeScanner: BarcodeScanner,public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute, private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController,
     public loadingController: LoadingController, public changeDetectorref: ChangeDetectorRef) {
@@ -60,6 +61,15 @@ export class SalesLinePage implements OnInit {
     //   });
   }
 
+  scanByCamera() {
+    this.barcodeScanner.scan().then(barcodeData => {
+      console.log('Barcode data', barcodeData);
+      this.barcode = barcodeData.text;
+      
+    }).catch(err => {
+      console.log('Error', err);
+    });
+  }
   ionViewWillEnter() {
     this.setBarcodeFocus();
 
@@ -155,17 +165,27 @@ export class SalesLinePage implements OnInit {
   chechCountNumber(soLine: SalesLineModel) {
     if (this.soHeader.CountNumber == "1") {
       if (soLine.CountNumber == 1) {
-        soLine.isVisible = true;
-        soLine.QtyToReceive = soLine.Quantity - soLine.QtyReceivedServer;
-        soLine.QtyReceived = soLine.QtyReceivedServer;
+        if (this.pageType == "Sales-Order") {
+          soLine.QtyToShip = soLine.Quantity - soLine.QtyReceivedServer;
+          soLine.QtyShipped = soLine.QtyReceivedServer
+        } else {
+          soLine.QtyToReceive = soLine.Quantity - soLine.QtyReceivedServer;
+          soLine.QtyReceived = soLine.QtyReceivedServer;
+        }
       }
     } else if (this.soHeader.CountNumber == "2") {
       if (soLine.CountNumber == 1) {
-        soLine.isVisible = true;
-        soLine.QtyToReceive = soLine.Quantity;
-        soLine.QtyReceived = 0;
+        if (this.pageType == "Sales-Order") {
+          soLine.QtyToShip = soLine.Quantity;
+          soLine.QtyShipped = 0;
+        } else {
+          soLine.QtyToReceive = soLine.Quantity;
+          soLine.QtyReceived = 0;
+        }
+
       }
     }
+    soLine.isVisible = true;
     return soLine;
   }
   async presentToast(msg) {

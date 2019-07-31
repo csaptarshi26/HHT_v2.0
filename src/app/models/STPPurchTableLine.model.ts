@@ -6,11 +6,13 @@ export class PurchLineModel {
     QtyReceived: any;
     QtyToReceive: any;
     UnitId: any;
-    updatableQty: any;
+    updatableCount1Qty: any;
+    updatableCount2Qty: any;
     UnitAmt: any;
     NetAmt: any;
     qtyDesc: any;
-    CountNumber:any;
+    Count1Qty:any;
+    Count2Qty:any;
 
     QtyReceivedServer: any;
     inputQty: any;

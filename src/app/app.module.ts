@@ -23,6 +23,8 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 
 import { HideKeyboardModule } from 'hide-keyboard';
 import { ModPipe } from './pipes/mod.pipe';
+import { Uid } from '@ionic-native/uid/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -42,6 +44,8 @@ import { ModPipe } from './pipes/mod.pipe';
     StatusBar,
     Keyboard,
     UniqueDeviceID,
+    Uid,
+    AndroidPermissions,
     BarcodeScanner,
     SplashScreen,
     AxService,

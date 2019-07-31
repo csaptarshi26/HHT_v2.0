@@ -14,11 +14,16 @@ import { ItemModel } from 'src/app/models/STPItem.model';
 import { Network } from '@ionic-native/network/ngx';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 declare var $: any;
+interface IqtyList {
+  qty: any;
+  countNumber: any;
+}
 @Component({
   selector: 'app-stock-count',
   templateUrl: './stock-count.page.html',
   styleUrls: ['./stock-count.page.scss'],
 })
+
 export class StockCountPage implements OnInit {
 
   barcode: string;
@@ -27,11 +32,12 @@ export class StockCountPage implements OnInit {
 
   item: ItemModel = {} as ItemModel;
   itemList: ItemModel[] = [];
-  scannedQty: any = 0;
+  scannedQty1: any = 0;
+  scannedQty2: any = 0;
   user: any;
-  CountNumber: any;
+  CountNumber: any = "1";
 
-  qtyList: any[] = [];
+  qtyList: IqtyList[] = [];
 
   editField: boolean = false;
   count: any;
@@ -110,6 +116,16 @@ export class StockCountPage implements OnInit {
     //   function () { }  //  Failure in sending the intent, not failure of DW to process the intent.
     // );
   }
+
+  scanByCamera() {
+    this.barcodeScanner.scan().then(barcodeData => {
+      console.log('Barcode data', barcodeData);
+      this.barcode = barcodeData.text;
+      
+    }).catch(err => {
+      console.log('Error', err);
+    });
+  }
   ngOnInit() {
     this.count = -1;
     this.getStorageData();
@@ -133,10 +149,15 @@ export class StockCountPage implements OnInit {
     if (this.paramService.itemUpdated) {
       this.item = {} as ItemModel;
       this.itemList = [];
-      this.scannedQty = 0;
+      this.scannedQty1 = 0;
+      this.scannedQty2 = 0;
     }
     else {
-      this.scannedQty = this.calculateItemListQty();
+      if (this.CountNumber == "1") {
+        this.scannedQty1 = this.calculateItemListQty(this.CountNumber);
+      } else if (this.CountNumber == "2") {
+        this.scannedQty2 = this.calculateItemListQty(this.CountNumber);
+      }
     }
   }
   keyboardHide() {
@@ -172,29 +193,33 @@ export class StockCountPage implements OnInit {
         this.itemList = [];
       } else {
         this.itemList = this.paramService.ItemList;
-        this.scannedQty = this.calculateItemListQty();
+        this.scannedQty1 = this.calculateItemListQty("1");
+        this.scannedQty2 = this.calculateItemListQty("2");
         //this.item.visible = true;
       }
     });
   }
-  calculateItemListQty() {
+  calculateItemListQty(selectedCountNumber) {
     var sum = 0;
     this.qtyList = [];
     this.itemList.forEach(el => {
       this.qtyList.push(el.quantity);
-      sum = sum + el.quantity;
+      if (selectedCountNumber == el.CountNumber) {
+        sum = sum + el.quantity;
+      }
     })
     if (sum == 0) {
       this.item = {} as ItemModel;
     }
     return sum;
   }
-  calculateSum() {
+  calculateSum(selectedCount) {
     var sum = 0;
     this.qtyList.forEach(el => {
-      sum = sum + el;
+      if (selectedCount == el.countNumber) {
+        sum = sum + el.qty;
+      }
     })
-
     return sum;
   }
   onPressEnter() {
@@ -247,7 +272,6 @@ export class StockCountPage implements OnInit {
   async searchBarcode(flag = false) {
     this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
       this.item = res;
-      console.log(res)
       if (this.item.ItemId == null || this.item.ItemId == "") {
         // flag = true;
         // this.presentToast("This item barcode not in order list");
@@ -269,7 +293,11 @@ export class StockCountPage implements OnInit {
           }, 100);
         } else {
           this.item.quantity = 1;
-          this.scannedQty = this.scannedQty + 1;
+          if (this.CountNumber == "1") {
+            this.scannedQty1 = this.scannedQty1 + 1;
+          } else if (this.CountNumber == "2") {
+            this.scannedQty2 = this.scannedQty2 + 1;
+          }
           this.item.isEditable = false;
           this.item.isSaved = true;
           this.barcode = "";
@@ -279,7 +307,6 @@ export class StockCountPage implements OnInit {
         this.itemList.push(this.item);
         this.itemList.reverse();
         // this.itemList.push(this.item);
-        console.log(this.itemList)
       }
     }, error => {
       this.presentToast("Connection Error");
@@ -309,12 +336,19 @@ export class StockCountPage implements OnInit {
       }
     }
     if (this.item.quantity == "") {
-      this.qtyList[this.itemList.length - 1] = 0;
+      this.qtyList[this.itemList.length - 1].qty = 0;
+      this.qtyList[this.itemList.length - 1].countNumber = this.CountNumber;
     } else {
-      this.qtyList[this.itemList.length - 1] = this.item.quantity;
+      this.qtyList[this.itemList.length - 1].qty = this.item.quantity;
+      this.qtyList[this.itemList.length - 1].countNumber = this.CountNumber;
     }
     console.log(this.count + "   " + this.qtyList)
-    this.scannedQty = this.calculateSum();
+
+    if (this.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.CountNumber);
+    } else if (this.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.CountNumber);
+    }
     //this.storageServ.setItemList(this.itemList);
   }
 
@@ -344,7 +378,6 @@ export class StockCountPage implements OnInit {
     await alert.present();
   }
   backBtn() {
-
     if ((this.count >= 0 && !this.paramService.itemUpdated) || this.paramService.itemChanged) {
       this.presentAlertForExit();
     }
@@ -373,5 +406,13 @@ export class StockCountPage implements OnInit {
     });
 
     await alert.present();
+  }
+  countNumberChanged() {
+    this.item = {} as ItemModel;
+    if (this.CountNumber == "1") {
+
+    } else if (this.CountNumber == "2") {
+
+    }
   }
 }

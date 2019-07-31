@@ -39,7 +39,7 @@ export class StockCountListPage implements OnInit {
   }
 
   ngOnInit() {
-   console.log(this.paramService.userId); this.user = this.paramService.userId
+   this.user = this.paramService.userId
     //this.getItemsFromStorage()
     this.getItemList();
   }

@@ -1,3 +1,4 @@
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { StorageService } from './../../providers/storageService/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
@@ -39,7 +40,7 @@ export class PurchaseLinePage implements OnInit {
   constructor(public dataServ: DataService, public alertController: AlertController, private activateRoute: ActivatedRoute,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public loadingController: LoadingController,
-    public router: Router, public storageServ: StorageService,
+    public router: Router, public storageServ: StorageService, public barcodeScanner: BarcodeScanner,
     public changeDetectorref: ChangeDetectorRef) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
@@ -59,6 +60,16 @@ export class PurchaseLinePage implements OnInit {
     //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
     //     changeDetectorref.detectChanges();
     //   });
+  }
+
+  scanByCamera() {
+    this.barcodeScanner.scan().then(barcodeData => {
+      console.log('Barcode data', barcodeData);
+      this.barcode = barcodeData.text;
+
+    }).catch(err => {
+      console.log('Error', err);
+    });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -116,11 +127,11 @@ export class PurchaseLinePage implements OnInit {
           this.poLineList.forEach(el => {
             counter++;
             if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
-              
+
               this.count++
               el.inputQty = "";
               el.toggle = false;
-              if(el.QtyReceived){
+              if (el.QtyReceived) {
                 el.QtyReceivedServer = el.QtyReceived;
               }
               flag = true;
@@ -158,7 +169,7 @@ export class PurchaseLinePage implements OnInit {
 
               el.inputQty = "";
               // el.isVisible = true;
-              if(el.QtyReceived){
+              if (el.QtyReceived) {
                 el.QtyReceivedServer = el.QtyReceived;
               }
 
@@ -196,18 +207,50 @@ export class PurchaseLinePage implements OnInit {
 
   chechCountNumber(poLine: PurchLineModel) {
     if (this.poHeader.CountNumber == "1") {
-      if (poLine.CountNumber == 1){
-        poLine.isVisible = true;
-        poLine.QtyToReceive = poLine.Qty - poLine.QtyReceivedServer;
-        poLine.QtyReceived = poLine.QtyReceivedServer;
-      }
-    } else if (this.poHeader.CountNumber == "2") {
-      if (poLine.CountNumber == 1){
-        poLine.isVisible = true;
+      if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
+
+      } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
         poLine.QtyToReceive = poLine.Qty;
         poLine.QtyReceived = 0;
+      } else if (poLine.Count1Qty == poLine.Qty) {
+        poLine.QtyToReceive = 0;
+        poLine.QtyReceived = poLine.Qty;
+      } else if (poLine.Count1Qty > 0) {
+        poLine.QtyToReceive = poLine.Qty - poLine.Count1Qty;
+        poLine.QtyReceived = poLine.Count1Qty;
+      } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty == poLine.Qty) {
+        poLine.QtyToReceive = 0;
+        poLine.QtyReceived = poLine.Qty;
+      }
+      // if (poLine.CountNumber == 1) {
+      //   poLine.isVisible = true;
+      //   poLine.QtyToReceive = poLine.Qty - poLine.QtyReceivedServer;
+      //   poLine.QtyReceived = poLine.QtyReceivedServer;
+      // }
+    } else if (this.poHeader.CountNumber == "2") {
+      if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
+
+      } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
+        poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
+        poLine.QtyReceived = poLine.Count2Qty;
+      } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty == poLine.Qty) {
+        poLine.QtyToReceive = 0;
+        poLine.QtyReceived = poLine.Qty;
+      } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty > 0) {
+        poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
+        poLine.QtyReceived = poLine.Count2Qty;
+      } else if (poLine.Count2Qty == poLine.Qty) {
+        poLine.QtyToReceive = 0;
+        poLine.QtyReceived = poLine.Qty;
+      } else if (poLine.Count1Qty > 0 && poLine.Count2Qty == 0) {
+        poLine.QtyToReceive = poLine.Qty;
+        poLine.QtyReceived = 0;
+      } else if (poLine.Count1Qty > 0 && poLine.Count2Qty > 0) {
+        poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
+        poLine.QtyReceived = poLine.Count2Qty;
       }
     }
+    poLine.isVisible = true;
     return poLine;
   }
   async presentToast(msg) {
@@ -266,8 +309,13 @@ export class PurchaseLinePage implements OnInit {
       } else {
         poLine.QtyToReceive -= poLine.inputQty;
         poLine.QtyReceived += poLine.inputQty;
-        poLine.updatableQty += poLine.inputQty;
-        this.qtyList[this.count] = poLine.updatableQty;
+        if (this.poHeader.CountNumber == "1") {
+          poLine.updatableCount1Qty += poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount1Qty;
+        } else if (this.poHeader.CountNumber == "2") {
+          poLine.updatableCount2Qty += poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount2Qty;
+        }
         poLine.inputQty = "";
         return true;
       }
@@ -279,8 +327,13 @@ export class PurchaseLinePage implements OnInit {
       } else {
         poLine.QtyToReceive -= -poLine.inputQty;
         poLine.QtyReceived += -poLine.inputQty;
-        poLine.updatableQty += poLine.inputQty;
-        this.qtyList[this.count] = poLine.updatableQty;
+        if (this.poHeader.CountNumber == "1") {
+          poLine.updatableCount1Qty += poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount1Qty;
+        } else if (this.poHeader.CountNumber == "2") {
+          poLine.updatableCount2Qty += poLine.inputQty;
+          this.qtyList[this.count] = poLine.updatableCount2Qty;
+        }
         poLine.inputQty = "";
         return true;
       }
@@ -295,13 +348,27 @@ export class PurchaseLinePage implements OnInit {
           text: 'Yes',
           handler: () => {
             if (this.pageType == "Receive") {
-              poLine.QtyReceived -= poLine.updatableQty;
-              poLine.QtyToReceive += poLine.updatableQty;
+              if (this.poHeader.CountNumber == "1") {
+                poLine.QtyReceived -= poLine.updatableCount1Qty;
+                poLine.QtyToReceive += poLine.updatableCount1Qty;
+              } else if (this.poHeader.CountNumber == "2") {
+                poLine.QtyReceived -= poLine.updatableCount2Qty;
+                poLine.QtyToReceive += poLine.updatableCount2Qty;
+              }
             } else {
-              poLine.QtyReceived -= -poLine.updatableQty;
-              poLine.QtyToReceive -= poLine.updatableQty;
+              if (this.poHeader.CountNumber == "1") {
+                poLine.QtyReceived -= -poLine.updatableCount1Qty;
+                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+              } else if (this.poHeader.CountNumber == "2") {
+                poLine.QtyReceived -= -poLine.updatableCount1Qty;
+                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+              }
             }
-            poLine.updatableQty = 0;
+            if (this.poHeader.CountNumber == "1") {
+              poLine.updatableCount1Qty = 0;
+            } else if (this.poHeader.CountNumber == "2") {
+              poLine.updatableCount2Qty = 0;
+            }
           }
         },
         {
@@ -383,6 +450,22 @@ export class PurchaseLinePage implements OnInit {
             } else {
               this.poItemSotrageList = [];
             }
+            this.poLineList.forEach(el => {
+              if (this.poHeader.CountNumber == "1") {
+                if (el.updatableCount1Qty == 0) {
+                  el.Count1Qty = el.Count1Qty;
+                } else {
+                  el.Count1Qty = el.updatableCount1Qty;
+                }
+
+              } else if (this.poHeader.CountNumber == "2") {
+                if (el.updatableCount2Qty == 0) {
+                  el.Count2Qty = el.Count2Qty;
+                } else {
+                  el.Count2Qty = el.updatableCount2Qty;
+                }
+              }
+            })
             var flag = 0;
             this.poItemSotrageList.forEach(el => {
               if (el.poNo == this.poHeader.PurchId) {

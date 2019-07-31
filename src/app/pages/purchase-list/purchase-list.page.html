@@ -4,8 +4,8 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
-      <ion-button (click)="savePO()">
-        <ion-icon slot="icon-only" name="document"></ion-icon>
+      <ion-button color="light" (click)="savePO()" [disabled]="!poLineList.length">
+        Upload
       </ion-button>
     </ion-buttons>
     <ion-title> {{pageType}}-List</ion-title>
