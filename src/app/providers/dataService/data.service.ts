@@ -68,7 +68,6 @@ export class DataService {
     this.stockCountNumber.next(data);
   }
 
-  
 
   setPOReturn(data) {
     this.purchaseReturnSub.next(data);

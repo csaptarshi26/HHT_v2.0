@@ -1,3 +1,4 @@
+import { IqtyList } from './../../models/IQtyModel';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { TransferOrderModel } from './../../models/STPTransferOrder.model';
@@ -14,10 +15,7 @@ import { ItemModel } from 'src/app/models/STPItem.model';
 import { Network } from '@ionic-native/network/ngx';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 declare var $: any;
-interface IqtyList {
-  qty: any;
-  countNumber: any;
-}
+
 @Component({
   selector: 'app-stock-count',
   templateUrl: './stock-count.page.html',
@@ -37,7 +35,7 @@ export class StockCountPage implements OnInit {
   user: any;
   CountNumber: any = "1";
 
-  qtyList: IqtyList[] = [];
+  qtyList: IqtyList[] = [{} as IqtyList];
 
   editField: boolean = false;
   count: any;
@@ -121,7 +119,7 @@ export class StockCountPage implements OnInit {
     this.barcodeScanner.scan().then(barcodeData => {
       console.log('Barcode data', barcodeData);
       this.barcode = barcodeData.text;
-      
+
     }).catch(err => {
       console.log('Error', err);
     });
@@ -203,9 +201,12 @@ export class StockCountPage implements OnInit {
     var sum = 0;
     this.qtyList = [];
     this.itemList.forEach(el => {
-      this.qtyList.push(el.quantity);
+      var obj = {} as IqtyList;
+      obj.countNumber = el.CountNumber;
+      obj.qty = el.quantity;
+      this.qtyList.push(obj);
       if (selectedCountNumber == el.CountNumber) {
-        sum = sum + el.quantity;
+        sum = sum + +el.quantity;
       }
     })
     if (sum == 0) {
@@ -217,7 +218,7 @@ export class StockCountPage implements OnInit {
     var sum = 0;
     this.qtyList.forEach(el => {
       if (selectedCount == el.countNumber) {
-        sum = sum + el.qty;
+        sum = sum + +el.qty;
       }
     })
     return sum;
@@ -263,7 +264,7 @@ export class StockCountPage implements OnInit {
     // }
     if (this.barcode != null && this.barcode.length > 3) {
       if (!this.CountNumber) {
-        this.presentAlertForCount();
+        this.presentAlertForError("Please Select Count Number ");
       } else {
         this.searchBarcode();
       }
@@ -298,6 +299,11 @@ export class StockCountPage implements OnInit {
           } else if (this.CountNumber == "2") {
             this.scannedQty2 = this.scannedQty2 + 1;
           }
+          let len = this.itemList.length - 1
+          let obj = {} as IqtyList;
+          obj.countNumber = this.CountNumber;
+          obj.qty = 1;
+          this.qtyList[len] = obj;
           this.item.isEditable = false;
           this.item.isSaved = true;
           this.barcode = "";
@@ -320,27 +326,36 @@ export class StockCountPage implements OnInit {
     });
     toast.present();
   }
-  valueChanged() {
+  valueChanged(qty) {
     this.item.isSaved = false;
+  }
+  onEnterConfirm(item: ItemModel) {
+    this.confirm(item);
+    this.setBarcodeFocus();
   }
   confirm(item: ItemModel) {
     if (item.quantity == 0 || item.quantity == null) {
       item.isSaved = false;
     } else {
       if (item.quantity > 9999) {
-        this.presentToast("Qty cann't be greater than 9999");
+        this.presentAlertForError("Qty cann't be greater than 9999");
         item.quantity = 0;
         return false;
       } else {
         item.isSaved = true;
       }
     }
+    var len = this.itemList.length - 1
     if (this.item.quantity == "") {
-      this.qtyList[this.itemList.length - 1].qty = 0;
-      this.qtyList[this.itemList.length - 1].countNumber = this.CountNumber;
+      let obj = {} as IqtyList;
+      obj.countNumber = this.CountNumber;
+      obj.qty = 0;
+      this.qtyList[len] = obj;
     } else {
-      this.qtyList[this.itemList.length - 1].qty = this.item.quantity;
-      this.qtyList[this.itemList.length - 1].countNumber = this.CountNumber;
+      let obj = {} as IqtyList;
+      obj.countNumber = this.CountNumber;
+      obj.qty = this.item.quantity;
+      this.qtyList[len] = obj;
     }
     console.log(this.count + "   " + this.qtyList)
 
@@ -354,7 +369,7 @@ export class StockCountPage implements OnInit {
 
   showList() {
     if (!this.CountNumber) {
-      this.presentAlertForCount();
+      this.presentAlertForError("Please Select Count Number");
     } else {
       this.dataServ.setItemList(this.itemList);
       this.dataServ.setStockCountNumber(this.CountNumber);
@@ -362,10 +377,10 @@ export class StockCountPage implements OnInit {
     }
 
   }
-  async presentAlertForCount() {
+  async presentAlertForError(msg) {
     const alert = await this.alertController.create({
       header: 'Information',
-      message: `Please Select Count Number `,
+      message: msg,
       buttons: [
         {
           text: 'Okay',
@@ -398,7 +413,7 @@ export class StockCountPage implements OnInit {
         {
           text: 'no',
           handler: () => {
-
+            this.itemList.forEach(el => el.isSaved = false)
           }
         }
 

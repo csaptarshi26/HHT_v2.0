@@ -14,7 +14,7 @@
 
 <ion-content>
   <div *ngFor="let poLine of poLineList,let i=index">
-    <div *ngIf="poLine.isVisible">
+    <div *ngIf="poLine.isVisible && poHeader.CountNumber == poLine.headerCountNumber">
       <ion-card class="lineDetails">
         <ion-card-header>
           <span class="iconPos">

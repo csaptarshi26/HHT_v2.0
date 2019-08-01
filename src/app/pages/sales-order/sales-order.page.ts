@@ -93,7 +93,6 @@ export class SalesOrderPage implements OnInit {
     this.axService.getSalesOrder(this.selectedCustomer.CustAccount).subscribe(res => {
       loading.dismiss();
       this.salesList = res;
-      console.log(res);
     }, error => {
       loading.dismiss();
       console.log(error);
@@ -108,7 +107,6 @@ export class SalesOrderPage implements OnInit {
     this.axService.getSalesReturnOrder(this.selectedCustomer.CustAccount).subscribe(res => {
       loading.dismiss();
       this.salesList = res;
-      console.log(res);
     }, error => {
       loading.dismiss();
       console.log(error);
@@ -163,7 +161,6 @@ export class SalesOrderPage implements OnInit {
   getSalesLine() {
     this.axService.getSalesLine(this.selectedSalesTable.DocumentNo).subscribe(res => {
       this.selectedSalesTable.SalesLine = res;
-      console.log(res);
     }, error => {
       console.log(error);
     })

@@ -83,7 +83,7 @@
       <ion-item lines="none" class="ionItemInput">
         <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
         <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" #qtyInput id="qtyInput"
-          [readonly]="!item.isEditable" min="0" max="9999" (ionChange)="valueChanged()" (keyup.enter)="confirm(item)">
+          [readonly]="!item.isEditable" min="0" max="9999" (ionChange)="confirm(item)" (keyup.enter)="onEnterConfirm(item)">
         </ion-input>
       </ion-item>
 

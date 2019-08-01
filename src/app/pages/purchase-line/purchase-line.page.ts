@@ -137,8 +137,10 @@ export class PurchaseLinePage implements OnInit {
               flag = true;
               el.qtyDesc = res.Description;
               el.BarCode = res.BarCode;
-              this.poLine = this.chechCountNumber(el);
+              el.isVisible = true;
               this.barcode = "";
+              this.poLine = this.chechCountNumber(el);
+
               setTimeout(() => {
                 this.qtyInput.setFocus();
               }, 100);
@@ -166,9 +168,7 @@ export class PurchaseLinePage implements OnInit {
             if (el.ItemId == res.ItemId) {
               this.count++;
               flag = true;
-
               el.inputQty = "";
-              // el.isVisible = true;
               if (el.QtyReceived) {
                 el.QtyReceivedServer = el.QtyReceived;
               }
@@ -190,6 +190,10 @@ export class PurchaseLinePage implements OnInit {
             if (multiPoLineList.length == 1) {
               this.poLine = multiPoLineList.pop();
               this.poLine.isVisible = true;
+              setTimeout(() => {
+                this.barcode = "";
+                this.qtyInput.setFocus();
+              }, 150);
             } else {
               this.presentAlertRadio(multiPoLineList);
             }
@@ -207,50 +211,88 @@ export class PurchaseLinePage implements OnInit {
 
   chechCountNumber(poLine: PurchLineModel) {
     if (this.poHeader.CountNumber == "1") {
-      if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
+      if (this.pageType == "Receive") {
+        if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
 
-      } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
-        poLine.QtyToReceive = poLine.Qty;
-        poLine.QtyReceived = 0;
-      } else if (poLine.Count1Qty == poLine.Qty) {
-        poLine.QtyToReceive = 0;
-        poLine.QtyReceived = poLine.Qty;
-      } else if (poLine.Count1Qty > 0) {
-        poLine.QtyToReceive = poLine.Qty - poLine.Count1Qty;
-        poLine.QtyReceived = poLine.Count1Qty;
-      } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty == poLine.Qty) {
-        poLine.QtyToReceive = 0;
-        poLine.QtyReceived = poLine.Qty;
+        } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = poLine.Qty;
+          poLine.QtyReceived = 0;
+        } else if (poLine.Count1Qty == poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = poLine.Qty;
+        } else if (poLine.Count1Qty > 0) {
+          poLine.QtyToReceive = poLine.Qty - poLine.Count1Qty;
+          poLine.QtyReceived = poLine.Count1Qty;
+        } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty == poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = poLine.Qty;
+        }
+      } else {
+        if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
+
+        } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = poLine.Qty;
+          poLine.QtyReceived = 0;
+        } else if (poLine.Count1Qty == -poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = -poLine.Qty;
+        } else if (poLine.Count1Qty > 0) {
+          poLine.QtyToReceive = -poLine.Qty - poLine.Count1Qty;
+          poLine.QtyReceived = poLine.Count1Qty;
+        } else if (poLine.Count1Qty == -poLine.Qty && poLine.Count2Qty == -poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = -poLine.Qty;
+        }
       }
-      // if (poLine.CountNumber == 1) {
-      //   poLine.isVisible = true;
-      //   poLine.QtyToReceive = poLine.Qty - poLine.QtyReceivedServer;
-      //   poLine.QtyReceived = poLine.QtyReceivedServer;
-      // }
     } else if (this.poHeader.CountNumber == "2") {
-      if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
+      if (this.pageType == "Receive") {
+        if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
 
-      } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
-        poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
-        poLine.QtyReceived = poLine.Count2Qty;
-      } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty == poLine.Qty) {
-        poLine.QtyToReceive = 0;
-        poLine.QtyReceived = poLine.Qty;
-      } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty > 0) {
-        poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
-        poLine.QtyReceived = poLine.Count2Qty;
-      } else if (poLine.Count2Qty == poLine.Qty) {
-        poLine.QtyToReceive = 0;
-        poLine.QtyReceived = poLine.Qty;
-      } else if (poLine.Count1Qty > 0 && poLine.Count2Qty == 0) {
-        poLine.QtyToReceive = poLine.Qty;
-        poLine.QtyReceived = 0;
-      } else if (poLine.Count1Qty > 0 && poLine.Count2Qty > 0) {
-        poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
-        poLine.QtyReceived = poLine.Count2Qty;
+        } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
+          poLine.QtyReceived = poLine.Count2Qty;
+        } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty == poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = poLine.Qty;
+        } else if (poLine.Count1Qty == poLine.Qty && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
+          poLine.QtyReceived = poLine.Count2Qty;
+        } else if (poLine.Count2Qty == poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = poLine.Qty;
+        } else if (poLine.Count1Qty > 0 && poLine.Count2Qty == 0) {
+          poLine.QtyToReceive = poLine.Qty;
+          poLine.QtyReceived = 0;
+        } else if (poLine.Count1Qty > 0 && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = poLine.Qty - poLine.Count2Qty;
+          poLine.QtyReceived = poLine.Count2Qty;
+        }
+      } else {
+        if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
+
+        } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = -poLine.Qty - poLine.Count2Qty;
+          poLine.QtyReceived = poLine.Count2Qty;
+        } else if (poLine.Count1Qty == -poLine.Qty && poLine.Count2Qty == -poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = -poLine.Qty;
+        } else if (poLine.Count1Qty == -poLine.Qty && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = -poLine.Qty - poLine.Count2Qty;
+          poLine.QtyReceived = poLine.Count2Qty;
+        } else if (poLine.Count2Qty == -poLine.Qty) {
+          poLine.QtyToReceive = 0;
+          poLine.QtyReceived = -poLine.Qty;
+        } else if (poLine.Count1Qty > 0 && poLine.Count2Qty == 0) {
+          poLine.QtyToReceive = poLine.Qty;
+          poLine.QtyReceived = 0;
+        } else if (poLine.Count1Qty > 0 && poLine.Count2Qty > 0) {
+          poLine.QtyToReceive = -poLine.Qty - poLine.Count2Qty;
+          poLine.QtyReceived = poLine.Count2Qty;
+        }
       }
+
     }
-    poLine.isVisible = true;
+    poLine.headerCountNumber = this.poHeader.CountNumber;
     return poLine;
   }
   async presentToast(msg) {
@@ -320,7 +362,7 @@ export class PurchaseLinePage implements OnInit {
         return true;
       }
     } else {
-      if ((poLine.QtyReceived + poLine.inputQty) > (-poLine.Qty)) {
+      if ((this.mod(poLine.QtyReceived) + this.mod(poLine.inputQty)) > this.mod((poLine.Qty))) {
         this.presentToast("Rec item cannot be greater than Qty");
         //poLine.btnDisable = true;
         return false;
@@ -418,11 +460,13 @@ export class PurchaseLinePage implements OnInit {
         }, {
           text: 'Ok',
           handler: (data: PurchLineModel) => {
+            console.log(data);
             data.isVisible = true;
             this.poLine = data;
-            // setTimeout(() => {
-            //   this.qtyInput.setFocus();
-            // }, 150);
+            setTimeout(() => {
+              this.barcode = "";
+              this.qtyInput.setFocus();
+            }, 150);
           }
         }
       ]
@@ -491,11 +535,18 @@ export class PurchaseLinePage implements OnInit {
         {
           text: 'No',
           handler: () => {
+            this.poLineList.forEach(el=> el.isVisible = false);
+
           }
         }
       ]
     });
-
     await alert.present();
+  }
+
+  mod(n:any){
+    if(n==0) return 0;
+    else if(n > 0) return n;
+    else return -n;
   }
 }

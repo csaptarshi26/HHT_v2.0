@@ -10,11 +10,14 @@ export class SalesLineModel {
     Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
-    CountNumber:any;
+    
+    updatableCount1Qty: any;
+    updatableCount2Qty: any;
+    Count1Qty:any;
+    Count2Qty:any;
 
     QtyReceivedServer: any;
     inputQty: number;
-    updatableQty: number;
 
     qtyDesc: any;
     BarCode: any;

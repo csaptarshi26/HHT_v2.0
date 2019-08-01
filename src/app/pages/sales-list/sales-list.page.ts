@@ -112,7 +112,12 @@ export class SalesListPage implements OnInit {
     }
 
     this.salesLineList.forEach(el => {
-      el.inputQty = el.updatableQty;
+
+      if (this.soHeader.CountNumber == "1") {
+        el.inputQty = el.updatableCount1Qty;
+      } else if (this.soHeader.CountNumber == "2") {
+        el.inputQty = el.updatableCount2Qty;
+      }
     })
   }
 
@@ -123,7 +128,7 @@ export class SalesListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId =  this.paramService.deviceID;
+        dataTable.DeviceId = this.paramService.deviceID;
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
         dataTable.DocumentNum = el.DocumentNo;
         dataTable.ItemId = el.ItemNumber;
@@ -136,7 +141,11 @@ export class SalesListPage implements OnInit {
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = lineNum;
-        dataTable.Quantity = el.updatableQty;
+        if (this.soHeader.CountNumber == "1") {
+          dataTable.Quantity = el.updatableCount1Qty;
+        } else if (this.soHeader.CountNumber == "2") {
+          dataTable.Quantity = el.updatableCount2Qty;
+        }
         dataTable.TransactionType = 1;
         dataTable.UnitId = el.UnitOfMeasure;
         dataTable.User = this.user;
@@ -211,7 +220,7 @@ export class SalesListPage implements OnInit {
 
     console.log(this.salesLineList);
 
-    this.storageService.setSOItemList(this.soHeader);
+    // this.storageService.setSOItemList(this.soHeader);
   }
   clearQtyToRec(soLine: SalesLineModel) {
 
@@ -221,27 +230,55 @@ export class SalesListPage implements OnInit {
   }
   qtyRecCheck(soLine: SalesLineModel) {
     if (this.pageType == "Sales-Order") {
-      if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableQty) > soLine.Quantity) {
-        this.presentToast("Rec item cannot be greater than Qty");
-        return false;
-      } else {
-        soLine.QtyToShip = soLine.QtyToShip + soLine.updatableQty - soLine.inputQty;
-        soLine.QtyShipped = soLine.QtyShipped - soLine.updatableQty + soLine.inputQty;
-        soLine.updatableQty = soLine.inputQty;
-        //this.qtyList[this.count] = soLine.updatableQty;
-        return true;
+      if (this.soHeader.CountNumber == "1") {
+        if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableCount1Qty) > soLine.Quantity) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          soLine.QtyToShip = soLine.QtyToShip + soLine.updatableCount1Qty - soLine.inputQty;
+          soLine.QtyShipped = soLine.QtyShipped - soLine.updatableCount1Qty + soLine.inputQty;
+          soLine.updatableCount1Qty = soLine.inputQty;
+          //this.qtyList[this.count] = soLine.updatableQty;
+          return true;
+        }
+      } else if (this.soHeader.CountNumber == "2") {
+        if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableCount2Qty) > soLine.Quantity) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          soLine.QtyToShip = soLine.QtyToShip + soLine.updatableCount2Qty - soLine.inputQty;
+          soLine.QtyShipped = soLine.QtyShipped - soLine.updatableCount2Qty + soLine.inputQty;
+          soLine.updatableCount2Qty = soLine.inputQty;
+          //this.qtyList[this.count] = soLine.updatableQty;
+          return true;
+        }
       }
+
     } else {
-      if ((soLine.QtyReceived + soLine.inputQty - soLine.updatableQty) > soLine.Quantity) {
-        this.presentToast("Rec item cannot be greater than Qty");
-        return false;
-      } else {
-        soLine.QtyToReceive = soLine.QtyToReceive + soLine.updatableQty - soLine.inputQty;
-        soLine.QtyReceived = soLine.QtyReceived - soLine.updatableQty + soLine.inputQty;
-        soLine.updatableQty = soLine.inputQty;
-        //this.qtyList[this.count] = soLine.updatableQty;
-        return true;
+      if (this.soHeader.CountNumber == "1") {
+        if ((soLine.QtyReceived + soLine.inputQty - soLine.updatableCount1Qty) > soLine.Quantity) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          soLine.QtyToReceive = soLine.QtyToReceive + soLine.updatableCount1Qty - soLine.inputQty;
+          soLine.QtyReceived = soLine.QtyReceived - soLine.updatableCount1Qty + soLine.inputQty;
+          soLine.updatableCount1Qty = soLine.inputQty;
+          //this.qtyList[this.count] = soLine.updatableQty;
+          return true;
+        }
+      } else if (this.soHeader.CountNumber == "2") {
+        if ((soLine.QtyReceived + soLine.inputQty - soLine.updatableCount2Qty) > soLine.Quantity) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          soLine.QtyToReceive = soLine.QtyToReceive + soLine.updatableCount2Qty - soLine.inputQty;
+          soLine.QtyReceived = soLine.QtyReceived - soLine.updatableCount2Qty + soLine.inputQty;
+          soLine.updatableCount2Qty = soLine.inputQty;
+          //this.qtyList[this.count] = soLine.updatableQty;
+          return true;
+        }
       }
+
     }
   }
 
@@ -254,13 +291,30 @@ export class SalesListPage implements OnInit {
           text: 'Yes',
           handler: () => {
             if (this.pageType == "Sales-Order") {
-              soLine.QtyShipped -= soLine.updatableQty;
-              soLine.QtyToShip += soLine.updatableQty;
+              if (this.soHeader.CountNumber == "1") {
+                soLine.QtyShipped -= soLine.updatableCount1Qty;
+                soLine.QtyToShip += soLine.updatableCount1Qty;
+              } else if (this.soHeader.CountNumber == "2") {
+                soLine.QtyShipped -= soLine.updatableCount2Qty;
+                soLine.QtyToShip += soLine.updatableCount2Qty;
+              }
+
             } else {
-              soLine.QtyReceived -= soLine.updatableQty;
-              soLine.QtyToReceive += soLine.updatableQty;
+              if (this.soHeader.CountNumber == "1") {
+                soLine.QtyReceived -= soLine.updatableCount1Qty;
+                soLine.QtyToReceive += soLine.updatableCount1Qty;
+              } else if (this.soHeader.CountNumber == "2") {
+                soLine.QtyReceived -= soLine.updatableCount2Qty;
+                soLine.QtyToReceive += soLine.updatableCount2Qty;
+              }
+
             }
-            soLine.updatableQty = 0;
+            if (this.soHeader.CountNumber == "1") {
+              soLine.updatableCount1Qty = 0;
+            } else if (this.soHeader.CountNumber == "2") {
+              soLine.updatableCount2Qty = 0;
+            }
+
             soLine.inputQty = 0;
           }
         },

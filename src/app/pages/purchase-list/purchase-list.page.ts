@@ -90,7 +90,7 @@ export class PurchaseListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = "123456789"// this.paramService.deviceID;
+        dataTable.DeviceId = this.paramService.deviceID;// this.paramService.deviceID;
         dataTable.DocumentDate = this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
         dataTable.DocumentNum = this.poHeader.PurchId;
@@ -273,7 +273,7 @@ export class PurchaseListPage implements OnInit {
 
     } else {
       if (this.poHeader.CountNumber == "1") {
-        if ((-poLine.QtyReceived + poLine.inputQty - poLine.updatableCount1Qty) > (-poLine.Qty)) {
+        if ((this.mod(poLine.QtyReceived) + this.mod(poLine.inputQty)) > this.mod((poLine.Qty))) {
           this.presentToast("Rec item cannot be greater than Qty");
           //poLine.btnDisable = true;
           return false;
@@ -285,7 +285,7 @@ export class PurchaseListPage implements OnInit {
           return true;
         }
       } else if (this.poHeader.CountNumber == "2") {
-        if ((-poLine.QtyReceived + poLine.inputQty - poLine.updatableCount2Qty) > (-poLine.Qty)) {
+        if ((this.mod(poLine.QtyReceived) + this.mod(poLine.inputQty)) > this.mod((poLine.Qty))) {
           this.presentToast("Rec item cannot be greater than Qty");
           //poLine.btnDisable = true;
           return false;
@@ -350,5 +350,9 @@ export class PurchaseListPage implements OnInit {
   valueChanged(poLine: PurchLineModel) {
     poLine.isSaved = false;
   }
-
+  mod(n:any){
+    if(n==0) return 0;
+    else if(n > 0) return n;
+    else return -n;
+  }
 }

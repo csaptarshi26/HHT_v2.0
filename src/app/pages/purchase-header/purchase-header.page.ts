@@ -28,7 +28,7 @@ export class PurchaseHeaderPage implements OnInit {
   itemExistsInStorage: boolean;
   searchByPo: boolean = true;
   poNo: any = "";
-  
+
   constructor(public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
     public storageService: StorageService, public loadingController: LoadingController,
@@ -120,7 +120,7 @@ export class PurchaseHeaderPage implements OnInit {
 
   getPurchReturnOrdersLine() {
     this.axService.readPOReturnLineList(this.selectedPurchOrder.PurchId).subscribe(res => {
-      this.selectedPurchOrder.PurchLines = res;      
+      this.selectedPurchOrder.PurchLines = res;
     }, error => {
 
     })
@@ -188,41 +188,80 @@ export class PurchaseHeaderPage implements OnInit {
   }
 
   getVendorByPO() {
-    this.axService.getVendorByPO(this.poNo).subscribe(res => {
-      if (!res.PurchId) {
-        this.AlertForPoError();
-      } else {
-        this.selectedPurchOrder = res;
-        this.selectedPurchOrder.InvoiceDate = new Date().toUTCString();
-        this.selectedPurchOrder.CountNumber = "1";
-        this.vendorList.forEach(el => {
-          if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
-            this.selectedVendor = el;
-            $('.ui.fluid.dropdown').dropdown('set selected', [this.selectedVendor.displayText]);
-            $('.ui.dropdown').addClass("disabled");
-          }
-        })
-
-        var poItem: PurchTableModel;
-        var flag = false;
-        if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
-          this.poSotrageItemList.forEach(el => {
-            if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
-              this.itemExistsInStorage = true;
-              poItem = el.poHeader;
-              flag = true;
+    if (this.pageType == "Receive") {
+      this.axService.getVendorByPO(this.poNo).subscribe(res => {
+        if (!res.PurchId) {
+          this.AlertForPoError();
+        } else {
+          this.selectedPurchOrder = res;
+          this.selectedPurchOrder.InvoiceDate = new Date().toUTCString();
+          this.selectedPurchOrder.CountNumber = "1";
+          this.vendorList.forEach(el => {
+            if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
+              this.selectedVendor = el;
+              $('.ui.fluid.dropdown').dropdown('set selected', [this.selectedVendor.displayText]);
+              $('.ui.dropdown').addClass("disabled");
             }
           })
-          this.itemExistsInStorage = flag;
-          if (this.itemExistsInStorage) {
-            this.presentAlert(poItem);
+
+          var poItem: PurchTableModel;
+          var flag = false;
+          if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
+            this.poSotrageItemList.forEach(el => {
+              if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
+                this.itemExistsInStorage = true;
+                poItem = el.poHeader;
+                flag = true;
+              }
+            })
+            this.itemExistsInStorage = flag;
+            if (this.itemExistsInStorage) {
+              this.presentAlert(poItem);
+            }
           }
         }
-      }
 
-    }, error => {
+      }, error => {
 
-    })
+      })
+    } else {
+      this.axService.getVendorByPOReturn(this.poNo).subscribe(res => {
+        if (!res.PurchId) {
+          this.AlertForPoError();
+        } else {
+          this.selectedPurchOrder = res;
+          this.selectedPurchOrder.InvoiceDate = new Date().toUTCString();
+          this.selectedPurchOrder.CountNumber = "1";
+          this.vendorList.forEach(el => {
+            if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
+              this.selectedVendor = el;
+              $('.ui.fluid.dropdown').dropdown('set selected', [this.selectedVendor.displayText]);
+              $('.ui.dropdown').addClass("disabled");
+            }
+          })
+  
+          var poItem: PurchTableModel;
+          var flag = false;
+          if (this.poSotrageItemList != null || this.poSotrageItemList.length != 0) {
+            this.poSotrageItemList.forEach(el => {
+              if (el.poNo == this.selectedPurchOrder.PurchId && el.type == this.pageType) {
+                this.itemExistsInStorage = true;
+                poItem = el.poHeader;
+                flag = true;
+              }
+            })
+            this.itemExistsInStorage = flag;
+            if (this.itemExistsInStorage) {
+              this.presentAlert(poItem);
+            }
+          }
+        }
+  
+      }, error => {
+  
+      })
+    }
+
   }
   poSelected(po: PurchTableModel) {
     this.selectedPurchOrder = po;
@@ -255,7 +294,7 @@ export class PurchaseHeaderPage implements OnInit {
       $('.ui.dropdown').addClass("disabled");
     } else {
       $('.ui.dropdown').removeClass("disabled");
-      
+
     }
     //this.selectedVendor.displayText = "";
   }

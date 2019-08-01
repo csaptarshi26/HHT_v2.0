@@ -22,6 +22,7 @@ export class PurchLineModel {
     dataSavedToList: boolean;
     toggle: boolean = true;
 
+    headerCountNumber:any;
 
     btnDisable: boolean = true;
     constructor() {

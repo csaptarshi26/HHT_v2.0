@@ -331,4 +331,18 @@ export class AxService {
     };
     return this.http.post(url, body, httpOptions);
   }
+  getVendorByPOReturn(purchid): Observable<any> {
+    let url = this.baseAddress + "readVendorNameByPOReturn";
+    let body = {
+      "LocationId": this.paramService.Location.LocationId,
+      "DataAreaId": this.paramService.dataAreaId,
+      "PurchId": purchid,
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
 }
