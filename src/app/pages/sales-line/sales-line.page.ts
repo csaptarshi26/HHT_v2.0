@@ -1,3 +1,4 @@
+import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { SalesLineModel } from './../../models/STPSalesLine.model';
@@ -8,7 +9,7 @@ import { DataService } from 'src/app/providers/dataService/data.service';
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
-import { ToastController, AlertController, IonInput, LoadingController } from '@ionic/angular';
+import { ToastController, AlertController, IonInput, LoadingController, IonSearchbar } from '@ionic/angular';
 declare var $: any;
 @Component({
   selector: 'app-sales-line',
@@ -34,13 +35,15 @@ export class SalesLinePage implements OnInit {
   qtyList: any[] = [];
   count: any = -1;
 
-  @ViewChild("input") barcodeInput: IonInput;
+  soItemSotrageList: any = [];
+  @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
 
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public axService: AxService, public router: Router,
     public paramService: ParameterService, private activateRoute: ActivatedRoute, private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController,
-    public loadingController: LoadingController, public changeDetectorref: ChangeDetectorRef) {
+    public loadingController: LoadingController, public changeDetectorref: ChangeDetectorRef,
+    public storageServ:StorageService) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
@@ -382,5 +385,74 @@ export class SalesLinePage implements OnInit {
       this.dataServ.setSOReturnList(this.soLineList);
     }
     this.router.navigateByUrl('/sales-list/' + this.pageType);
+  }
+
+  backBtn() {
+    if (this.count >= 0) {
+      this.presentAlertForstoragebckUp();
+    }
+  }
+
+  async presentAlertForstoragebckUp() {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Do you want to Keep the unprocessed data?`,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.paramService.POItemList != null) {
+              this.soItemSotrageList = this.paramService.POItemList;
+            } else {
+              this.soItemSotrageList = [];
+            }
+            this.soLineList.forEach(el => {
+              if (this.soHeader.CountNumber == "1") {
+                if (el.updatableCount1Qty == 0) {
+                  el.Count1Qty = el.Count1Qty;
+                } else {
+                  el.Count1Qty = el.updatableCount1Qty;
+                }
+
+              } else if (this.soHeader.CountNumber == "2") {
+                if (el.updatableCount2Qty == 0) {
+                  el.Count2Qty = el.Count2Qty;
+                } else {
+                  el.Count2Qty = el.updatableCount2Qty;
+                }
+              }
+            })
+            var flag = 0;
+            this.soItemSotrageList.forEach(el => {
+              if (el.poNo == this.soHeader.DocumentNo) {
+                el.type = this.pageType;
+                el.poNo = this.soHeader.DocumentNo;
+                el.poHeader = this.soHeader;
+                flag = 1;
+              }
+            });
+            if (flag == 0) {
+              this.soItemSotrageList.push(
+                {
+                  type: this.pageType,
+                  poNo: this.soHeader.DocumentNo,
+                  poHeader: this.soHeader
+                }
+              )
+            }
+            this.storageServ.setPOItemList(this.soItemSotrageList);
+            this.paramService.POItemList = this.soItemSotrageList;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+            this.soLineList.forEach(el => el.isVisible = false);
+
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 }

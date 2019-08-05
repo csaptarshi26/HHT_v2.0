@@ -53,15 +53,26 @@ export class SalesListPage implements OnInit {
       if (this.dataUpdatedToServer) {
         this.removeElementFromStorageList();
       } else {
-        this.soItemSotrageList.push(
-          {
-            type: this.pageType,
-            soNo: this.soHeader.DocumentNo,
-            soHeader: this.soHeader
+        var flag = 0;
+        this.soItemSotrageList.forEach(el => {
+          if (el.poNo == this.soHeader.DocumentNo) {
+            el.type = this.pageType;
+            el.soNo = this.soHeader.DocumentNo;
+            el.soHeader = this.soHeader;
+            flag = 1;
           }
-        )
+        });
+        if (flag == 0) {
+          this.soItemSotrageList.push(
+            {
+              type: this.pageType,
+              soNo: this.soHeader.DocumentNo,
+              soHeader: this.soHeader,
+            }
+          )
+        }
         this.storeDataInStorage();
-        this.paramService.SOItemList = this.soItemSotrageList;
+        this.paramService.POItemList = this.soItemSotrageList;
       }
     });
   }

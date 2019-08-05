@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import { CommonModel } from './../../models/STPCommon.model';
 import { Injectable } from '@angular/core';
 import { HTTP } from '@ionic-native/http/ngx';
@@ -39,11 +40,11 @@ export class AxService {
     let url = "https://schnellservicesit.azurewebsites.net/api/D365Integration/SaveD365Products";
     let bodyArr =[];
     let body =
-      {
+      [{
         "ProductTypeName": "Product",
         "BCProductId": "BCProd6",
         "ProductName": "Schnell Finance Product6",
-        "ProductPrice": "720.00",
+        "ProductPrice": "110.00",
         "ProductCurrency": "AED",
         "ProductPriceROW": "800.00",
         "ProductCurrencyROW": "USD",
@@ -57,21 +58,20 @@ export class AxService {
         {
           "ProductDetailsTypeName": "Feature",
           "ProductDetails": "VAT Test"
-        }
-          ,
+        },
         {
           "ProductDetailsTypeName": "Feature",
           "ProductDetails": "VAT Test Feature S"
         }]
-      };
+      }];
     bodyArr.push(body);
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzY2huZWxsZDM2NUB5b3BtYWlsLmNvbSIsImp0aSI6IjdkNTY4MzUwLThkNzctNDZmNy04OWVjLWFmZGJmMDU2MzRkMyIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZTdkZjNiMWYtYWExOS00N2RjLWE3NWEtZDlmNDFkMWUyNzdjIiwiZXhwIjoxNTY2NjQ1MDE0LCJpc3MiOiJodHRwczovL3d3dy5vcHRpc29sYnVzaW5lc3MuY29tLyIsImF1ZCI6Imh0dHBzOi8vd3d3Lm9wdGlzb2xidXNpbmVzcy5jb20vIn0.cCYQqLnrx4_7MgZ_OwStKeUHSRtsK7WNrnQqeYbBWNU'
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzY2huZWxsZDM2NUB5b3BtYWlsLmNvbSIsImp0aSI6IjkyMTg5N2YzLTYzY2EtNDdmMC1iOGU3LTE2OGYzNmZlYmFjZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiZTdkZjNiMWYtYWExOS00N2RjLWE3NWEtZDlmNDFkMWUyNzdjIiwiZXhwIjoxNTY3NTAyNTUyLCJpc3MiOiJodHRwczovL3d3dy5vcHRpc29sYnVzaW5lc3MuY29tLyIsImF1ZCI6Imh0dHBzOi8vd3d3Lm9wdGlzb2xidXNpbmVzcy5jb20vIn0.oQjkPOyitMHkdMoGjzmqsId6ircNWyp_bEboBxTdqzA'
       })
     };
-    return this.http.post(url,JSON.stringify(bodyArr), httpOptions);
+    return this.http.post(url,body, httpOptions);
   }
 
   getCurrentDate() {

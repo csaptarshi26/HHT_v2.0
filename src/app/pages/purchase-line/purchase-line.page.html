@@ -16,7 +16,7 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <ion-searchbar [(ngModel)]="barcode" (ionChange)="searchBarcode()" #input id="barcodeInput"
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="searchBarcode()" #input id="barcodeInput"
         (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
 
       <!-- <ion-item lines="none" class="ionItemInput">
@@ -24,7 +24,8 @@
           [(ngModel)]="barcode" (ionChange)="searchBarcode()" (click)="clearBarcode()" >
         </ion-input>
       </ion-item> -->
-      Total Scan Qty: {{scannedQty}}
+      <span *ngIf="poHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
+      <span *ngIf="poHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>
     </ion-card-content>
   </ion-card>
 

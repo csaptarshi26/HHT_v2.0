@@ -114,7 +114,7 @@ export class StockCountPage implements OnInit {
     //   function () { }  //  Failure in sending the intent, not failure of DW to process the intent.
     // );
   }
-
+ 
   scanByCamera() {
     this.barcodeScanner.scan().then(barcodeData => {
       console.log('Barcode data', barcodeData);
@@ -151,6 +151,14 @@ export class StockCountPage implements OnInit {
       this.scannedQty2 = 0;
     }
     else {
+      this.dataServ.getitemListFromSCList$.subscribe(res => {
+        console.log(res);
+        if (res) {
+          this.itemList = res;
+        }
+      }, error => {
+
+      })
       if (this.CountNumber == "1") {
         this.scannedQty1 = this.calculateItemListQty(this.CountNumber);
       } else if (this.CountNumber == "2") {
@@ -334,6 +342,9 @@ export class StockCountPage implements OnInit {
     this.setBarcodeFocus();
   }
   confirm(item: ItemModel) {
+    if (item.BarCode == "") {
+      return false;
+    }
     if (item.quantity == 0 || item.quantity == null) {
       item.isSaved = false;
     } else {

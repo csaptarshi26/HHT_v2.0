@@ -1,3 +1,4 @@
+import { IqtyList } from './../../models/IQtyModel';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { StorageService } from './../../providers/storageService/storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,13 +23,14 @@ export class PurchaseLinePage implements OnInit {
   poHeader: PurchTableModel;
   poLineList: PurchLineModel[] = [];
   user: any;
-  scannedQty: any = 0;
+  scannedQty1: any = 0;
+  scannedQty2: any = 0;
   pageType: any;
 
   itemBarcode: any = "";
 
   poItemSotrageList: any = [];
-  qtyList: any[] = [];
+  qtyList: IqtyList[] = [{} as IqtyList];
 
   poLine: PurchLineModel = {} as PurchLineModel;
   count: any = -1;
@@ -62,6 +64,22 @@ export class PurchaseLinePage implements OnInit {
     //   });
   }
 
+  getScannedQty() {
+    this.poLineList.forEach(el => {
+      if (el.isVisible) {
+        if (this.poHeader.CountNumber == "1") {
+          this.qtyList.push(this.getQtyObj(this.poHeader.CountNumber, el.updatableCount1Qty))
+        } else if (this.poHeader.CountNumber == "2") {
+          this.qtyList.push(this.getQtyObj(this.poHeader.CountNumber, el.updatableCount2Qty))
+        }
+      }
+    })
+    if (this.poHeader.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.poHeader.CountNumber);
+    } else if (this.poHeader.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.poHeader.CountNumber);
+    }
+  }
   scanByCamera() {
     this.barcodeScanner.scan().then(barcodeData => {
       console.log('Barcode data', barcodeData);
@@ -76,10 +94,10 @@ export class PurchaseLinePage implements OnInit {
   }
   ngOnInit() {
     this.getPoLineData();
+    this.getScannedQty();
     //this.getStorageData();
     this.user = this.paramService.userId
   }
-
   getPoLineData() {
     if (this.pageType == "Receive") {
       this.dataServ.getPO$.subscribe(res => {
@@ -235,13 +253,13 @@ export class PurchaseLinePage implements OnInit {
           poLine.QtyReceived = 0;
         } else if (poLine.Count1Qty == -poLine.Qty) {
           poLine.QtyToReceive = 0;
-          poLine.QtyReceived = -poLine.Qty;
+          poLine.QtyReceived = poLine.Qty;
         } else if (poLine.Count1Qty > 0) {
-          poLine.QtyToReceive = -poLine.Qty - poLine.Count1Qty;
-          poLine.QtyReceived = poLine.Count1Qty;
+          poLine.QtyToReceive = -(this.mod(poLine.Qty) - poLine.Count1Qty);
+          poLine.QtyReceived = -poLine.Count1Qty;
         } else if (poLine.Count1Qty == -poLine.Qty && poLine.Count2Qty == -poLine.Qty) {
           poLine.QtyToReceive = 0;
-          poLine.QtyReceived = -poLine.Qty;
+          poLine.QtyReceived = poLine.Qty;
         }
       }
     } else if (this.poHeader.CountNumber == "2") {
@@ -271,7 +289,7 @@ export class PurchaseLinePage implements OnInit {
         if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
 
         } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
-          poLine.QtyToReceive = -poLine.Qty - poLine.Count2Qty;
+          poLine.QtyToReceive =-(this.mod(poLine.Qty) - poLine.Count2Qty);
           poLine.QtyReceived = poLine.Count2Qty;
         } else if (poLine.Count1Qty == -poLine.Qty && poLine.Count2Qty == -poLine.Qty) {
           poLine.QtyToReceive = 0;
@@ -281,13 +299,13 @@ export class PurchaseLinePage implements OnInit {
           poLine.QtyReceived = poLine.Count2Qty;
         } else if (poLine.Count2Qty == -poLine.Qty) {
           poLine.QtyToReceive = 0;
-          poLine.QtyReceived = -poLine.Qty;
+          poLine.QtyReceived = poLine.Qty;
         } else if (poLine.Count1Qty > 0 && poLine.Count2Qty == 0) {
           poLine.QtyToReceive = poLine.Qty;
           poLine.QtyReceived = 0;
         } else if (poLine.Count1Qty > 0 && poLine.Count2Qty > 0) {
-          poLine.QtyToReceive = -poLine.Qty - poLine.Count2Qty;
-          poLine.QtyReceived = poLine.Count2Qty;
+          poLine.QtyToReceive = poLine.Qty + poLine.Count2Qty;
+          poLine.QtyReceived = -poLine.Count2Qty;
         }
       }
 
@@ -314,19 +332,20 @@ export class PurchaseLinePage implements OnInit {
       poLine.isSaved = false;
       poLine.toggle = false;
     }
-    var sum = 0;
-    this.qtyList.forEach(data => {
-      sum += data;
-    })
-    this.scannedQty = sum;
+    if (this.poHeader.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.poHeader.CountNumber);
+    } else if (this.poHeader.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.poHeader.CountNumber);
+    }
     this.setBarcodeFocus();
   }
-  calculateSum() {
+  calculateSum(count) {
     var sum = 0;
     this.qtyList.forEach(el => {
-      sum = sum + el;
+      if (count == el.countNumber) {
+        sum = sum + +el.qty;
+      }
     })
-
     return sum;
   }
 
@@ -335,6 +354,7 @@ export class PurchaseLinePage implements OnInit {
   }
   qtyRecCheck(poLine: PurchLineModel) {
     poLine.isSaved = false;
+    var len = this.getVisibleItemScannedQty(this.poHeader.PurchLines)
     if (poLine.inputQty < 0) {
       this.presentToast("Qty Cann't be Negative");
       return false;
@@ -353,10 +373,10 @@ export class PurchaseLinePage implements OnInit {
         poLine.QtyReceived += poLine.inputQty;
         if (this.poHeader.CountNumber == "1") {
           poLine.updatableCount1Qty += poLine.inputQty;
-          this.qtyList[this.count] = poLine.updatableCount1Qty;
+          this.qtyList[len] = this.getQtyObj(this.poHeader.CountNumber, poLine.updatableCount1Qty);
         } else if (this.poHeader.CountNumber == "2") {
           poLine.updatableCount2Qty += poLine.inputQty;
-          this.qtyList[this.count] = poLine.updatableCount2Qty;
+          this.qtyList[len] = this.getQtyObj(this.poHeader.CountNumber, poLine.updatableCount2Qty);
         }
         poLine.inputQty = "";
         return true;
@@ -368,18 +388,35 @@ export class PurchaseLinePage implements OnInit {
         return false;
       } else {
         poLine.QtyToReceive -= -poLine.inputQty;
-        poLine.QtyReceived += -poLine.inputQty;
+        poLine.QtyReceived = poLine.QtyReceived -poLine.inputQty;
         if (this.poHeader.CountNumber == "1") {
           poLine.updatableCount1Qty += poLine.inputQty;
-          this.qtyList[this.count] = poLine.updatableCount1Qty;
+          this.qtyList[len] = this.getQtyObj(this.poHeader.CountNumber, poLine.updatableCount1Qty);
         } else if (this.poHeader.CountNumber == "2") {
           poLine.updatableCount2Qty += poLine.inputQty;
-          this.qtyList[this.count] = poLine.updatableCount2Qty;
+          this.qtyList[len] = this.getQtyObj(this.poHeader.CountNumber, poLine.updatableCount2Qty);
         }
         poLine.inputQty = "";
         return true;
       }
     }
+  }
+  getQtyObj(header, qty) {
+    var obj = {} as IqtyList;
+    obj.countNumber = header;
+    obj.qty = qty;
+
+    return obj;
+  }
+  getVisibleItemScannedQty(poLine: PurchLineModel[]) {
+    let len = 0;
+    poLine.forEach(el => {
+      if (el.isVisible) {
+        len++;
+      }
+    })
+
+    return len;
   }
   async presentAlert(poLine: PurchLineModel) {
     const alert = await this.alertController.create({
@@ -402,15 +439,18 @@ export class PurchaseLinePage implements OnInit {
                 poLine.QtyReceived -= -poLine.updatableCount1Qty;
                 poLine.QtyToReceive -= poLine.updatableCount1Qty;
               } else if (this.poHeader.CountNumber == "2") {
-                poLine.QtyReceived -= -poLine.updatableCount1Qty;
-                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+                poLine.QtyReceived -= -poLine.updatableCount2Qty;
+                poLine.QtyToReceive -= poLine.updatableCount2Qty;
               }
             }
             if (this.poHeader.CountNumber == "1") {
+              this.scannedQty1 = this.scannedQty1 - poLine.updatableCount1Qty;
               poLine.updatableCount1Qty = 0;
             } else if (this.poHeader.CountNumber == "2") {
+              this.scannedQty2 = this.scannedQty2 - poLine.updatableCount2Qty;
               poLine.updatableCount2Qty = 0;
             }
+
           }
         },
         {
@@ -535,7 +575,7 @@ export class PurchaseLinePage implements OnInit {
         {
           text: 'No',
           handler: () => {
-            this.poLineList.forEach(el=> el.isVisible = false);
+            this.poLineList.forEach(el => el.isVisible = false);
 
           }
         }
@@ -544,9 +584,9 @@ export class PurchaseLinePage implements OnInit {
     await alert.present();
   }
 
-  mod(n:any){
-    if(n==0) return 0;
-    else if(n > 0) return n;
+  mod(n: any) {
+    if (n == 0) return 0;
+    else if (n > 0) return n;
     else return -n;
   }
 }

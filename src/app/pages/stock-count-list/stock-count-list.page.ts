@@ -107,6 +107,8 @@ export class StockCountListPage implements OnInit {
 
     await alert.present();
   }
+
+ 
   async saveItem() {
     var lineNum = 1;
 
@@ -181,7 +183,7 @@ export class StockCountListPage implements OnInit {
       this.paramService.itemUpdated = true;
     } else {
       this.paramService.itemUpdated = false;
-     //this.storageService.setItemList(this.itemList);
+      //this.storageService.setItemList(this.itemList);
     }
     
   }
@@ -202,6 +204,7 @@ export class StockCountListPage implements OnInit {
             this.itemList = [...this.itemList];
             this.paramService.itemChanged = true;
             //this.storageService.setItemList(this.itemList);
+            this.dataServ.setitemListFromSCList(this.itemList);
           }
         },
         {

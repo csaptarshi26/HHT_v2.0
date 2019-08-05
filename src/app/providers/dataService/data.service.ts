@@ -58,8 +58,15 @@ export class DataService {
   private stockCountNumber = new BehaviorSubject<any>(0);
   getStockCountNumber$ = this.stockCountNumber.asObservable();
 
+  private itemListFromSCList = new BehaviorSubject<any>(0);
+  getitemListFromSCList$ = this.itemListFromSCList.asObservable();
+
   constructor() { }
 
+
+  setitemListFromSCList(data) {
+    this.itemListFromSCList.next(data);
+  }
   setPO(data) {
     this.purchaseSub.next(data);
   }
