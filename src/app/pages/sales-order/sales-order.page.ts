@@ -50,7 +50,6 @@ export class SalesOrderPage implements OnInit {
 
   soSelected(sales: SalesTable) {
     this.selectedSalesTable = sales;
-    this.selectedSalesTable.CountNumber = "1";
     var soItem: SalesTable;
     this.getSalesLine();
     if (this.soStorageItemList != null || this.soStorageItemList.length != 0) {
@@ -113,15 +112,33 @@ export class SalesOrderPage implements OnInit {
     })
   }
   navigateToNext() {
-    if (this.pageType == "Sales-Order") {
-      this.dataServ.setSO(this.selectedSalesTable);
+    if (!this.selectedSalesTable.CountNumber) {
+      this.presentAlertError("Please Select Count Number.");
     } else {
-      this.dataServ.setSOReturn(this.selectedSalesTable);
+      if (this.pageType == "Sales-Order") {
+        this.dataServ.setSO(this.selectedSalesTable);
+      } else {
+        this.dataServ.setSOReturn(this.selectedSalesTable);
+      }
+      this.router.navigateByUrl('/sales-line/' + this.pageType);
     }
-    this.router.navigateByUrl('/sales-line/' + this.pageType);
-
   }
+  async presentAlertError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: msg,
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
 
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
   getItemsFromStorage() {
     this.storageService.getAllValuesFromStorage.subscribe((res) => {
 

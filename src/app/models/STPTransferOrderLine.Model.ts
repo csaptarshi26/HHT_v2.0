@@ -9,11 +9,18 @@ export class TransferOrderLine {
     Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
-    updatableQty: number;
+    
     qtyDesc: any;
     BarCode: any;
-    //qtyReceivedFromServer:any;
 
+    qtyReceivedFromServer:any;
+    qtyShippedFromServer:any;
+    
+    updatableCount1Qty: any;
+    updatableCount2Qty: any;
+    Count1Qty:any;
+    Count2Qty:any;
+    
     inputQty:number;
 
     isVisible: boolean;

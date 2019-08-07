@@ -173,6 +173,9 @@ export class SalesLinePage implements OnInit {
         } else if (soLine.Count1Qty == 0 && soLine.Count2Qty > 0) {
           soLine.QtyToShip = soLine.Quantity;
           soLine.QtyShipped = 0;
+
+          // soLine.QtyToShip = soLine.Quantity - soLine.QtyReceivedServer;
+          // soLine.QtyShipped = soLine.QtyReceivedServer;
         } else if (soLine.Count1Qty == soLine.Quantity) {
           soLine.QtyToShip = 0;
           soLine.QtyShipped = soLine.Quantity;

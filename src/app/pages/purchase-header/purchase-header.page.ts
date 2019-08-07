@@ -127,7 +127,9 @@ export class PurchaseHeaderPage implements OnInit {
   }
   navigateToNext() {
     if (!this.selectedPurchOrder.InvoiceId) {
-      this.presentAlertError();
+      this.presentAlertError("Please Enter Invoice No.");
+    }else if(!this.selectedPurchOrder.CountNumber){
+      this.presentAlertError("Please Select Count Number.");
     } else {
       this.poLineList = this.selectedPurchOrder.PurchLines;
       if (this.pageType == "Receive") {
@@ -138,10 +140,10 @@ export class PurchaseHeaderPage implements OnInit {
       this.router.navigateByUrl('/purchase-line/' + this.pageType);
     }
   }
-  async presentAlertError() {
+  async presentAlertError(msg) {
     const alert = await this.alertController.create({
       header: 'Error',
-      message: 'Please Enter Invoice No.',
+      message: msg,
       buttons: [
         {
           text: 'Okay',
@@ -195,7 +197,6 @@ export class PurchaseHeaderPage implements OnInit {
         } else {
           this.selectedPurchOrder = res;
           this.selectedPurchOrder.InvoiceDate = new Date().toUTCString();
-          this.selectedPurchOrder.CountNumber = "1";
           this.vendorList.forEach(el => {
             if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
               this.selectedVendor = el;
@@ -231,7 +232,6 @@ export class PurchaseHeaderPage implements OnInit {
         } else {
           this.selectedPurchOrder = res;
           this.selectedPurchOrder.InvoiceDate = new Date().toUTCString();
-          this.selectedPurchOrder.CountNumber = "1";
           this.vendorList.forEach(el => {
             if (el.VendAccount == this.selectedPurchOrder.VendorAccount) {
               this.selectedVendor = el;
@@ -266,7 +266,6 @@ export class PurchaseHeaderPage implements OnInit {
   poSelected(po: PurchTableModel) {
     this.selectedPurchOrder = po;
     this.selectedPurchOrder.InvoiceDate = new Date().toUTCString();
-    this.selectedPurchOrder.CountNumber = "1";
     if (this.pageType == "Receive") {
       this.getPurchOrdersLine();
     } else {

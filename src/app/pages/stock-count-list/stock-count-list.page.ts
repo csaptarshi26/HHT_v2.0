@@ -124,7 +124,7 @@ export class StockCountListPage implements OnInit {
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = lineNum;
         dataTable.CountNumber = el.CountNumber;
-
+        dataTable.zone = el.zone;
         if (el.quantity == 0 || el.quantity < 0 || el.quantity == "") {
           this.presentAlert("Qty can't be blank");
           return false;

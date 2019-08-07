@@ -34,7 +34,7 @@ export class StockCountPage implements OnInit {
   scannedQty2: any = 0;
   user: any;
   CountNumber: any = "1";
-
+  zone:any="";
   qtyList: IqtyList[] = [{} as IqtyList];
 
   editField: boolean = false;
@@ -273,6 +273,8 @@ export class StockCountPage implements OnInit {
     if (this.barcode != null && this.barcode.length > 3) {
       if (!this.CountNumber) {
         this.presentAlertForError("Please Select Count Number ");
+      }else if (!this.zone) {
+        this.presentAlertForError("Please Select Zone ");
       } else {
         this.searchBarcode();
       }
@@ -318,6 +320,7 @@ export class StockCountPage implements OnInit {
           this.setBarcodeFocus();
         }
         this.item.CountNumber = this.CountNumber;
+        this.item.zone = this.zone;
         this.itemList.push(this.item);
         this.itemList.reverse();
         // this.itemList.push(this.item);
@@ -381,6 +384,8 @@ export class StockCountPage implements OnInit {
   showList() {
     if (!this.CountNumber) {
       this.presentAlertForError("Please Select Count Number");
+    }else if(!this.zone){
+      this.presentAlertForError("Please Select Zone");
     } else {
       this.dataServ.setItemList(this.itemList);
       this.dataServ.setStockCountNumber(this.CountNumber);

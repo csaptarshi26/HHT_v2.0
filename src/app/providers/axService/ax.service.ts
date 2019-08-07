@@ -184,6 +184,20 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
+  readTransOrdersOutLine(transferId: any): Observable<any> {
+    let url = this.baseAddress + "readTransOrdersOutLine";
+    let body = {
+      "DataAreaId": this.paramService.dataAreaId,
+      "TransferId": transferId
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
   readPOReturnList(vendAcc: any): Observable<any> {
     let url = this.baseAddress + "readPOReturnList";
     let body = {

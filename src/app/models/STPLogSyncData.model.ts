@@ -24,6 +24,7 @@ export class STPLogSyncDetailsModel {
 	FromWMSLocationId: any;
 	ToWMSLocationId: any;
 	CountNumber:any;
+	zone:any;
 	constructor() {
 
 	}

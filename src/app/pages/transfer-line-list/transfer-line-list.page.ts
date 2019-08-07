@@ -60,7 +60,11 @@ export class TransferLineListPage implements OnInit {
     }
 
     this.toLineList.forEach(el => {
-      el.inputQty = el.updatableQty;
+      if (this.toHeader.CountNumber == "1") {
+        el.inputQty = el.updatableCount1Qty;
+      } else if (this.toHeader.CountNumber == "2") {
+        el.inputQty = el.updatableCount2Qty;
+      }
     })
   }
 
@@ -87,7 +91,7 @@ export class TransferLineListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId =  this.paramService.deviceID;
+        dataTable.DeviceId = this.paramService.deviceID;
         dataTable.DocumentDate = this.toHeader.ReceiveDate;
         dataTable.ItemId = el.ItemNo;
         dataTable.DocumentNum = this.toHeader.JournalId;
@@ -101,7 +105,11 @@ export class TransferLineListPage implements OnInit {
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = el.LineNo;
 
-        dataTable.Quantity = el.updatableQty;
+        if (this.toHeader.CountNumber == "1") {
+          dataTable.Quantity = el.updatableCount1Qty;
+        } else if (this.toHeader.CountNumber == "2") {
+          dataTable.Quantity = el.updatableCount2Qty;
+        }
         dataTable.TransactionType = 3;
         dataTable.UnitId = el.UnitOfMeasure;
         dataTable.User = this.user;
@@ -136,33 +144,62 @@ export class TransferLineListPage implements OnInit {
     }
   }
   clearQtyToRec(toLine: TransferOrderLine) {
-    
+
   }
   recQtyChanged(toLine: TransferOrderLine) {
     toLine.isSaved = false;
   }
   qtyRecCheck(toLine: TransferOrderLine) {
-    if (this.pageType == "Transfer-out") {
-      if ((toLine.QtyShipped + toLine.inputQty  - toLine.updatableQty) > toLine.Quantity || (toLine.inputQty - toLine.updatableQty) > toLine.QtyToShip) {
-        this.presentToast("Rec item cannot be greater than Qty");
-        return false;
+    if (this.toHeader.CountNumber == "1") {
+      if (this.pageType == "Transfer-out") {
+        if ((toLine.QtyShipped + toLine.inputQty - toLine.updatableCount1Qty) > toLine.Quantity || 
+        (toLine.inputQty - toLine.updatableCount1Qty) > toLine.QtyToShip) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          toLine.QtyToShip = toLine.QtyToShip + toLine.updatableCount1Qty - toLine.inputQty;
+          toLine.QtyShipped = toLine.QtyShipped - toLine.updatableCount1Qty + toLine.inputQty;
+          toLine.updatableCount1Qty = toLine.inputQty;
+          return true;
+        }
       } else {
-        toLine.QtyToShip = toLine.QtyToShip + toLine.updatableQty - toLine.inputQty;
-        toLine.QtyShipped = toLine.QtyShipped - toLine.updatableQty + toLine.inputQty;
-        toLine.updatableQty = toLine.inputQty;
-        return true;
+        if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableCount1Qty) > toLine.Quantity ||
+         (toLine.inputQty - toLine.updatableCount1Qty) > toLine.QtyToReceive) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          toLine.QtyToReceive = toLine.QtyToReceive + toLine.updatableCount1Qty - toLine.inputQty;
+          toLine.QtyReceived = toLine.QtyReceived - toLine.updatableCount1Qty + toLine.inputQty;
+          toLine.updatableCount1Qty = toLine.inputQty;
+          return true;
+        }
       }
-    } else {
-      if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableQty) > toLine.Quantity || (toLine.inputQty - toLine.updatableQty) > toLine.QtyToReceive) {
-        this.presentToast("Rec item cannot be greater than Qty");
-        return false;
+    } else if (this.toHeader.CountNumber == "2") {
+      if (this.pageType == "Transfer-out") {
+        if ((toLine.QtyShipped + toLine.inputQty - toLine.updatableCount2Qty) > toLine.Quantity || 
+        (toLine.inputQty - toLine.updatableCount2Qty) > toLine.QtyToShip) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          toLine.QtyToShip = toLine.QtyToShip + toLine.updatableCount2Qty - toLine.inputQty;
+          toLine.QtyShipped = toLine.QtyShipped - toLine.updatableCount2Qty + toLine.inputQty;
+          toLine.updatableCount2Qty = toLine.inputQty;
+          return true;
+        }
       } else {
-        toLine.QtyToReceive = toLine.QtyToReceive + toLine.updatableQty - toLine.inputQty;
-        toLine.QtyReceived = toLine.QtyReceived - toLine.updatableQty + toLine.inputQty;
-        toLine.updatableQty = toLine.inputQty;
-        return true;
+        if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableCount2Qty) > toLine.Quantity ||
+        (toLine.inputQty - toLine.updatableCount2Qty) > toLine.QtyToReceive) {
+          this.presentToast("Rec item cannot be greater than Qty");
+          return false;
+        } else {
+          toLine.QtyToReceive = toLine.QtyToReceive + toLine.updatableCount2Qty - toLine.inputQty;
+          toLine.QtyReceived = toLine.QtyReceived - toLine.updatableCount2Qty + toLine.inputQty;
+          toLine.updatableCount2Qty = toLine.inputQty;
+          return true;
+        }
       }
     }
+
   }
 
   async presentAlert() {
@@ -173,7 +210,7 @@ export class TransferLineListPage implements OnInit {
         {
           text: 'Okay',
           handler: () => {
-            this.router.navigateByUrl('/transfer');  
+            this.router.navigateByUrl('/transfer');
           }
         }
       ]
@@ -190,15 +227,27 @@ export class TransferLineListPage implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-            if (this.pageType == "Transfer-out") {
-              toLine.QtyShipped -= toLine.updatableQty;
-              toLine.QtyToShip += toLine.updatableQty;
-            } else {
-              toLine.QtyReceived -= toLine.updatableQty;
-              toLine.QtyToReceive += toLine.updatableQty;
+            if (this.toHeader.CountNumber == "1") {
+              if (this.pageType == "Transfer-out") {
+                toLine.QtyShipped -= toLine.updatableCount1Qty;
+                toLine.QtyToShip += toLine.updatableCount1Qty;
+              } else {
+                toLine.QtyReceived -= toLine.updatableCount1Qty;
+                toLine.QtyToReceive += toLine.updatableCount1Qty;
+              }
+              toLine.updatableCount1Qty = 0;
+              toLine.inputQty = 0;
+            } else if (this.toHeader.CountNumber == "2") {
+              if (this.pageType == "Transfer-out") {
+                toLine.QtyShipped -= toLine.updatableCount2Qty;
+                toLine.QtyToShip += toLine.updatableCount2Qty;
+              } else {
+                toLine.QtyReceived -= toLine.updatableCount2Qty;
+                toLine.QtyToReceive += toLine.updatableCount2Qty;
+              }
+              toLine.updatableCount2Qty = 0;
+              toLine.inputQty = 0;
             }
-            toLine.updatableQty = 0;
-            toLine.inputQty = 0;
           }
         },
         {
@@ -231,13 +280,24 @@ export class TransferLineListPage implements OnInit {
       if (this.dataUpdatedToServer) {
         this.removeElementFromStorageList();
       } else {
-        this.toSotrageItemList.push(
-          {
-            type: this.pageType,
-            toNo: this.toHeader.JournalId,
-            toHeader: this.toHeader
+        var flag = 0;
+        this.toSotrageItemList.forEach(el => {
+          if (el.poNo == this.toHeader.JournalId) {
+            el.type= this.pageType,
+            el.toNo= this.toHeader.JournalId,
+            el.toHeader= this.toHeader
+            flag = 1;
           }
-        )
+        });
+        if (flag == 0) {
+          this.toSotrageItemList.push(
+            {
+              type: this.pageType,
+              toNo: this.toHeader.JournalId,
+              toHeader: this.toHeader,
+            }
+          )
+        }
         this.storeDataInStorage();
         this.paramService.TOItemList = this.toSotrageItemList;
       }

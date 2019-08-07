@@ -6,6 +6,7 @@ export class ItemModel {
     UnitFactor: any;
     CountNumber:any;
     quantity: any;
+    zone:any;
 
     visible: boolean;
     toggle: boolean;

@@ -47,21 +47,21 @@ export class TransferLinePage implements OnInit {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
-    let instance = this;
-    (<any>window).plugins.intentShim.registerBroadcastReceiver({
-      filterActions: ['com.steeples.hht.ACTION'
-        // 'com.zebra.ionicdemo.ACTION',
-        // 'com.symbol.datawedge.api.RESULT_ACTION'
-      ],
-      filterCategories: ['android.intent.category.DEFAULT']
-    },
-      function (intent) {
-        //  Broadcast received
-        instance.barcode = "";
-        console.log('Received Intent: ' + JSON.stringify(intent.extras));
-        instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
-        changeDetectorref.detectChanges();
-      });
+    // let instance = this;
+    // (<any>window).plugins.intentShim.registerBroadcastReceiver({
+    //   filterActions: ['com.steeples.hht.ACTION'
+    //     // 'com.zebra.ionicdemo.ACTION',
+    //     // 'com.symbol.datawedge.api.RESULT_ACTION'
+    //   ],
+    //   filterCategories: ['android.intent.category.DEFAULT']
+    // },
+    //   function (intent) {
+    //     //  Broadcast received
+    //     instance.barcode = "";
+    //     console.log('Received Intent: ' + JSON.stringify(intent.extras));
+    //     instance.barcode = intent.extras['com.symbol.datawedge.data_string'];
+    //     changeDetectorref.detectChanges();
+    //   });
   }
   ionViewWillEnter() {
     this.setBarcodeFocus();
@@ -115,6 +115,7 @@ export class TransferLinePage implements OnInit {
     this.toHeader.scannedQty = this.scannedQty;
   }
   async barcodeScan() {
+    console.log(this.toLineList);
     var visibleLine = [];
 
     if (this.barcode != null && this.barcode.length > 3) {
@@ -133,12 +134,17 @@ export class TransferLinePage implements OnInit {
 
             el.inputQty = 0;
             this.count++
-
+            if (el.QtyShipped) {
+              el.qtyShippedFromServer = el.QtyShipped;
+            }
+            if(el.QtyReceived){
+              el.qtyReceivedFromServer = el.QtyReceived;
+            }
             flag = true;
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
 
-            this.toLine = el;
+            this.toLine = this.chechCountNumber(el);
             visibleLine.push(counter);
           }
         });
@@ -187,60 +193,101 @@ export class TransferLinePage implements OnInit {
     })
     this.scannedQty = sum;
   }
-  async savePO() {
-    this.toLineList.forEach(el => {
-      var dataTable = {} as STPLogSyncDetailsModel;
-      if (el.isSaved && !el.dataSavedToList) {
-        dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId = this.paramService.deviceID;
-        dataTable.DocumentDate = this.toHeader.ReceiveDate;
-        dataTable.ItemId = el.ItemNo;
-        dataTable.DocumentNum = this.toHeader.JournalId;
-        if (this.pageType == "Transfer-out") {
-          dataTable.DocumentType = 4;
-        } else {
-          dataTable.DocumentType = 3;
-        }
-        dataTable.ItemLocation = this.paramService.Location.LocationId;
-        dataTable.UserLocation = this.paramService.Location.LocationId;
-        dataTable.LineNum = el.LineNo;
 
-        dataTable.Quantity = el.updatableQty;
-        dataTable.TransactionType = 3;
-        dataTable.UnitId = el.UnitOfMeasure;
-        dataTable.User = this.user;
-
-        el.dataSavedToList = true;
-        this.updateDataTableList.push(dataTable)
-      }
-    })
-
-    if (this.updateDataTableList.length > 0) {
-      const loading = await this.loadingController.create({
-        message: 'Please Wait'
-      });
-      await loading.present();
-      this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
-        if (res) {
-          this.presentToast("Line Updated successfully");
-          this.updateDataTableList = [];
-        } else {
-          this.presentToast("Error Updating Line");
-        }
-        loading.dismiss();
-      }, error => {
-        loading.dismiss();
-        console.log(error.message);
-      })
-    } else {
-      this.presentToast("Line Already Saved");
-    }
-  }
   clearQtyToRec(toLine: TransferOrderLine) {
     toLine.inputQty = 0;
   }
   recQtyChanged(toLine: TransferOrderLine) {
     toLine.isSaved = false;
+  }
+
+  chechCountNumber(toLine: TransferOrderLine) {
+    if (this.toHeader.CountNumber == "1") {
+      if (this.pageType == "Transfer-out") {
+        if (toLine.Count1Qty == 0 && toLine.Count2Qty == 0) {
+
+        } else if (toLine.Count1Qty == 0 && toLine.Count2Qty > 0) {
+          toLine.QtyToShip = toLine.Quantity;
+          toLine.QtyShipped = 0;
+
+          // toLine.QtyToShip = toLine.Quantity - toLine.QtyReceivedServer;
+          // toLine.QtyShipped = toLine.QtyReceivedServer;
+        } else if (toLine.Count1Qty == toLine.Quantity) {
+          toLine.QtyToShip = 0;
+          toLine.QtyShipped = toLine.Quantity;
+        } else if (toLine.Count1Qty > 0) {
+          toLine.QtyToShip = toLine.Quantity - toLine.Count1Qty;
+          toLine.QtyShipped = toLine.Count1Qty;
+        } else if (toLine.Count1Qty == toLine.Quantity && toLine.Count2Qty == toLine.Quantity) {
+          toLine.QtyToShip = 0;
+          toLine.QtyShipped = toLine.Quantity;
+        }
+      } else {
+        if (toLine.Count1Qty == 0 && toLine.Count2Qty == 0) {
+
+        } else if (toLine.Count1Qty == 0 && toLine.Count2Qty > 0) {
+          toLine.QtyToReceive = toLine.Quantity;
+          toLine.QtyReceived = 0;
+        } else if (toLine.Count1Qty == toLine.Quantity) {
+          toLine.QtyToReceive = 0;
+          toLine.QtyReceived = toLine.Quantity;
+        } else if (toLine.Count1Qty > 0) {
+          toLine.QtyToReceive = toLine.Quantity - toLine.Count1Qty;
+          toLine.QtyReceived = toLine.Count1Qty;
+        } else if (toLine.Count1Qty == toLine.Quantity && toLine.Count2Qty == toLine.Quantity) {
+          toLine.QtyToReceive = 0;
+          toLine.QtyReceived = toLine.Quantity;
+        }
+      }
+    } else if (this.toHeader.CountNumber == "2") {
+      if (this.pageType == "Transfer-out") {
+        if (toLine.Count1Qty == 0 && toLine.Count2Qty == 0) {
+
+        } else if (toLine.Count1Qty == 0 && toLine.Count2Qty > 0) {
+          toLine.QtyToShip = toLine.Quantity - toLine.Count2Qty;
+          toLine.QtyShipped = toLine.Count2Qty;
+        } else if (toLine.Count1Qty == toLine.Quantity && toLine.Count2Qty == toLine.Quantity) {
+          toLine.QtyToShip = 0;
+          toLine.QtyShipped = toLine.Quantity;
+        } else if (toLine.Count1Qty == toLine.Quantity && toLine.Count2Qty > 0) {
+          toLine.QtyToShip = toLine.Quantity - toLine.Count2Qty;
+          toLine.QtyShipped = toLine.Count2Qty;
+        } else if (toLine.Count2Qty == toLine.Quantity) {
+          toLine.QtyToShip = 0;
+          toLine.QtyShipped = toLine.Quantity;
+        } else if (toLine.Count1Qty > 0 && toLine.Count2Qty == 0) {
+          toLine.QtyToShip = toLine.Quantity;
+          toLine.QtyShipped = 0;
+        } else if (toLine.Count1Qty > 0 && toLine.Count2Qty > 0) {
+          toLine.QtyToShip = toLine.Quantity - toLine.Count2Qty;
+          toLine.QtyShipped = toLine.Count2Qty;
+        }
+      } else {
+        if (toLine.Count1Qty == 0 && toLine.Count2Qty == 0) {
+
+        } else if (toLine.Count1Qty == 0 && toLine.Count2Qty > 0) {
+          toLine.QtyToReceive = toLine.Quantity - toLine.Count2Qty;
+          toLine.QtyReceived = toLine.Count2Qty;
+        } else if (toLine.Count1Qty == toLine.Quantity && toLine.Count2Qty == toLine.Quantity) {
+          toLine.QtyToReceive = 0;
+          toLine.QtyReceived = toLine.Quantity;
+        } else if (toLine.Count1Qty == toLine.Quantity && toLine.Count2Qty > 0) {
+          toLine.QtyToReceive = toLine.Quantity - toLine.Count2Qty;
+          toLine.QtyReceived = toLine.Count2Qty;
+        } else if (toLine.Count2Qty == toLine.Quantity) {
+          toLine.QtyToReceive = 0;
+          toLine.QtyReceived = toLine.Quantity;
+        } else if (toLine.Count1Qty > 0 && toLine.Count2Qty == 0) {
+          toLine.QtyToReceive = toLine.Quantity;
+          toLine.QtyReceived = 0;
+        } else if (toLine.Count1Qty > 0 && toLine.Count2Qty > 0) {
+          toLine.QtyToReceive = toLine.Quantity - toLine.Count2Qty;
+          toLine.QtyReceived = toLine.Count2Qty;
+        }
+      }
+    }
+    toLine.isVisible = true;
+    return toLine;
   }
   qtyRecCheck(toLine: TransferOrderLine) {
     if (this.pageType == "Transfer-out") {
@@ -250,8 +297,13 @@ export class TransferLinePage implements OnInit {
       } else {
         toLine.QtyToShip -= toLine.inputQty;
         toLine.QtyShipped += toLine.inputQty;
-        toLine.updatableQty += toLine.inputQty;
-        this.qtyList[this.count] = toLine.updatableQty;
+        if (this.toHeader.CountNumber == "1") {
+          toLine.updatableCount1Qty += toLine.inputQty;
+          this.qtyList[this.count] = toLine.updatableCount1Qty;
+        } else if (this.toHeader.CountNumber == "2") {
+          toLine.updatableCount1Qty += toLine.inputQty;
+          this.qtyList[this.count] = toLine.updatableCount2Qty;
+        }
         toLine.inputQty = 0;
         return true;
       }
@@ -262,8 +314,13 @@ export class TransferLinePage implements OnInit {
       } else {
         toLine.QtyToReceive -= toLine.inputQty;
         toLine.QtyReceived += toLine.inputQty;
-        toLine.updatableQty += toLine.inputQty;
-        this.qtyList[this.count] = toLine.updatableQty;
+        if (this.toHeader.CountNumber == "1") {
+          toLine.updatableCount1Qty += toLine.inputQty;
+          this.qtyList[this.count] = toLine.updatableCount1Qty;
+        } else if (this.toHeader.CountNumber == "2") {
+          toLine.updatableCount1Qty += toLine.inputQty;
+          this.qtyList[this.count] = toLine.updatableCount2Qty;
+        }
         toLine.inputQty = 0;
         return true;
       }
@@ -290,13 +347,27 @@ export class TransferLinePage implements OnInit {
           text: 'Yes',
           handler: () => {
             if (this.pageType == "Transfer-out") {
-              toLine.QtyShipped -= toLine.updatableQty;
-              toLine.QtyToShip += toLine.updatableQty;
+              if (this.toHeader.CountNumber == "1") {
+                toLine.QtyShipped -= toLine.updatableCount1Qty;
+                toLine.QtyToShip += toLine.updatableCount1Qty;
+              } else if (this.toHeader.CountNumber == "2") {
+                toLine.QtyShipped -= toLine.updatableCount2Qty;
+                toLine.QtyToShip += toLine.updatableCount2Qty;
+              }
             } else {
-              toLine.QtyReceived -= toLine.updatableQty;
-              toLine.QtyToReceive += toLine.updatableQty;
+              if (this.toHeader.CountNumber == "1") {
+                toLine.QtyReceived -= toLine.updatableCount1Qty;
+                toLine.QtyToReceive += toLine.updatableCount1Qty;
+              } else if (this.toHeader.CountNumber == "2") {
+                toLine.QtyReceived -= toLine.updatableCount2Qty;
+                toLine.QtyToReceive += toLine.updatableCount2Qty;
+              } 
             }
-            toLine.updatableQty = 0;
+            if (this.toHeader.CountNumber == "1") {
+              toLine.updatableCount1Qty = 0;
+            } else if (this.toHeader.CountNumber == "2") {
+              toLine.updatableCount2Qty = 0;
+            }
             toLine.inputQty = 0;
           }
         },

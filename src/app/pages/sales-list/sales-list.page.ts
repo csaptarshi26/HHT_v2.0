@@ -72,7 +72,7 @@ export class SalesListPage implements OnInit {
           )
         }
         this.storeDataInStorage();
-        this.paramService.POItemList = this.soItemSotrageList;
+        this.paramService.SOItemList = this.soItemSotrageList;
       }
     });
   }

@@ -43,7 +43,6 @@ export class TransferHeaderPage implements OnInit {
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
     this.currentLoc = this.paramService.Location;
-    this.getWarehouse();
 
   }
   async fromListSelected() {
@@ -125,7 +124,11 @@ export class TransferHeaderPage implements OnInit {
   toNoSelected() {
     var toItem: TransferOrderModel;
     this.selectedTrans.CountNumber = "1";
-    this.getTransferOrderLine();
+    if (this.pageType == "Transfer-in") {
+      this.getTransferOrderLine();
+    }else{
+      this.getTransferOrderOutLine();
+    }
     if (this.toSotrageItemList != null || this.toSotrageItemList.length != 0) {
       this.toSotrageItemList.forEach(el => {
         if (el.toNo == this.selectedTrans.JournalId && el.type == this.pageType) {
@@ -148,11 +151,21 @@ export class TransferHeaderPage implements OnInit {
       if (this.paramService.TOItemList != null) {
         this.toSotrageItemList = this.paramService.TOItemList;
       }
+      this.getWarehouse();
     });
   }
 
   getTransferOrderLine() {
     this.axService.readTransOrdersLine(this.selectedTrans.JournalId).subscribe(res => {
+      this.selectedTrans.JournalLine = res;
+      console.log(res);
+    }, error => {
+      console.log(error)
+    })
+  }
+
+  getTransferOrderOutLine() {
+    this.axService.readTransOrdersOutLine(this.selectedTrans.JournalId).subscribe(res => {
       this.selectedTrans.JournalLine = res;
       console.log(res);
     }, error => {
