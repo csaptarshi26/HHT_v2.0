@@ -124,6 +124,7 @@ export class TransferLineListPage implements OnInit {
         message: 'Please Wait'
       });
       await loading.present();
+      console.log(this.updateDataTableList);
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
           this.presentToast("Line Updated successfully");

@@ -65,7 +65,6 @@ export class StockCountListPage implements OnInit {
     })
     this.dataServ.getStockCountNumber$.subscribe(res => {
       this.countNumber = res;
-      console.log(this.countNumber);
     }, error => {
 
     })
@@ -124,7 +123,7 @@ export class StockCountListPage implements OnInit {
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = lineNum;
         dataTable.CountNumber = el.CountNumber;
-        dataTable.zone = el.zone;
+        dataTable.zone = el.zone.ZoneName;
         if (el.quantity == 0 || el.quantity < 0 || el.quantity == "") {
           this.presentAlert("Qty can't be blank");
           return false;
@@ -139,13 +138,12 @@ export class StockCountListPage implements OnInit {
         this.updateDataTableList.push(dataTable)
       }
     })
-
+    console.log(this.updateDataTableList);
     if (this.updateDataTableList.length > 0) {
       const loading = await this.loadingController.create({
         message: 'Please Wait'
       });
       await loading.present();
-      console.log(this.updateDataTableList);
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
           this.presentToast("Line Updated successfully");
@@ -153,7 +151,6 @@ export class StockCountListPage implements OnInit {
           this.itemList.splice(0);
           this.valueUpdated = true;
           this.storageService.clearItemList();
-          console.log(this.itemList)
           this.router.navigateByUrl('/home');
 
         } else {
@@ -162,6 +159,7 @@ export class StockCountListPage implements OnInit {
         loading.dismiss();
       }, error => {
         loading.dismiss();
+        this.presentToast("Connection Error");
         console.log(error.message);
       })
     } else {

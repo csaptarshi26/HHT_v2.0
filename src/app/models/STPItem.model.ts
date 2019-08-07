@@ -1,3 +1,4 @@
+import { ZoneModel } from 'src/app/models/STPZone.model';
 export class ItemModel {
     BarCode: any;
     Description: any;
@@ -6,7 +7,7 @@ export class ItemModel {
     UnitFactor: any;
     CountNumber:any;
     quantity: any;
-    zone:any;
+    zone:ZoneModel;
 
     visible: boolean;
     toggle: boolean;

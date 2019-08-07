@@ -1,3 +1,4 @@
+import { RoleModel } from 'src/app/models/STPRole.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
@@ -34,7 +35,7 @@ export class SalesLinePage implements OnInit {
 
   qtyList: any[] = [];
   count: any = -1;
-
+  role:RoleModel = {} as RoleModel;
   soItemSotrageList: any = [];
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
@@ -86,7 +87,7 @@ export class SalesLinePage implements OnInit {
     }, 150);
   }
   ngOnInit() {
-
+    this.role = this.paramService.userRole;
     this.user = this.paramService.userId
     this.getSoLineData();
   }

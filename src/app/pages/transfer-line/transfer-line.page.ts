@@ -9,6 +9,7 @@ import { Component, OnInit, Input, SimpleChanges, ViewChild, ChangeDetectorRef }
 import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
+import { RoleModel } from 'src/app/models/STPRole.model';
 declare var $: any;
 
 @Component({
@@ -39,6 +40,8 @@ export class TransferLinePage implements OnInit {
   count: any = -1;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
+  role:RoleModel = {} as RoleModel;
+  
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
@@ -77,6 +80,7 @@ export class TransferLinePage implements OnInit {
   }
 
   ngOnInit() {
+    this.role = this.paramService.userRole;
     this.user = this.paramService.userId
     this.getToLineData();
   }
@@ -301,7 +305,7 @@ export class TransferLinePage implements OnInit {
           toLine.updatableCount1Qty += toLine.inputQty;
           this.qtyList[this.count] = toLine.updatableCount1Qty;
         } else if (this.toHeader.CountNumber == "2") {
-          toLine.updatableCount1Qty += toLine.inputQty;
+          toLine.updatableCount2Qty += toLine.inputQty;
           this.qtyList[this.count] = toLine.updatableCount2Qty;
         }
         toLine.inputQty = 0;
@@ -318,7 +322,7 @@ export class TransferLinePage implements OnInit {
           toLine.updatableCount1Qty += toLine.inputQty;
           this.qtyList[this.count] = toLine.updatableCount1Qty;
         } else if (this.toHeader.CountNumber == "2") {
-          toLine.updatableCount1Qty += toLine.inputQty;
+          toLine.updatableCount2Qty += toLine.inputQty;
           this.qtyList[this.count] = toLine.updatableCount2Qty;
         }
         toLine.inputQty = 0;

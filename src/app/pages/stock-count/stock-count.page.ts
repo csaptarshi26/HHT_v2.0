@@ -14,6 +14,7 @@ import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { ItemModel } from 'src/app/models/STPItem.model';
 import { Network } from '@ionic-native/network/ngx';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
+import { ZoneModel } from 'src/app/models/STPZone.model';
 declare var $: any;
 
 @Component({
@@ -34,13 +35,13 @@ export class StockCountPage implements OnInit {
   scannedQty2: any = 0;
   user: any;
   CountNumber: any = "1";
-  zone:any="";
+  zone: ZoneModel = {} as ZoneModel;
   qtyList: IqtyList[] = [{} as IqtyList];
 
   editField: boolean = false;
   count: any;
   exitingPage: boolean;
-
+  zoneList: ZoneModel[] = [];
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
@@ -114,7 +115,7 @@ export class StockCountPage implements OnInit {
     //   function () { }  //  Failure in sending the intent, not failure of DW to process the intent.
     // );
   }
- 
+
   scanByCamera() {
     this.barcodeScanner.scan().then(barcodeData => {
       console.log('Barcode data', barcodeData);
@@ -125,6 +126,7 @@ export class StockCountPage implements OnInit {
     });
   }
   ngOnInit() {
+    this.getZoneList();
     this.count = -1;
     this.getStorageData();
     this.user = this.paramService.userId
@@ -152,7 +154,6 @@ export class StockCountPage implements OnInit {
     }
     else {
       this.dataServ.getitemListFromSCList$.subscribe(res => {
-        console.log(res);
         if (res) {
           this.itemList = res;
         }
@@ -273,7 +274,7 @@ export class StockCountPage implements OnInit {
     if (this.barcode != null && this.barcode.length > 3) {
       if (!this.CountNumber) {
         this.presentAlertForError("Please Select Count Number ");
-      }else if (!this.zone) {
+      } else if (!this.zone.ZoneName) {
         this.presentAlertForError("Please Select Zone ");
       } else {
         this.searchBarcode();
@@ -384,7 +385,7 @@ export class StockCountPage implements OnInit {
   showList() {
     if (!this.CountNumber) {
       this.presentAlertForError("Please Select Count Number");
-    }else if(!this.zone){
+    } else if (!this.zone) {
       this.presentAlertForError("Please Select Zone");
     } else {
       this.dataServ.setItemList(this.itemList);
@@ -445,5 +446,13 @@ export class StockCountPage implements OnInit {
     } else if (this.CountNumber == "2") {
 
     }
+  }
+
+  getZoneList() {
+    this.axService.getZoneList().subscribe(res => {
+      this.zoneList = res;
+    },error=>{
+      console.log(error);
+    })
   }
 }

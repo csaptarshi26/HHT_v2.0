@@ -11,6 +11,7 @@ import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ToastController, LoadingController, AlertController, IonInput, IonSearchbar } from '@ionic/angular';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
+import { RoleModel } from 'src/app/models/STPRole.model';
 
 declare var $: any;
 @Component({
@@ -35,6 +36,7 @@ export class PurchaseLinePage implements OnInit {
   poLine: PurchLineModel = {} as PurchLineModel;
   count: any = -1;
 
+  role:RoleModel = {} as RoleModel;
 
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
@@ -93,6 +95,7 @@ export class PurchaseLinePage implements OnInit {
     this.setBarcodeFocus();
   }
   ngOnInit() {
+    this.role = this.paramService.userRole;
     this.getPoLineData();
     this.getScannedQty();
     //this.getStorageData();

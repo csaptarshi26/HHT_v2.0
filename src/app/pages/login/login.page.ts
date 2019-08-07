@@ -1,3 +1,4 @@
+import { CheckUser } from './../../models/STPCheckUser.model';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { DataService } from './../../providers/dataService/data.service';
 import { InventLocationLineModel } from './../../models/STPInventLocationLine.model';
@@ -32,7 +33,7 @@ export class LoginPage implements OnInit {
   expirationDate: Date;
   imei: string;
 
-  roleList: RoleModel = {} as RoleModel;
+  checkUser: CheckUser = {} as CheckUser;
   constructor(public router: Router, public menuCtrl: MenuController, public events: Events,
     public toastController: ToastController, public axService: AxService,
     public storageService: StorageService, public paramService: ParameterService,
@@ -52,7 +53,7 @@ export class LoginPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.roleList = {} as RoleModel;
+    this.checkUser = {} as CheckUser;
     this.userId = "";
     this.password = "";
     this.selectedInventory = {} as InventLocationModel;
@@ -62,7 +63,7 @@ export class LoginPage implements OnInit {
     this.axService.getCurrentDate().subscribe(res => {
       this.currentDate = new Date(res.toString());
       if (this.currentDate.toISOString().slice(0, 10) >= this.expirationDate.toISOString().slice(0, 10)) {
-       // this.presentAlertForExpiration();
+        // this.presentAlertForExpiration();
       }
     }, error => {
       console.log(error);
@@ -104,12 +105,8 @@ export class LoginPage implements OnInit {
     if (this.checkForm()) {
       this.axService.checkUser(this.userId, this.password).subscribe(res => {
         console.log(res);
-        var role = [];
-        role = res;
-        if (role.length < 1) {
-          this.presentToast("Role is not definned");
-          return;
-        } else if (role[0] == "False") {
+        this.checkUser = res;
+        if (!this.checkUser.UserStatus) {
           this.presentToast("Invalid credentials");
           return;
         } else {
@@ -118,7 +115,7 @@ export class LoginPage implements OnInit {
           this.storageService.setDataAreaId(this.selectedInventory.DataAreaId);
           this.storageService.setLocation(this.selectedWarehouse);
           this.storageService.setWarehouseForLegalEntity(this.warehouseList);
-          this.defineRole(role);
+          this.defineRole(this.checkUser.UserRole);
         }
 
       }, error => {
@@ -128,16 +125,17 @@ export class LoginPage implements OnInit {
     }
   }
 
-  defineRole(role: any[]) {
-    role.forEach(el => {
-      if (el == "Administrator") this.roleList.Administrator = true;
-      if (el == "InvenoryAdj") this.roleList.InvenoryAdj = true;
-      if (el == "Purchase") this.roleList.Purchase = true;
-      if (el == "Sales") this.roleList.Sales = true;
-      if (el == "StockCount") this.roleList.StockCount = true;
-      if (el == "Transfer") this.roleList.Transfer = true;
-    })
-    this.storageService.setRole(this.roleList);
+  defineRole(role: RoleModel) {
+    // if(role)
+    // role.forEach(el => {
+    //   if (el == "Administrator") this.roleList.Administrator = true;
+    //   if (el == "InvenoryAdj") this.roleList.InvenoryAdj = true;
+    //   if (el == "Purchase") this.roleList.Purchase = true;
+    //   if (el == "Sales") this.roleList.Sales = true;
+    //   if (el == "StockCount") this.roleList.StockCount = true;
+    //   if (el == "Transfer") this.roleList.Transfer = true;
+    // })
+    this.storageService.setRole(role);
     this.navigatingToHome();
   }
   legalEntitySelected() {

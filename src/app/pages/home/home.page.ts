@@ -1,3 +1,4 @@
+import { CheckUser } from './../../models/STPCheckUser.model';
 import { AxService } from 'src/app/providers/axService/ax.service';
 import { Router } from '@angular/router';
 import { MenuController, AlertController } from '@ionic/angular';
@@ -15,7 +16,8 @@ export class HomePage implements OnInit {
   dataAreadId: any;
   location: any;
 
-  userRole: RoleModel = {} as RoleModel;
+  checkUser: CheckUser = {} as CheckUser;
+  userRole:RoleModel = {} as RoleModel;
   constructor(public router: Router, public menuCtrl: MenuController, public paramService: ParameterService,
     public alertCtrl: AlertController, public sotrageService: StorageService,
     public axservice: AxService) {

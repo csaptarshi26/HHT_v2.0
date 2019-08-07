@@ -19,11 +19,10 @@
       
         <ion-item lines="none" class="barcode">
             <ion-label>Zone</ion-label>
-            <ion-select interface="action-sheet" [(ngModel)]="zone" (ionChange)="countNumberChanged()">
-              <ion-select-option value="zone 1" selected>Zone 1</ion-select-option>
-              <ion-select-option value="zone 2">Zone 2</ion-select-option>
-              <ion-select-option value="zone 3">Zone 3</ion-select-option>
-              <ion-select-option value="zone 4">Zone 4</ion-select-option>
+            <ion-select interface="action-sheet" [(ngModel)]="zone">
+              <ion-select-option *ngFor="let zones of zoneList" [value]="zones" >
+                {{zones.ZoneName}}
+              </ion-select-option>
             </ion-select>
           </ion-item>
 
