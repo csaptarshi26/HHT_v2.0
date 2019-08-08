@@ -16,14 +16,15 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <ion-item lines="none" class="ionItemInput">
+      <!-- <ion-item lines="none" class="ionItemInput">
         <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" [(ngModel)]="barcode"
           (ionChange)="searchBarcode()" (click)="clearBarcode()">
         </ion-input>
-      </ion-item>
-      <!-- <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="searchBarcode()" #input id="barcodeInput"
-        (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar> -->
-      Total Scan Qty: {{scannedQty}}
+      </ion-item> -->
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="searchBarcode()" #input id="barcodeInput"
+        (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
+      <span *ngIf="soHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
+      <span *ngIf="soHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>
     </ion-card-content>
   </ion-card>
 
@@ -62,7 +63,7 @@
           </ion-input>
         </ion-item>
 
-        <ion-item lines="none" class="ionItemInput"  *ngIf="role.OrderedQty">
+        <ion-item lines="none" class="ionItemInput" *ngIf="role.OrderedQty">
           <ion-label text-left class="ion-text-wrap">Ordered Qty</ion-label>
           <ion-label text-left> {{salesDetails.Quantity | mod}} </ion-label>
         </ion-item>

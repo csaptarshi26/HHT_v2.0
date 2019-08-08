@@ -25,6 +25,7 @@ export class HomePage implements OnInit {
   }
   ngOnInit() {
     this.userRole = this.paramService.userRole;
+    console.log(this.userRole)
     this.dataAreadId = this.paramService.dataAreaId;
     this.location = this.paramService.Location;
     //this.getDemoData();

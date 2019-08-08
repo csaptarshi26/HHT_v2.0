@@ -6,6 +6,6 @@ export class TransferOrderModel {
     ReceiveDate: any;
     TransferFrom: any;
     TransferTo: any;
-    scannedQty:any;
+
     CountNumber:any;
 }

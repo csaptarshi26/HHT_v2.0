@@ -8,6 +8,7 @@ import { PurchLineModel } from 'src/app/models/STPPurchTableLine.model';
 import { ToastController, LoadingController, AlertController } from '@ionic/angular';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
+import { RoleModel } from 'src/app/models/STPRole.model';
 
 @Component({
   selector: 'app-purchase-list',
@@ -32,6 +33,8 @@ export class PurchaseListPage implements OnInit {
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
 
   poItemSotrageList: any = [];
+  role:RoleModel = {} as RoleModel;
+  
   constructor(public dataServ: DataService, private activateRoute: ActivatedRoute,
     public toastController: ToastController, public axService: AxService,
     public paramService: ParameterService, public loadingController: LoadingController,
@@ -40,6 +43,7 @@ export class PurchaseListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.role = this.paramService.userRole;
     this.user = this.paramService.userId;
     console.log(this.user)
     this.getPoLineData();

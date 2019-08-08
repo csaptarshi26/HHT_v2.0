@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button (click)="backBtn()"></ion-back-button>
     </ion-buttons>
     <ion-title> {{pageType}}-Line</ion-title>
   </ion-toolbar>
@@ -17,7 +17,8 @@
         </ion-input>
 
       </ion-item>
-      Total Scan Qty: {{scannedQty}}
+      <span *ngIf="toHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
+      <span *ngIf="toHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>
     </ion-card-content>
   </ion-card>
 

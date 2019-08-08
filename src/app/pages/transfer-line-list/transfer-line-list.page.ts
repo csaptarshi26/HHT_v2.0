@@ -8,6 +8,7 @@ import { StorageService } from 'src/app/providers/storageService/storage.service
 import { TransferOrderModel } from 'src/app/models/STPTransferOrder.model';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
+import { RoleModel } from 'src/app/models/STPRole.model';
 
 @Component({
   selector: 'app-transfer-line-list',
@@ -30,6 +31,7 @@ export class TransferLineListPage implements OnInit {
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
   toSotrageItemList: any = [];
+  role:RoleModel = {} as RoleModel;
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService,
     public paramService: ParameterService, public storageServ: StorageService, public loadingController: LoadingController,
     public router: Router, private activateRoute: ActivatedRoute, public alertController: AlertController) {
@@ -37,6 +39,7 @@ export class TransferLineListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.role = this.paramService.userRole;
     this.user = this.paramService.userId;
     this.getToLineData();
   }

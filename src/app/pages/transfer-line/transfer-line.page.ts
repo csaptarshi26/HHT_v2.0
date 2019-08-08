@@ -1,3 +1,4 @@
+import { IqtyList } from './../../models/IQtyModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TransferOrderModel } from './../../models/STPTransferOrder.model';
 import { ParameterService } from './../../providers/parameterService/parameter.service';
@@ -10,6 +11,7 @@ import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { RoleModel } from 'src/app/models/STPRole.model';
+import { StorageService } from 'src/app/providers/storageService/storage.service';
 declare var $: any;
 
 @Component({
@@ -30,22 +32,24 @@ export class TransferLinePage implements OnInit {
 
   itemBarcode: any = "";
   updateDataTableList: STPLogSyncDetailsModel[] = [];
-
+  scannedQty1: any = 0;
+  scannedQty2: any = 0;
   @ViewChild("input") barcodeInput: IonInput;
   @ViewChild("Recinput") qtyInput: IonInput;
 
 
-  qtyList: any[] = [];
+  qtyList: IqtyList[] = [{} as IqtyList];
 
   count: any = -1;
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
-  role:RoleModel = {} as RoleModel;
-  
+  role: RoleModel = {} as RoleModel;
+  toItemSotrageList: any = [];
+
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService, public alertController: AlertController,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, private activateRoute: ActivatedRoute,
-    public loadingController: LoadingController, public router: Router,
+    public loadingController: LoadingController, public router: Router,public storageServe:StorageService,
     public changeDetectorref: ChangeDetectorRef) {
 
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
@@ -83,8 +87,24 @@ export class TransferLinePage implements OnInit {
     this.role = this.paramService.userRole;
     this.user = this.paramService.userId
     this.getToLineData();
+    this.getScannedQty();
   }
-
+  getScannedQty() {
+    this.toLineList.forEach(el => {
+      if (el.isVisible) {
+        if (this.toHeader.CountNumber == "1") {
+          this.qtyList.push(this.getQtyObj(this.toHeader.CountNumber, el.updatableCount1Qty))
+        } else if (this.toHeader.CountNumber == "2") {
+          this.qtyList.push(this.getQtyObj(this.toHeader.CountNumber, el.updatableCount2Qty))
+        }
+      }
+    })
+    if (this.toHeader.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.toHeader.CountNumber);
+    } else if (this.toHeader.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.toHeader.CountNumber);
+    }
+  }
   keyboardHide() {
     this.keyboard.hide();
   }
@@ -102,12 +122,6 @@ export class TransferLinePage implements OnInit {
         console.log(this.toHeader)
       })
     }
-    if (this.toHeader.scannedQty) {
-      this.scannedQty = this.toHeader.scannedQty;
-    } else {
-      this.scannedQty = 0;
-    }
-
   }
 
   clearBarcode() {
@@ -116,21 +130,14 @@ export class TransferLinePage implements OnInit {
   }
 
   ngOnDestroy() {
-    this.toHeader.scannedQty = this.scannedQty;
   }
   async barcodeScan() {
     console.log(this.toLineList);
-    var visibleLine = [];
 
     if (this.barcode != null && this.barcode.length > 3) {
-      const loading = await this.loadingController.create({
-        message: 'Please Wait'
-      });
-      await loading.present();
       this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
-        loading.dismiss();
         this.toLineList.forEach(el => {
           counter++;
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
@@ -141,7 +148,7 @@ export class TransferLinePage implements OnInit {
             if (el.QtyShipped) {
               el.qtyShippedFromServer = el.QtyShipped;
             }
-            if(el.QtyReceived){
+            if (el.QtyReceived) {
               el.qtyReceivedFromServer = el.QtyReceived;
             }
             flag = true;
@@ -149,7 +156,6 @@ export class TransferLinePage implements OnInit {
             el.BarCode = res.BarCode;
 
             this.toLine = this.chechCountNumber(el);
-            visibleLine.push(counter);
           }
         });
 
@@ -164,7 +170,6 @@ export class TransferLinePage implements OnInit {
           }, 150);
         }
       }, error => {
-        loading.dismiss()
         this.barcode = "";
         this.setBarcodeFocus()
         this.presentToast("Connection Error");
@@ -191,13 +196,21 @@ export class TransferLinePage implements OnInit {
 
     console.log(toLine);
     console.log(this.qtyList)
-    var sum = 0;
-    this.qtyList.forEach(data => {
-      sum += data;
-    })
-    this.scannedQty = sum;
+    if (this.toHeader.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.toHeader.CountNumber);
+    } else if (this.toHeader.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.toHeader.CountNumber);
+    }
   }
-
+  calculateSum(count) {
+    var sum = 0;
+    this.qtyList.forEach(el => {
+      if (count == el.countNumber) {
+        sum = sum + +el.qty;
+      }
+    })
+    return sum;
+  }
   clearQtyToRec(toLine: TransferOrderLine) {
     toLine.inputQty = 0;
   }
@@ -293,7 +306,22 @@ export class TransferLinePage implements OnInit {
     toLine.isVisible = true;
     return toLine;
   }
+  getVisibleItemScannedQty(toLine: TransferOrderLine[]) {
+    let len = 0;
+    toLine.forEach(el => {
+      if (el.isVisible) {
+        len++;
+      }
+    })
+
+    return len;
+  }
   qtyRecCheck(toLine: TransferOrderLine) {
+    var len = this.getVisibleItemScannedQty(this.toHeader.JournalLine)
+    if (toLine.inputQty < 0) {
+      this.presentToast("Qty Cann't be Negative");
+      return false;
+    }
     if (this.pageType == "Transfer-out") {
       if ((toLine.QtyShipped + toLine.inputQty) > toLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
@@ -303,10 +331,10 @@ export class TransferLinePage implements OnInit {
         toLine.QtyShipped += toLine.inputQty;
         if (this.toHeader.CountNumber == "1") {
           toLine.updatableCount1Qty += toLine.inputQty;
-          this.qtyList[this.count] = toLine.updatableCount1Qty;
+          this.qtyList[len] = this.getQtyObj(this.toHeader.CountNumber, toLine.updatableCount1Qty);
         } else if (this.toHeader.CountNumber == "2") {
           toLine.updatableCount2Qty += toLine.inputQty;
-          this.qtyList[this.count] = toLine.updatableCount2Qty;
+          this.qtyList[len] = this.getQtyObj(this.toHeader.CountNumber, toLine.updatableCount2Qty);
         }
         toLine.inputQty = 0;
         return true;
@@ -341,7 +369,13 @@ export class TransferLinePage implements OnInit {
 
     await alert.present();
   }
+  getQtyObj(header, qty) {
+    var obj = {} as IqtyList;
+    obj.countNumber = header;
+    obj.qty = qty;
 
+    return obj;
+  }
   async presentAlertForCancel(toLine: TransferOrderLine) {
     const alert = await this.alertController.create({
       header: 'Confirmation',
@@ -365,7 +399,7 @@ export class TransferLinePage implements OnInit {
               } else if (this.toHeader.CountNumber == "2") {
                 toLine.QtyReceived -= toLine.updatableCount2Qty;
                 toLine.QtyToReceive += toLine.updatableCount2Qty;
-              } 
+              }
             }
             if (this.toHeader.CountNumber == "1") {
               toLine.updatableCount1Qty = 0;
@@ -397,5 +431,74 @@ export class TransferLinePage implements OnInit {
       this.dataServ.setToInList(this.toLineList);
     }
     this.router.navigateByUrl('/transfer-line-list/' + this.pageType);
+  }
+
+
+  backBtn() {
+    if (this.count >= 0) {
+      this.presentAlertForstoragebckUp();
+    }
+  }
+
+  async presentAlertForstoragebckUp() {
+    const alert = await this.alertController.create({
+      header: 'Confirmation',
+      message: `Do you want to Keep the unprocessed data?`,
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+            if (this.paramService.TOItemList != null) {
+              this.toItemSotrageList = this.paramService.TOItemList;
+            } else {
+              this.toItemSotrageList = [];
+            }
+            this.toLineList.forEach(el => {
+              if (this.toHeader.CountNumber == "1") {
+                if (el.updatableCount1Qty == 0) {
+                  el.Count1Qty = el.Count1Qty;
+                } else {
+                  el.Count1Qty = el.updatableCount1Qty;
+                }
+
+              } else if (this.toHeader.CountNumber == "2") {
+                if (el.updatableCount2Qty == 0) {
+                  el.Count2Qty = el.Count2Qty;
+                } else {
+                  el.Count2Qty = el.updatableCount2Qty;
+                }
+              }
+            })
+            var flag = 0;
+            this.toItemSotrageList.forEach(el => {
+              if (el.toNo == this.toHeader.JournalLine) {
+                el.type = this.pageType;
+                el.toNo = this.toHeader.JournalId;
+                el.toHeader = this.toHeader;
+                flag = 1;
+              }
+            });
+            if (flag == 0) {
+              this.toItemSotrageList.push(
+                {
+                  type: this.pageType,
+                  toNo: this.toHeader.JournalId,
+                  toHeader: this.toHeader
+                }
+              )
+            }
+            this.storageServe.setTOItemList(this.toItemSotrageList);
+            this.paramService.TOItemList = this.toItemSotrageList;
+          }
+        },
+        {
+          text: 'No',
+          handler: () => {
+            this.toLineList.forEach(el => el.isVisible = false);
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 } 

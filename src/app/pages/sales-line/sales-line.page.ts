@@ -1,3 +1,4 @@
+import { IqtyList } from './../../models/IQtyModel';
 import { RoleModel } from 'src/app/models/STPRole.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
@@ -33,10 +34,12 @@ export class SalesLinePage implements OnInit {
 
   itemBarcode: any = "";
 
-  qtyList: any[] = [];
+  qtyList: IqtyList[] = [{} as IqtyList];
   count: any = -1;
-  role:RoleModel = {} as RoleModel;
+  role: RoleModel = {} as RoleModel;
   soItemSotrageList: any = [];
+  scannedQty1: any = 0;
+  scannedQty2: any = 0;
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
 
@@ -44,7 +47,7 @@ export class SalesLinePage implements OnInit {
     public paramService: ParameterService, private activateRoute: ActivatedRoute, private keyboard: Keyboard,
     public toastController: ToastController, public alertController: AlertController,
     public loadingController: LoadingController, public changeDetectorref: ChangeDetectorRef,
-    public storageServ:StorageService) {
+    public storageServ: StorageService) {
     this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
 
 
@@ -64,7 +67,29 @@ export class SalesLinePage implements OnInit {
     //     changeDetectorref.detectChanges();
     //   });
   }
+  getScannedQty() {
+    this.soLineList.forEach(el => {
+      if (el.isVisible) {
+        if (this.soHeader.CountNumber == "1") {
+          this.qtyList.push(this.getQtyObj(this.soHeader.CountNumber, el.updatableCount1Qty))
+        } else if (this.soHeader.CountNumber == "2") {
+          this.qtyList.push(this.getQtyObj(this.soHeader.CountNumber, el.updatableCount2Qty))
+        }
+      }
+    })
+    if (this.soHeader.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.soHeader.CountNumber);
+    } else if (this.soHeader.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.soHeader.CountNumber);
+    }
+  }
+  getQtyObj(header, qty) {
+    var obj = {} as IqtyList;
+    obj.countNumber = header;
+    obj.qty = qty;
 
+    return obj;
+  }
   scanByCamera() {
     this.barcodeScanner.scan().then(barcodeData => {
       console.log('Barcode data', barcodeData);
@@ -90,6 +115,7 @@ export class SalesLinePage implements OnInit {
     this.role = this.paramService.userRole;
     this.user = this.paramService.userId
     this.getSoLineData();
+    this.getScannedQty();
   }
 
   getSoLineData() {
@@ -107,24 +133,29 @@ export class SalesLinePage implements OnInit {
       })
     }
   }
-
+  calculateSum(count) {
+    var sum = 0;
+    this.qtyList.forEach(el => {
+      if (count == el.countNumber) {
+        sum = sum + +el.qty;
+      }
+    })
+    return sum;
+  }
   clearBarcode() {
     this.barcode = "";
     this.setBarcodeFocus();
   }
-
-  async searchBarcode() {
-    var visibleLine = [];
-
+  onPressEnter() {
+    this.searchBarcode(true);
+  }
+  async searchBarcode(keyboardPressed = false) {
     if (this.barcode != null && this.barcode.length > 3) {
-      const loading = await this.loadingController.create({
-        message: 'Please Wait'
-      });
-      await loading.present();
+     
       this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
-        loading.dismiss();
+        
         this.soLineList.forEach(el => {
           counter++;
           if (el.ItemNumber == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
@@ -143,22 +174,27 @@ export class SalesLinePage implements OnInit {
             }
             el.qtyDesc = res.Description;
             el.BarCode = res.BarCode;
-
-            visibleLine.push(counter);
             this.salesDetails = this.chechCountNumber(el);
-
+            setTimeout(() => {
+              this.qtyInput.setFocus();
+            }, 100);
+            return;
           }
         });
-        if (!flag) {
-          this.clearBarcode();
-          this.presentToast("This item barcode not in order list");
-        } else {
+        if (flag) {
           setTimeout(() => {
+            this.barcode = "";
             this.qtyInput.setFocus();
           }, 150);
+        } else {
+          if (keyboardPressed) {
+            this.barcode = "";
+            this.setBarcodeFocus();
+            this.presentToast("This item barcode not in order list");
+          }
         }
       }, error => {
-        loading.dismiss();
+        
         this.barcode = "";
         this.setBarcodeFocus();
         this.presentToast("Connection error");
@@ -288,17 +324,22 @@ export class SalesLinePage implements OnInit {
     }
 
     console.log(this.soLineList);
-    console.log(this.qtyList)
-    var sum = 0;
-    this.qtyList.forEach(data => {
-      sum += data;
-    })
-    this.scannedQty = sum;
+    if (this.soHeader.CountNumber == "1") {
+      this.scannedQty1 = this.calculateSum(this.soHeader.CountNumber);
+    } else if (this.soHeader.CountNumber == "2") {
+      this.scannedQty2 = this.calculateSum(this.soHeader.CountNumber);
+    }
+    this.setBarcodeFocus();
   }
   clearQtyToRec(soLine: SalesLineModel) {
     soLine.inputQty = 0;
   }
   qtyRecCheck(soLine: SalesLineModel) {
+    var len = this.getVisibleItemScannedQty(this.soHeader.SalesLine);
+    if (soLine.inputQty < 0) {
+      this.presentToast("Qty Cann't be Negative");
+      return false;
+    }
     if (this.pageType == "Sales-Order") {
       if ((soLine.QtyShipped + soLine.inputQty) > soLine.Quantity) {
         this.presentToast("Rec item cannot be greater than Qty");
@@ -308,10 +349,10 @@ export class SalesLinePage implements OnInit {
         soLine.QtyShipped += soLine.inputQty;
         if (this.soHeader.CountNumber == "1") {
           soLine.updatableCount1Qty += soLine.inputQty;
-          this.qtyList[this.count] = soLine.updatableCount1Qty;
+          this.qtyList[len] = this.getQtyObj(this.soHeader.CountNumber, soLine.updatableCount1Qty);
         } else if (this.soHeader.CountNumber == "2") {
           soLine.updatableCount2Qty += soLine.inputQty;
-          this.qtyList[this.count] = soLine.updatableCount2Qty;
+          this.qtyList[len] = this.getQtyObj(this.soHeader.CountNumber, soLine.updatableCount2Qty);
         }
         soLine.inputQty = 0;
         return true;
@@ -335,7 +376,16 @@ export class SalesLinePage implements OnInit {
       }
     }
   }
+  getVisibleItemScannedQty(soLine: SalesLineModel[]) {
+    let len = 0;
+    soLine.forEach(el => {
+      if (el.isVisible) {
+        len++;
+      }
+    })
 
+    return len;
+  }
   async presentAlertForCancel(soLine: SalesLineModel) {
     const alert = await this.alertController.create({
       header: 'Confirmation',
@@ -405,8 +455,8 @@ export class SalesLinePage implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-            if (this.paramService.POItemList != null) {
-              this.soItemSotrageList = this.paramService.POItemList;
+            if (this.paramService.SOItemList != null) {
+              this.soItemSotrageList = this.paramService.SOItemList;
             } else {
               this.soItemSotrageList = [];
             }
@@ -428,10 +478,10 @@ export class SalesLinePage implements OnInit {
             })
             var flag = 0;
             this.soItemSotrageList.forEach(el => {
-              if (el.poNo == this.soHeader.DocumentNo) {
+              if (el.soNo == this.soHeader.DocumentNo) {
                 el.type = this.pageType;
-                el.poNo = this.soHeader.DocumentNo;
-                el.poHeader = this.soHeader;
+                el.soNo = this.soHeader.DocumentNo;
+                el.soHeader = this.soHeader;
                 flag = 1;
               }
             });
@@ -439,13 +489,13 @@ export class SalesLinePage implements OnInit {
               this.soItemSotrageList.push(
                 {
                   type: this.pageType,
-                  poNo: this.soHeader.DocumentNo,
-                  poHeader: this.soHeader
+                  soNo: this.soHeader.DocumentNo,
+                  soHeader: this.soHeader
                 }
               )
             }
-            this.storageServ.setPOItemList(this.soItemSotrageList);
-            this.paramService.POItemList = this.soItemSotrageList;
+            this.storageServ.setSOItemList(this.soItemSotrageList);
+            this.paramService.SOItemList = this.soItemSotrageList;
           }
         },
         {

@@ -31,7 +31,7 @@ export class PurchaseLinePage implements OnInit {
   itemBarcode: any = "";
 
   poItemSotrageList: any = [];
-  qtyList: IqtyList[] = [{} as IqtyList];
+  qtyList: IqtyList[] = [{} as IqtyList]; 
 
   poLine: PurchLineModel = {} as PurchLineModel;
   count: any = -1;
@@ -98,7 +98,6 @@ export class PurchaseLinePage implements OnInit {
     this.role = this.paramService.userRole;
     this.getPoLineData();
     this.getScannedQty();
-    //this.getStorageData();
     this.user = this.paramService.userId
   }
   getPoLineData() {
@@ -579,14 +578,12 @@ export class PurchaseLinePage implements OnInit {
           text: 'No',
           handler: () => {
             this.poLineList.forEach(el => el.isVisible = false);
-
           }
         }
       ]
     });
     await alert.present();
   }
-
   mod(n: any) {
     if (n == 0) return 0;
     else if (n > 0) return n;
