@@ -51,7 +51,7 @@ export class LoginPage implements OnInit {
     this.getInventoryLocation();
     this.menuCtrl.enable(false);
   }
-
+  
   ionViewWillEnter() {
     this.checkUser = {} as CheckUser;
     this.userId = "";
@@ -112,6 +112,8 @@ export class LoginPage implements OnInit {
         } else {
           this.storageService.setUserId(this.userId);
           this.storageService.setAuthenticated(true);
+          this.paramService.dataAreaId = this.selectedInventory.DataAreaId;
+          this.paramService.Location = this.selectedWarehouse;
           this.storageService.setDataAreaId(this.selectedInventory.DataAreaId);
           this.storageService.setLocation(this.selectedWarehouse);
           this.storageService.setWarehouseForLegalEntity(this.warehouseList);

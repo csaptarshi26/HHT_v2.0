@@ -8,7 +8,7 @@ import { DataService } from 'src/app/providers/dataService/data.service';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 import { Component, OnInit, Input, SimpleChanges, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
-import { ToastController, IonInput, AlertController, LoadingController } from '@ionic/angular';
+import { ToastController, IonInput, AlertController, LoadingController, IonSearchbar } from '@ionic/angular';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { RoleModel } from 'src/app/models/STPRole.model';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
@@ -34,7 +34,7 @@ export class TransferLinePage implements OnInit {
   updateDataTableList: STPLogSyncDetailsModel[] = [];
   scannedQty1: any = 0;
   scannedQty2: any = 0;
-  @ViewChild("input") barcodeInput: IonInput;
+  @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
 
 
@@ -70,6 +70,16 @@ export class TransferLinePage implements OnInit {
     //     changeDetectorref.detectChanges();
     //   });
   }
+  scanByCamera() {
+    this.barcodeScanner.scan().then(barcodeData => {
+      console.log('Barcode data', barcodeData);
+      this.barcode = barcodeData.text;
+
+    }).catch(err => {
+      console.log('Error', err);
+    });
+  }
+
   ionViewWillEnter() {
     this.setBarcodeFocus();
   }
@@ -126,25 +136,31 @@ export class TransferLinePage implements OnInit {
 
   clearBarcode() {
     this.barcode = "";
-    this.setBarcodeFocus()
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 100);
+    setTimeout(() => {
+      this.keyboard.show();
+    }, 100);
   }
 
   ngOnDestroy() {
   }
-  async barcodeScan() {
-    console.log(this.toLineList);
-
-    if (this.barcode != null && this.barcode.length > 3) {
+  onPressEnter() {
+    this.barcodeScan(true);
+  }
+  async barcodeScan(keyboardPressed = false) {
+    if (this.barcode != null && this.barcode.length > 1) {
       this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         var flag = false;
-        var counter = 0;
+        this.count++;
         this.toLineList.forEach(el => {
-          counter++;
+          
           if (el.ItemNo == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
             el.isVisible = true;
 
             el.inputQty = 0;
-            this.count++
+            
             if (el.QtyShipped) {
               el.qtyShippedFromServer = el.QtyShipped;
             }
@@ -159,30 +175,44 @@ export class TransferLinePage implements OnInit {
           }
         });
 
-        if (!flag) {
-          this.barcode = "";
-          this.setBarcodeFocus()
-          this.presentToast("This item barcode not in order list");
-
-        } else {
+        if (flag) {
           setTimeout(() => {
+            this.barcode = "";
             this.qtyInput.setFocus();
           }, 150);
+          //this.presentError("This item barcode not in order list");
+        } else {
+          this.toLine.isVisible = false;
+          if (keyboardPressed) {
+            this.barcode = "";
+            this.setBarcodeFocus();
+            this.presentError("This item barcode not in order list");
+          }
         }
       }, error => {
+        this.toLine.isVisible = false;
         this.barcode = "";
         this.setBarcodeFocus()
-        this.presentToast("Connection Error");
+        this.presentError("Connection Error");
       })
     }
 
   }
-  async presentToast(msg) {
-    const toast = await this.toastController.create({
+  async presentError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error',
       message: msg,
-      duration: 2000
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+
+          }
+        }
+      ]
     });
-    toast.present();
+
+    await alert.present();
   }
   onEnter(toLine: TransferOrderLine) {
     this.saveLine(toLine);
@@ -319,12 +349,12 @@ export class TransferLinePage implements OnInit {
   qtyRecCheck(toLine: TransferOrderLine) {
     var len = this.getVisibleItemScannedQty(this.toHeader.JournalLine)
     if (toLine.inputQty < 0) {
-      this.presentToast("Qty Cann't be Negative");
+      this.presentError("Qty Cann't be Negative");
       return false;
     }
     if (this.pageType == "Transfer-out") {
       if ((toLine.QtyShipped + toLine.inputQty) > toLine.Quantity) {
-        this.presentToast("Rec item cannot be greater than Qty");
+        this.presentError("Rec item cannot be greater than Qty");
         return false;
       } else {
         toLine.QtyToShip -= toLine.inputQty;
@@ -341,17 +371,17 @@ export class TransferLinePage implements OnInit {
       }
     } else {
       if ((toLine.QtyReceived + toLine.inputQty) > toLine.Quantity || (toLine.inputQty > toLine.QtyToReceive)) {
-        this.presentToast("Rec item cannot be greater than Qty");
+        this.presentError("Rec item cannot be greater than Qty");
         return false;
       } else {
         toLine.QtyToReceive -= toLine.inputQty;
         toLine.QtyReceived += toLine.inputQty;
         if (this.toHeader.CountNumber == "1") {
           toLine.updatableCount1Qty += toLine.inputQty;
-          this.qtyList[this.count] = toLine.updatableCount1Qty;
+          this.qtyList[len] = this.getQtyObj(this.toHeader.CountNumber, toLine.updatableCount1Qty);
         } else if (this.toHeader.CountNumber == "2") {
           toLine.updatableCount2Qty += toLine.inputQty;
-          this.qtyList[this.count] = toLine.updatableCount2Qty;
+          this.qtyList[len] = this.getQtyObj(this.toHeader.CountNumber, toLine.updatableCount2Qty);
         }
         toLine.inputQty = 0;
         return true;

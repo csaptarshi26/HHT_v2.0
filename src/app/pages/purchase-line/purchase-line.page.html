@@ -16,7 +16,10 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="searchBarcode()" #input id="barcodeInput"
+      <span *ngIf="count >= 0 && !poLine.isVisible" class="error">
+        Barcode Not Found,Scan barcode
+      </span>
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="searchBarcodeOninput($event)" #input id="barcodeInput"
         (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
 
       <!-- <ion-item lines="none" class="ionItemInput">
@@ -29,7 +32,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card class="lineDetails" *ngIf="poLine.isVisible">
+  <ion-card class="lineDetails" *ngIf="count != -1 && poLine.isVisible">
     <ion-card-header>
       <span class="iconPos">
         <ion-checkbox color="primary" mode="ios" [(ngModel)]="poLine.isSaved" [disabled]="poLine.btnDisable"
@@ -69,7 +72,7 @@
 
         </ion-item>
 
-        <ion-item lines="none" class="ionItemInput" *ngIf="role.BalanceQty" >
+        <ion-item lines="none" class="ionItemInput" *ngIf="role.BalanceQty">
           <ion-label text-left class="ion-text-wrap">Balance</ion-label>
           <ion-label text-left> {{poLine.QtyToReceive}} </ion-label>
         </ion-item>
@@ -84,7 +87,7 @@
           </ion-input>
         </ion-item>
 
-        <ion-item lines="none" class="ionItemInput"  *ngIf="role.OrderedQty">
+        <ion-item lines="none" class="ionItemInput" *ngIf="role.OrderedQty">
           <ion-label text-left class="ion-text-wrap">Return Qty</ion-label>
           <ion-label text-left> {{poLine.Qty | mod}} </ion-label>
         </ion-item>

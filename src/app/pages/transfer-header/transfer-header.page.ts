@@ -51,7 +51,7 @@ export class TransferHeaderPage implements OnInit {
       message: 'Please Wait'
     });
     await loading.present();
-    this.axService.readTransferOrders(this.paramService.Location.LocationId, this.fromWarehouse.LocationId).subscribe(res => {
+    this.axService.readTransferOrdersIn(this.paramService.Location.LocationId, this.fromWarehouse.LocationId).subscribe(res => {
       loading.dismiss();
       this.transOrderList = res;
     }, error => {
@@ -76,7 +76,7 @@ export class TransferHeaderPage implements OnInit {
       message: 'Please Wait'
     });
     await loading.present();
-    this.axService.readTransferOrders(this.toWarehouse.LocationId, this.paramService.Location.LocationId).subscribe(res => {
+    this.axService.readTransferOrdersOut(this.toWarehouse.LocationId, this.paramService.Location.LocationId).subscribe(res => {
       console.log(res);
       loading.dismiss();
       this.transOrderList = res;

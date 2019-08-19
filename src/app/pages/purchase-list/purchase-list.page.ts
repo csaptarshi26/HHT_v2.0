@@ -80,14 +80,23 @@ export class PurchaseListPage implements OnInit {
     })
   }
 
-
-  async presentToast(msg) {
-    const toast = await this.toastController.create({
+  async presentError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error',
       message: msg,
-      duration: 2000
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+
+          }
+        }
+      ]
     });
-    toast.present();
+
+    await alert.present();
   }
+ 
   async savePO() {
     console.log(this.poLineList)
     this.poLineList.forEach(el => {
@@ -137,7 +146,7 @@ export class PurchaseListPage implements OnInit {
             this.dataUpdatedToServer = true;
             this.presentAlert();
           } else {
-            this.presentToast("Error Updating Line");
+            this.presentError("Error Updating Line");
           }
           loading.dismiss();
         }, error => {
@@ -149,7 +158,7 @@ export class PurchaseListPage implements OnInit {
       }
 
     } else {
-      this.presentToast("Line Already Saved");
+      this.presentError("Line Already Saved");
     }
   }
 
@@ -251,7 +260,7 @@ export class PurchaseListPage implements OnInit {
     if (this.pageType == "Receive") {
       if (this.poHeader.CountNumber == "1") {
         if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableCount1Qty) > poLine.Qty) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           //poLine.btnDisable = true;
           return false;
         } else {
@@ -263,7 +272,7 @@ export class PurchaseListPage implements OnInit {
         }
       } else if (this.poHeader.CountNumber == "2") {
         if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableCount2Qty) > poLine.Qty) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           //poLine.btnDisable = true;
           return false;
         } else {
@@ -278,7 +287,7 @@ export class PurchaseListPage implements OnInit {
     } else {
       if (this.poHeader.CountNumber == "1") {
         if ((this.mod(poLine.QtyReceived) + this.mod(poLine.inputQty)) > this.mod((poLine.Qty))) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           //poLine.btnDisable = true;
           return false;
         } else {
@@ -290,7 +299,7 @@ export class PurchaseListPage implements OnInit {
         }
       } else if (this.poHeader.CountNumber == "2") {
         if ((this.mod(poLine.QtyReceived) + this.mod(poLine.inputQty)) > this.mod((poLine.Qty))) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           //poLine.btnDisable = true;
           return false;
         } else {

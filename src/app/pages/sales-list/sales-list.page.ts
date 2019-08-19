@@ -9,7 +9,7 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { SalesTable } from 'src/app/models/STPSalesTable.model';
-
+import { RoleModel } from 'src/app/models/STPRole.model';
 @Component({
   selector: 'app-sales-list',
   templateUrl: './sales-list.page.html',
@@ -25,7 +25,7 @@ export class SalesListPage implements OnInit {
   pageType: any;
 
   soItemSotrageList: any = [];
-
+  role: RoleModel = {} as RoleModel;
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
     public router: Router, private activateRoute: ActivatedRoute, public alertController: AlertController) {
@@ -33,6 +33,7 @@ export class SalesListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.role = this.paramService.userRole;
     this.getsalesLineList();
     this.user = this.paramService.userId
     //this.getItemsFromStorage()
@@ -175,7 +176,7 @@ export class SalesListPage implements OnInit {
       await loading.present();
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
-          //this.presentToast("Line Updated successfully");
+          //this.presentError("Line Updated successfully");
           this.updateDataTableList = [];
           this.salesLineList = [];
           this.dataUpdatedToServer = true;
@@ -183,7 +184,7 @@ export class SalesListPage implements OnInit {
           console.log(this.salesLineList)
 
         } else {
-          this.presentToast("Error Updating Line");
+          this.presentError("Error Updating Line");
         }
         loading.dismiss();
       }, error => {
@@ -191,7 +192,7 @@ export class SalesListPage implements OnInit {
         console.log(error.message);
       })
     } else {
-      this.presentToast("Line Already Saved");
+      this.presentError("Line Already Saved");
     }
   }
 
@@ -211,12 +212,21 @@ export class SalesListPage implements OnInit {
 
     await alert.present();
   }
-  async presentToast(msg) {
-    const toast = await this.toastController.create({
+  async presentError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error',
       message: msg,
-      duration: 2000
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+
+          }
+        }
+      ]
     });
-    toast.present();
+
+    await alert.present();
   }
 
   saveLine(soLine: SalesLineModel) {
@@ -243,7 +253,7 @@ export class SalesListPage implements OnInit {
     if (this.pageType == "Sales-Order") {
       if (this.soHeader.CountNumber == "1") {
         if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableCount1Qty) > soLine.Quantity) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
           soLine.QtyToShip = soLine.QtyToShip + soLine.updatableCount1Qty - soLine.inputQty;
@@ -254,7 +264,7 @@ export class SalesListPage implements OnInit {
         }
       } else if (this.soHeader.CountNumber == "2") {
         if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableCount2Qty) > soLine.Quantity) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
           soLine.QtyToShip = soLine.QtyToShip + soLine.updatableCount2Qty - soLine.inputQty;
@@ -268,7 +278,7 @@ export class SalesListPage implements OnInit {
     } else {
       if (this.soHeader.CountNumber == "1") {
         if ((soLine.QtyReceived + soLine.inputQty - soLine.updatableCount1Qty) > soLine.Quantity) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
           soLine.QtyToReceive = soLine.QtyToReceive + soLine.updatableCount1Qty - soLine.inputQty;
@@ -279,7 +289,7 @@ export class SalesListPage implements OnInit {
         }
       } else if (this.soHeader.CountNumber == "2") {
         if ((soLine.QtyReceived + soLine.inputQty - soLine.updatableCount2Qty) > soLine.Quantity) {
-          this.presentToast("Rec item cannot be greater than Qty");
+          this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
           soLine.QtyToReceive = soLine.QtyToReceive + soLine.updatableCount2Qty - soLine.inputQty;

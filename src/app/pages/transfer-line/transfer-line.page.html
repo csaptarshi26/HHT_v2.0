@@ -3,7 +3,14 @@
     <ion-buttons slot="start">
       <ion-back-button (click)="backBtn()"></ion-back-button>
     </ion-buttons>
+
     <ion-title> {{pageType}}-Line</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="scanByCamera()">
+        <ion-icon name="camera"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -11,12 +18,11 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <ion-item lines="none" class="ionItemInput">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" [(ngModel)]="barcode"
-          (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
-        </ion-input>
-
-      </ion-item>
+      <span *ngIf="count >= 0 && !toLine.isVisible" class="error">
+        Barcode Not Found,Scan barcode
+      </span>
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="barcodeScan()" #input id="barcodeInput"
+        (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
       <span *ngIf="toHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
       <span *ngIf="toHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>
     </ion-card-content>

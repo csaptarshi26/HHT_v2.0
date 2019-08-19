@@ -235,7 +235,8 @@ export class StockCountPage implements OnInit {
   onPressEnter() {
     this.searchBarcode(true);
   }
-  async barcodeScan() {
+  async barcodeScan(event:any) {
+    this.barcode =  event.target.value;
     // this.storageServ.setItemList(this.itemList);
 
     // if (this.barcode && this.barcode != " ") {
@@ -271,7 +272,7 @@ export class StockCountPage implements OnInit {
     //   this.setBarcodeFocus();
     //   return null;
     // }
-    if (this.barcode != null && this.barcode.length > 3) {
+    if (this.barcode != null) {
       if (!this.CountNumber) {
         this.presentAlertForError("Please Select Count Number ");
       } else if (!this.zone.ZoneName) {
@@ -288,8 +289,9 @@ export class StockCountPage implements OnInit {
         // flag = true;
         // this.presentToast("This item barcode not in order list");
         // this.setBarcodeFocus();
+        this.count++;
         if (flag) {
-          this.presentToast("Item not found");
+          // this.presentToast("Item not found");
           this.setBarcodeFocus();
         }
       } else {

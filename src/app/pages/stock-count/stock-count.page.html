@@ -16,15 +16,15 @@
 <ion-content>
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      
-        <ion-item lines="none" class="barcode">
-            <ion-label>Zone</ion-label>
-            <ion-select interface="action-sheet" [(ngModel)]="zone">
-              <ion-select-option *ngFor="let zones of zoneList" [value]="zones" >
-                {{zones.ZoneName}}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
+
+      <ion-item lines="none" class="barcode">
+        <ion-label>Zone</ion-label>
+        <ion-select interface="action-sheet" [(ngModel)]="zone">
+          <ion-select-option *ngFor="let zones of zoneList" [value]="zones">
+            {{zones.ZoneName}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
 
       <ion-item lines="none" class="barcode">
         <ion-label>Count Number</ion-label>
@@ -34,18 +34,12 @@
         </ion-select>
       </ion-item>
 
-      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="barcodeScan()" #input id="barcodeInput" (click)="clearBarcode()"
-        (search)="onPressEnter()"></ion-searchbar>
 
-      <!-- <ion-item lines="none" class="ionItemInput barcode">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput" placeholder="Scan" [(ngModel)]="barcode"
-          (ionChange)="barcodeScan()" (ionFocus)="keyboardHide()" (click)="clearBarcode()">
-        </ion-input>
-
-        <ion-button fill="clear" slots="end" item-right (click)="saveLine(poLine)" [disabled]="poLine.btnDisable">
-          <ion-icon name="return-left"></ion-icon>
-        </ion-button>
-      </ion-item> -->
+      <span *ngIf="count >= 0 && !item.visible" class="error">
+        Barcode Not Found,Scan barcode
+      </span>
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="barcodeScan($event)" #input id="barcodeInput"
+        (click)="clearBarcode()" (search)="onPressEnter()" (keyup.enter)="onPressEnter()"></ion-searchbar>
 
       <ion-item lines="none" class="twoItems item-text-wrap">
         <ion-label *ngIf="CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</ion-label>
@@ -60,7 +54,7 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card class="lineDetails" *ngIf="item.visible;else notFound">
+  <ion-card class="lineDetails" *ngIf="count != -1 && item.visible">
     <ion-card-header>
       <span class="iconPos">
         <ion-checkbox color="primary" mode="ios" [(ngModel)]="item.isSaved" [checked]="item.isSaved"
@@ -87,12 +81,6 @@
       </ion-item>
     </ion-card-content>
   </ion-card>
-
-  <ng-template #notFound>
-    <div class="alert alert-warning" *ngIf="count >=0">
-      Barcode Not Found,Scan correct barcode
-    </div>
-  </ng-template>
 </ion-content>
 
 <ion-footer>

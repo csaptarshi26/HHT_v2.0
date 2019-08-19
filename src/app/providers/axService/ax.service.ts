@@ -16,8 +16,12 @@ export class AxService {
   //MASSKAR URL
   //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
 
-  //NAIVAS URL
-  public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
+  //NAIVAS AFZ DEV URL
+  //public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
+
+  //NAIVAS DEV URL
+  public baseAddress: string = "http://192.168.100.145:1060/api/ax/";
+
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
   }
@@ -88,9 +92,10 @@ export class AxService {
   checkUser(userId: string, password: string): Observable<any> {
     let url = this.baseAddress + "checkuser";
     let body = {
-      UserId: userId,
-      Password: password
+      "UserId": userId,
+      "Password": password
     };
+    console.log(body);
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -155,8 +160,23 @@ export class AxService {
     return this.http.post(url, body, httpOptions);
   }
 
-  readTransferOrders(toLocaion: any, fromLocation: any): Observable<any> {
-    let url = this.baseAddress + "readTransOrders";
+  readTransferOrdersIn(toLocaion: any, fromLocation: any): Observable<any> {
+    let url = this.baseAddress + "readTransferOrdersIn";
+    let body = {
+      "DataAreaId": this.paramService.dataAreaId,
+      "ToLocationId": toLocaion,
+      "FromLocationId": fromLocation
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
+
+  readTransferOrdersOut(toLocaion: any, fromLocation: any): Observable<any> {
+    let url = this.baseAddress + "readTransferOrdersOut";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
       "ToLocationId": toLocaion,
@@ -272,11 +292,12 @@ export class AxService {
   }
 
 
-  getCustomerList(): Observable<any> {
+  getCustomerList(forReturn:boolean): Observable<any> {
     let url = this.baseAddress + "readCustomers";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
-      "LocationId": this.paramService.Location.LocationId,
+      "LocationId": "",//this.paramService.Location.LocationId,
+      "forReturn":forReturn
     };
     let httpOptions = {
       headers: new HttpHeaders({

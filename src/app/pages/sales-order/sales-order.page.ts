@@ -68,13 +68,17 @@ export class SalesOrderPage implements OnInit {
     $('.ui.dropdown').dropdown({ fullTextSearch: true });
     this.itemExistsInStorage = false;
     this.getItemsFromStorage();
-    this.getcustomerList();
+    if (this.pageType == "Sales-Order") {
+      this.getcustomerList(false);
+    } else {
+      this.getcustomerList(true);
+    }
   }
-  getcustomerList() {
+  getcustomerList(forReturn) {
     if (this.paramService.customerList) {
       this.customerList = this.paramService.customerList;
     }
-    this.axService.getCustomerList().subscribe(res => {
+    this.axService.getCustomerList(forReturn).subscribe(res => {
       this.customerList = res;
       this.customerList.forEach(el => {
         el.displayText = el.CustAccount + " - " + el.Name;

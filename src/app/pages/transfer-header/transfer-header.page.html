@@ -44,6 +44,14 @@
       <ion-label>Shipment Date</ion-label>
       <ion-label> {{selectedTrans.ReceiveDate | date: 'mediumDate'}} </ion-label>
     </ion-item>
+
+    <ion-item lines="none" class="ionItemInput">
+      <ion-label>Count Number</ion-label>
+      <ion-select interface="action-sheet" [(ngModel)]="selectedTrans.CountNumber">
+        <ion-select-option value="1">First</ion-select-option>
+        <ion-select-option value="2">Second</ion-select-option>
+      </ion-select>
+    </ion-item>
   </div>
 
   <!--  -->

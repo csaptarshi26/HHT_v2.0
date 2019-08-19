@@ -108,7 +108,7 @@ export class SalesLinePage implements OnInit {
       this.barcodeInput.setFocus();
     }, 150);
     setTimeout(() => {
-      this.keyboard.hide();
+      //this.keyboard.hide();
     }, 150);
   }
   ngOnInit() {
@@ -144,22 +144,28 @@ export class SalesLinePage implements OnInit {
   }
   clearBarcode() {
     this.barcode = "";
-    this.setBarcodeFocus();
+    setTimeout(() => {
+      this.barcodeInput.setFocus();
+    }, 100);
+    setTimeout(() => {
+      this.keyboard.show();
+    }, 100);
   }
   onPressEnter() {
     this.searchBarcode(true);
   }
+  searchBarcodeOninput(event:any){
+    this.barcode = event.target.value;
+    this.searchBarcode();
+  }
   async searchBarcode(keyboardPressed = false) {
-    if (this.barcode != null && this.barcode.length > 3) {
+    if (this.barcode != null && this.barcode.length > 1) {
      
       this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         var flag = false;
-        var counter = 0;
-        
+        this.count++;
         this.soLineList.forEach(el => {
-          counter++;
           if (el.ItemNumber == res.ItemId && el.UnitOfMeasure.toLowerCase() == res.Unit.toLowerCase()) {
-            this.count++
             el.inputQty = 0;
             el.DocumentNo = this.soHeader.DocumentNo;
             flag = true;
@@ -187,17 +193,18 @@ export class SalesLinePage implements OnInit {
             this.qtyInput.setFocus();
           }, 150);
         } else {
+          this.salesDetails.isVisible = false;
           if (keyboardPressed) {
             this.barcode = "";
             this.setBarcodeFocus();
-            this.presentToast("This item barcode not in order list");
+            this.presentError("This item barcode not in order list");
           }
         }
       }, error => {
-        
+        this.salesDetails.isVisible = false;
         this.barcode = "";
         this.setBarcodeFocus();
-        this.presentToast("Connection error");
+        this.presentError("Connection error");
       })
     }
   }
@@ -290,12 +297,21 @@ export class SalesLinePage implements OnInit {
     soLine.isVisible = true;
     return soLine;
   }
-  async presentToast(msg) {
-    const toast = await this.toastController.create({
+  async presentError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error',
       message: msg,
-      duration: 2000
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+
+          }
+        }
+      ]
     });
-    toast.present();
+
+    await alert.present();
   }
   async presentAlert(msg) {
     const alert = await this.alertController.create({
@@ -337,12 +353,12 @@ export class SalesLinePage implements OnInit {
   qtyRecCheck(soLine: SalesLineModel) {
     var len = this.getVisibleItemScannedQty(this.soHeader.SalesLine);
     if (soLine.inputQty < 0) {
-      this.presentToast("Qty Cann't be Negative");
+      this.presentError("Qty Cann't be Negative");
       return false;
     }
     if (this.pageType == "Sales-Order") {
       if ((soLine.QtyShipped + soLine.inputQty) > soLine.Quantity) {
-        this.presentToast("Rec item cannot be greater than Qty");
+        this.presentError("Rec item cannot be greater than Qty");
         return false;
       } else {
         soLine.QtyToShip -= soLine.inputQty;
@@ -359,17 +375,17 @@ export class SalesLinePage implements OnInit {
       }
     } else {
       if ((soLine.QtyReceived + soLine.inputQty) > soLine.Quantity) {
-        this.presentToast("Rec item cannot be greater than Qty");
+        this.presentError("Rec item cannot be greater than Qty");
         return false;
       } else {
         soLine.QtyToReceive -= soLine.inputQty;
         soLine.QtyReceived += soLine.inputQty;
         if (this.soHeader.CountNumber == "1") {
           soLine.updatableCount1Qty += soLine.inputQty;
-          this.qtyList[this.count] = soLine.updatableCount1Qty;
+          this.qtyList[len] = this.getQtyObj(this.soHeader.CountNumber, soLine.updatableCount1Qty);
         } else if (this.soHeader.CountNumber == "2") {
           soLine.updatableCount2Qty += soLine.inputQty;
-          this.qtyList[this.count] = soLine.updatableCount2Qty;
+          this.qtyList[len] = this.getQtyObj(this.soHeader.CountNumber, soLine.updatableCount2Qty);
         }
         soLine.inputQty = 0;
         return true;

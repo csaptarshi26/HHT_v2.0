@@ -137,6 +137,10 @@ export class PurchaseLinePage implements OnInit {
   onPressEnter() {
     this.searchBarcode(true);
   }
+  searchBarcodeOninput(event:any){
+    this.barcode = event.target.value;
+    this.searchBarcode();
+  }
   searchBarcode(keyboardPressed = false) {
     if (this.barcode != null && this.barcode.length > 1) {
 
@@ -146,9 +150,8 @@ export class PurchaseLinePage implements OnInit {
         if (res.Unit) {
           this.poLineList.forEach(el => {
             counter++;
-            if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
-
-              this.count++
+            this.count++
+            if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {              
               el.inputQty = "";
               el.toggle = false;
               if (el.QtyReceived) {
@@ -174,10 +177,11 @@ export class PurchaseLinePage implements OnInit {
               this.qtyInput.setFocus();
             }, 150);
           } else {
+            this.poLine.isVisible = false;
             if (keyboardPressed) {
               this.barcode = "";
               this.setBarcodeFocus();
-              this.presentToast("This item barcode not in order list");
+              this.presentError("This item barcode not in order list");
             }
           }
         } else {
@@ -186,7 +190,6 @@ export class PurchaseLinePage implements OnInit {
           this.poLineList.forEach(el => {
             counter++;
             if (el.ItemId == res.ItemId) {
-              this.count++;
               flag = true;
               el.inputQty = "";
               if (el.QtyReceived) {
@@ -201,10 +204,11 @@ export class PurchaseLinePage implements OnInit {
           });
 
           if (!flag) {
+            this.poLine.isVisible = false;
             if (keyboardPressed) {
               this.barcode = "";
               this.setBarcodeFocus();
-              this.presentToast("This item barcode not in order list");
+              this.presentError("This item barcode not in order list");
             }
           } else {
             if (multiPoLineList.length == 1) {
@@ -224,7 +228,7 @@ export class PurchaseLinePage implements OnInit {
       }, error => {
         this.barcode = "";
         this.setBarcodeFocus();
-        this.presentToast("Connection Error");
+        this.presentError("Connection Error");
       })
     }
   }
@@ -315,12 +319,21 @@ export class PurchaseLinePage implements OnInit {
     poLine.headerCountNumber = this.poHeader.CountNumber;
     return poLine;
   }
-  async presentToast(msg) {
-    const toast = await this.toastController.create({
+  async presentError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error',
       message: msg,
-      duration: 2000
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+
+          }
+        }
+      ]
     });
-    toast.present();
+
+    await alert.present();
   }
   onEnter(poLine: PurchLineModel) {
     this.saveLine(poLine);
@@ -358,16 +371,16 @@ export class PurchaseLinePage implements OnInit {
     poLine.isSaved = false;
     var len = this.getVisibleItemScannedQty(this.poHeader.PurchLines)
     if (poLine.inputQty < 0) {
-      this.presentToast("Qty Cann't be Negative");
+      this.presentError("Qty Cann't be Negative");
       return false;
     }
     if (poLine.inputQty == "") {
-      this.presentToast("Qty Cann't be Blank");
+      this.presentError("Qty Cann't be Blank");
       return false;
     }
     if (this.pageType == "Receive") {
       if ((poLine.QtyReceived + poLine.inputQty) > poLine.Qty) {
-        this.presentToast("Rec item cannot be greater than Qty");
+        this.presentError("Rec item cannot be greater than Qty");
         //poLine.btnDisable = true;
         return false;
       } else {
@@ -385,7 +398,7 @@ export class PurchaseLinePage implements OnInit {
       }
     } else {
       if ((this.mod(poLine.QtyReceived) + this.mod(poLine.inputQty)) > this.mod((poLine.Qty))) {
-        this.presentToast("Rec item cannot be greater than Qty");
+        this.presentError("Rec item cannot be greater than Qty");
         //poLine.btnDisable = true;
         return false;
       } else {
@@ -577,7 +590,11 @@ export class PurchaseLinePage implements OnInit {
         {
           text: 'No',
           handler: () => {
-            this.poLineList.forEach(el => el.isVisible = false);
+            console.log(this.poLineList);
+            this.poLineList.forEach(el =>{
+              el.isVisible = false;
+              el.QtyReceived = el.QtyReceivedServer;
+          });
           }
         }
       ]
