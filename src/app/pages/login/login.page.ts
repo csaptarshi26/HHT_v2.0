@@ -153,6 +153,7 @@ export class LoginPage implements OnInit {
         this.storageService.setInventLocationList(res);
 
       }, error => {
+        this.presentToast("Connection Error");
         console.log(error);
       })
     } else {

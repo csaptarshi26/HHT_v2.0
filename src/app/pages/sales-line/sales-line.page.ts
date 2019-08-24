@@ -295,6 +295,7 @@ export class SalesLinePage implements OnInit {
       }
     }
     soLine.isVisible = true;
+    soLine.headerCountNumber = this.soHeader.CountNumber;
     return soLine;
   }
   async presentError(msg) {

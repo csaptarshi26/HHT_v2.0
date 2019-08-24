@@ -10,6 +10,7 @@ export class SalesLineModel {
     Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
+    headerCountNumber:any;
     
     updatableCount1Qty: any;
     updatableCount2Qty: any;

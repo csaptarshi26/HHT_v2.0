@@ -15,7 +15,7 @@
 <ion-content>
   <div *ngIf="salesLineList.length; else noItem">
     <div *ngFor="let salesDetails of salesLineList">
-      <ion-card *ngIf="salesDetails.isVisible">
+      <ion-card *ngIf="soHeader.CountNumber == salesDetails.headerCountNumber">
         <ion-card-header>
           <span style="width: 50%">
             <b>

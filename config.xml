@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.steeples.naivas.hht" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Steeples Naivas</name>
+    <name>Steeples HHT</name>
     <description>Steeples HHT</description>
     <author email="info@steeplesystems.com" href="http://steeplesystems.com/">Steeples Team</author>
     <content src="index.html" />
