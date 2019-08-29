@@ -130,7 +130,7 @@ export class StockCountPage implements OnInit {
     this.count = -1;
     this.getStorageData();
     this.user = this.paramService.userId
-    this.currentLoc = this.paramService.Location;
+    this.currentLoc = this.paramService.Location; 
 
   }
 
@@ -237,41 +237,7 @@ export class StockCountPage implements OnInit {
   }
   async barcodeScan(event:any) {
     this.barcode =  event.target.value;
-    // this.storageServ.setItemList(this.itemList);
-
-    // if (this.barcode && this.barcode != " ") {
-    //   var barcodeList = this.paramService.demoData;
-    //   var low = 0,
-    //     high = this.paramService.demoData.length - 1;
-    //   var mid, guessed;
-    //   console.log(high)
-    //   while (low <= high) {
-    //     mid = Math.floor((low + high) / 2);
-    //     guessed = barcodeList[mid];
-
-    //     if (guessed == this.barcode) {
-    //       setTimeout(() => {
-    //         this.barcode = " ";
-    //       }, 100);
-    //       this.item.visible = true;
-    //       this.item.BarCode = guessed;
-    //       this.presentToast("found");
-    //       this.setBarcodeFocus();
-    //       return;
-    //     }
-    //     if (this.barcode < guessed) {
-    //       high = mid - 1;
-    //     } else {
-    //       low = mid + 1;
-    //     }
-    //   }
-    //   setTimeout(() => {
-    //     this.barcode = " ";
-    //   }, 100);
-    //   this.presentToast("Not Found");
-    //   this.setBarcodeFocus();
-    //   return null;
-    // }
+    
     if (this.barcode != null) {
       if (!this.CountNumber) {
         this.presentAlertForError("Please Select Count Number ");

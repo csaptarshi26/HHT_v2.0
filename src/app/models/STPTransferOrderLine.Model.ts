@@ -9,6 +9,7 @@ export class TransferOrderLine {
     Quantity: number;
     UnitOfMeasure: any;
     VariantCode: any;
+    headerCountNumber:any;
     
     qtyDesc: any;
     BarCode: any;

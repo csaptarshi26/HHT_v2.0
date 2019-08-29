@@ -21,6 +21,7 @@ export class InventoryLinePage implements OnInit {
   user: any;
   valueUpdated: boolean = false;
   pageType: any;
+  countNumber:any;
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
@@ -50,6 +51,11 @@ export class InventoryLinePage implements OnInit {
     }, error => {
 
     })
+    this.dataServ.getStockCountNumber$.subscribe(res => {
+      this.countNumber = res;
+    }, error => {
+
+    })
   }
 
   async saveItem() {
@@ -66,6 +72,10 @@ export class InventoryLinePage implements OnInit {
           dataTable.DocumentType = 5;
         } else {
           dataTable.DocumentType = 6;
+        }
+        if (el.quantity == 0 || el.quantity < 0 || el.quantity == "") {
+          this.presentAlertError("Qty can't be blank");
+          return false;
         }
         dataTable.Quantity = el.quantity;
         dataTable.ItemLocation = this.paramService.Location.LocationId;
@@ -88,7 +98,6 @@ export class InventoryLinePage implements OnInit {
       await loading.present();
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
-          this.presentToast("Line Updated successfully");
           this.updateDataTableList = [];
           this.itemList = [];
           this.valueUpdated = true;
@@ -124,6 +133,24 @@ export class InventoryLinePage implements OnInit {
     await alert.present();
   }
 
+  async presentAlertError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Error!',
+      message: msg,
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+            
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+
   async presentToast(msg) {
     const toast = await this.toastController.create({
       message: msg,
@@ -148,11 +175,11 @@ export class InventoryLinePage implements OnInit {
 
   }
 
-  deleteLine(item: ItemModel) {
-    this.presentAlertForCancel(item);
+  deleteLine(item: ItemModel,i) {
+    this.presentAlertForCancel(item,i);
   }
 
-  async presentAlertForCancel(item: ItemModel) {
+  async presentAlertForCancel(item: ItemModel,i) {
     const alert = await this.alertController.create({
       header: 'Confirmation',
       message: `Are you sure you want to delete this line? `,
@@ -160,15 +187,12 @@ export class InventoryLinePage implements OnInit {
         {
           text: 'Yes',
           handler: () => {
-            for (var i = 0; i < this.itemList.length; i++) {
-              if (this.itemList[i].ItemId == item.ItemId) {
-                if (i > -1) {
-                  this.itemList.splice(i, 1);
-                  console.log("deleted")
-                  break;
-                }
-              }
-            }
+            this.itemList.splice(i, 1);
+            this.itemList = [...this.itemList];
+            this.paramService.itemChanged = true;
+            this.dataServ.setItemListFromInventoryList(this.itemList);
+            //this.storageService.setItemList(this.itemList);
+            
             // this.itemList.forEach(el => {
             //   if (el.ItemId == item.ItemId) {
             //     var index = this.itemList.indexOf(el);

@@ -9,7 +9,9 @@
 @import '~@ionic/angular/css/text-alignment.css';
 @import '~@ionic/angular/css/text-transformation.css';
 @import '~@ionic/angular/css/flex-utils.css';
-
+html {
+  scroll-behavior: smooth;
+ }
 
 ion-app {
     /*animation of native keyboard show*/

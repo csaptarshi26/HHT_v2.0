@@ -48,8 +48,11 @@ export class AppComponent {
         let inputScrollPixels = kbHeight - inputFieldOffsetFromBottomViewPort;
 
         // Set margin to give space for native keyboard.
-        ionapp.style["margin-bottom"] = kbHeight.toString() + "px";
-
+        console.log(inputFieldOffsetFromBottomViewPort)
+        if(inputFieldOffsetFromBottomViewPort<300){
+          ionapp.style["margin-top"] = "-10%";
+        }
+        ionapp.style["margin-bottom"] = kbHeight.toString() + "px";      
         // But this diminishes ion-content and may hide the input field...
         if (inputScrollPixels > 0) {
             // ...so, get the ionScroll element from ion-content and scroll correspondingly
@@ -66,6 +69,8 @@ export class AppComponent {
         // Move ion-app down again
         // Scroll not necessary.
         ionapp.style["margin-bottom"] = "0px";
+        
+        ionapp.style["margin-top"] = "0%";
     });
 }
 }

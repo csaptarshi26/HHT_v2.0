@@ -147,10 +147,10 @@ export class PurchaseLinePage implements OnInit {
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
         var flag = false;
         var counter = 0;
+        this.count++
         if (res.Unit) {
           this.poLineList.forEach(el => {
             counter++;
-            this.count++
             if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {              
               el.inputQty = "";
               el.toggle = false;

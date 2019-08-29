@@ -61,8 +61,14 @@ export class DataService {
   private itemListFromSCList = new BehaviorSubject<any>(0);
   getitemListFromSCList$ = this.itemListFromSCList.asObservable();
 
+  private itemListFromInventoryList = new BehaviorSubject<any>(0);
+  getitemListFromInventoryList$ = this.itemListFromInventoryList.asObservable();
+
   constructor() { }
 
+  setItemListFromInventoryList(data){
+    this.itemListFromInventoryList.next(data);
+  }
 
   setitemListFromSCList(data) {
     this.itemListFromSCList.next(data);

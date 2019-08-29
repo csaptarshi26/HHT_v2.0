@@ -15,7 +15,7 @@
 
 <ion-content>
   <div *ngFor="let toLine of toLineList,let i=index">
-    <ion-card class="lineDetails" *ngIf="toLine.isVisible">
+    <ion-card class="lineDetails" *ngIf="toHeader.CountNumber == toLine.headerCountNumber">
       <ion-card-header>
         <span class="iconPos">
           <ion-checkbox color="primary" mode="ios" [(ngModel)]="toLine.isSaved" [disabled]="toLine.btnDisable"

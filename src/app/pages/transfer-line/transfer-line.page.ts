@@ -333,6 +333,7 @@ export class TransferLinePage implements OnInit {
         }
       }
     }
+    toLine.headerCountNumber = this.toHeader.CountNumber;
     toLine.isVisible = true;
     return toLine;
   }

@@ -14,11 +14,11 @@
 
 <ion-content>
   <div *ngIf="itemList.length; else noItem">
-    <div *ngFor="let item of itemList">
-      <ion-card *ngIf="item.isSaved && item.quantity > 0">
+    <div *ngFor="let item of itemList;let i=index">
+      <ion-card *ngIf="item.isSaved && item.CountNumber == countNumber">
         <ion-card-header>
           <span class="iconPos">
-            <ion-icon name="close" (click)="deleteLine(item)"></ion-icon>
+            <ion-icon name="close" (click)="deleteLine(item,i)"></ion-icon>
           </span>
           <b> Id : {{item.ItemId}}
             <span style="margin-left: 15px;"> UOM : {{item.Unit}}</span>
