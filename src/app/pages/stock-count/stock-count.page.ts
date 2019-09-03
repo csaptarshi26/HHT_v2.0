@@ -140,7 +140,7 @@ export class StockCountPage implements OnInit {
       this.barcodeInput.setFocus();
     }, 100);
     setTimeout(() => {
-      this.keyboard.hide();
+      this.keyboard.show();
     }, 100);
   }
 
@@ -311,7 +311,6 @@ export class StockCountPage implements OnInit {
   }
   onEnterConfirm(item: ItemModel) {
     this.confirm(item);
-    this.setBarcodeFocus();
   }
   confirm(item: ItemModel) {
     if (item.BarCode == "") {
@@ -347,6 +346,7 @@ export class StockCountPage implements OnInit {
     } else if (this.CountNumber == "2") {
       this.scannedQty2 = this.calculateSum(this.CountNumber);
     }
+    this.clearBarcode();
     //this.storageServ.setItemList(this.itemList);
   }
 
