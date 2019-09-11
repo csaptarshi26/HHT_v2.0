@@ -16,11 +16,11 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <span *ngIf="count >= 0 && !poLine.isVisible" class="error">
+      <!-- <span *ngIf="count >= 0 && !poLine.isVisible" class="error">
         Barcode Not Found,Scan barcode
-      </span>
-      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="searchBarcodeOninput($event)" #input id="barcodeInput"
-        (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
+      </span> -->
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="valueChange($event)" #input id="barcodeInput"
+        (click)="clearBarcode()" (keyup.enter)="onPressEnter()"></ion-searchbar>
 
       <!-- <ion-item lines="none" class="ionItemInput">
         <ion-input type="text" hideKeyboard #input id="barcodeInput"  placeholder="Scan" 

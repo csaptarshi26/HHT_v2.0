@@ -35,11 +35,11 @@
       </ion-item>
 
 
-      <span *ngIf="count >= 0 && !item.visible" class="error">
+      <!-- <span *ngIf="count >= 0 && !item.visible" class="error">
         Barcode Not Found,Scan barcode
-      </span>
-      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="barcodeScan($event)" #input id="barcodeInput"
-        (click)="clearBarcode()" (search)="onPressEnter()" (keyup.enter)="onPressEnter()"></ion-searchbar>
+      </span> -->
+      <ion-searchbar type="tel" [(ngModel)]="barcode" #input id="barcodeInput"
+        (click)="clearBarcode()" (ionInput)="valueChange($event)" (keyup.enter)="onPressEnter()"></ion-searchbar>
 
       <ion-item lines="none" class="twoItems item-text-wrap">
         <ion-label *ngIf="CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</ion-label>

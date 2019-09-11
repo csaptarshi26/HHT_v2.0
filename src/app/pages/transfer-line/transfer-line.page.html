@@ -18,10 +18,10 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <span *ngIf="count >= 0 && !toLine.isVisible" class="error">
+      <!-- <span *ngIf="count >= 0 && !toLine.isVisible" class="error">
         Barcode Not Found,Scan barcode
-      </span>
-      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionChange)="barcodeScan()" #input id="barcodeInput"
+      </span> -->
+      <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="valueChange($event)" #input id="barcodeInput"
         (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
       <span *ngIf="toHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
       <span *ngIf="toHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>

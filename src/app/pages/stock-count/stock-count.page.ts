@@ -42,6 +42,8 @@ export class StockCountPage implements OnInit {
   count: any;
   exitingPage: boolean;
   zoneList: ZoneModel[] = [];
+  keyPress: boolean = false;
+  pageType:any="";
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
@@ -49,11 +51,11 @@ export class StockCountPage implements OnInit {
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService,
     public alertController: AlertController, public events: Events,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService, private router: Router,
+    public paramService: ParameterService, private router: Router,private activateRoute: ActivatedRoute,
     public loadingController: LoadingController, public storageServ: StorageService,
     public changeDetectorref: ChangeDetectorRef, private network: Network) {
 
-
+      this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
     let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       console.log('network was disconnected :-(');
       this.storageServ.setItemList(this.itemList);
@@ -130,7 +132,7 @@ export class StockCountPage implements OnInit {
     this.count = -1;
     this.getStorageData();
     this.user = this.paramService.userId
-    this.currentLoc = this.paramService.Location; 
+    this.currentLoc = this.paramService.Location;
 
   }
 
@@ -233,11 +235,6 @@ export class StockCountPage implements OnInit {
     return sum;
   }
   onPressEnter() {
-    this.searchBarcode(true);
-  }
-  async barcodeScan(event:any) {
-    this.barcode =  event.target.value;
-    
     if (this.barcode != null) {
       if (!this.CountNumber) {
         this.presentAlertForError("Please Select Count Number ");
@@ -248,18 +245,37 @@ export class StockCountPage implements OnInit {
       }
     }
   }
-  async searchBarcode(flag = false) {
+  valueChange(event: any) {
+    let dataValue = event.detail.data || 0;
+    let targerValue = event.target.value
+    console.clear();
+    console.log("data value " + dataValue);
+    console.log("targer value " + targerValue);
+    console.log(event);
+    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
+      this.barcode = targerValue;
+      if (this.barcode != null) {
+        if (!this.CountNumber) {
+          this.presentAlertForError("Please Select Count Number ");
+        } else if (!this.zone.ZoneName) {
+          this.presentAlertForError("Please Select Zone ");
+        } else {
+          this.searchBarcode();
+        }
+      }
+    } else if (targerValue != null && dataValue.toString().length == 1) {
+      console.log("keyboard input");
+    }
+  }
+
+  async searchBarcode() {
+    console.log("barcode scan");
     this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
       this.item = res;
       if (this.item.ItemId == null || this.item.ItemId == "") {
-        // flag = true;
-        // this.presentToast("This item barcode not in order list");
-        // this.setBarcodeFocus();
         this.count++;
-        if (flag) {
-          // this.presentToast("Item not found");
-          this.setBarcodeFocus();
-        }
+        this.presentAlertForError("Item not found");
+        this.setBarcodeFocus();
       } else {
         this.barcode = "";
         this.count++;
@@ -302,7 +318,8 @@ export class StockCountPage implements OnInit {
   async presentToast(msg) {
     const toast = await this.toastController.create({
       message: msg,
-      duration: 2000
+      duration: 2000,
+      position:'top'
     });
     toast.present();
   }
@@ -419,7 +436,7 @@ export class StockCountPage implements OnInit {
   getZoneList() {
     this.axService.getZoneList().subscribe(res => {
       this.zoneList = res;
-    },error=>{
+    }, error => {
       console.log(error);
     })
   }

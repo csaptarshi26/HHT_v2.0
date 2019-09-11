@@ -31,12 +31,12 @@ export class PurchaseLinePage implements OnInit {
   itemBarcode: any = "";
 
   poItemSotrageList: any = [];
-  qtyList: IqtyList[] = [{} as IqtyList]; 
+  qtyList: IqtyList[] = [{} as IqtyList];
 
   poLine: PurchLineModel = {} as PurchLineModel;
   count: any = -1;
 
-  role:RoleModel = {} as RoleModel;
+  role: RoleModel = {} as RoleModel;
 
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("Recinput") qtyInput: IonInput;
@@ -135,13 +135,27 @@ export class PurchaseLinePage implements OnInit {
     }, 150);
   }
   onPressEnter() {
-    this.searchBarcode(true);
+    if (this.barcode != null) {
+      this.searchBarcode();
+    }
   }
-  searchBarcodeOninput(event:any){
-    this.barcode = event.target.value;
-    this.searchBarcode();
+  valueChange(event: any) {
+    let dataValue = event.detail.data || 0;
+    let targerValue = event.target.value
+    console.clear();
+    console.log("data value " + dataValue);
+    console.log("targer value " + targerValue);
+    console.log(event);
+    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
+      this.barcode = targerValue;
+      if (this.barcode != null) {
+        this.searchBarcode();
+      }
+    } else if (targerValue != null && dataValue.toString().length == 1) {
+      console.log("keyboard input");
+    }
   }
-  searchBarcode(keyboardPressed = false) {
+  searchBarcode() {
     if (this.barcode != null && this.barcode.length > 1) {
 
       this.axService.getItemFromBarcode(this.barcode).subscribe(res => {
@@ -151,7 +165,7 @@ export class PurchaseLinePage implements OnInit {
         if (res.Unit) {
           this.poLineList.forEach(el => {
             counter++;
-            if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {              
+            if (el.ItemId == res.ItemId && el.UnitId.toLowerCase() == res.Unit.toLowerCase()) {
               el.inputQty = "";
               el.toggle = false;
               if (el.QtyReceived) {
@@ -178,11 +192,9 @@ export class PurchaseLinePage implements OnInit {
             }, 150);
           } else {
             this.poLine.isVisible = false;
-            if (keyboardPressed) {
-              this.barcode = "";
-              this.setBarcodeFocus();
-              this.presentError("This item barcode not in order list");
-            }
+            this.setBarcodeFocus();
+            this.presentError("This item barcode not in order list");
+
           }
         } else {
           var multiple = 0;
@@ -205,11 +217,8 @@ export class PurchaseLinePage implements OnInit {
 
           if (!flag) {
             this.poLine.isVisible = false;
-            if (keyboardPressed) {
-              this.barcode = "";
-              this.setBarcodeFocus();
-              this.presentError("This item barcode not in order list");
-            }
+            this.setBarcodeFocus();
+            this.presentError("This item barcode not in order list");
           } else {
             if (multiPoLineList.length == 1) {
               this.poLine = multiPoLineList.pop();
@@ -295,7 +304,7 @@ export class PurchaseLinePage implements OnInit {
         if (poLine.Count1Qty == 0 && poLine.Count2Qty == 0) {
 
         } else if (poLine.Count1Qty == 0 && poLine.Count2Qty > 0) {
-          poLine.QtyToReceive =-(this.mod(poLine.Qty) - poLine.Count2Qty);
+          poLine.QtyToReceive = -(this.mod(poLine.Qty) - poLine.Count2Qty);
           poLine.QtyReceived = poLine.Count2Qty;
         } else if (poLine.Count1Qty == -poLine.Qty && poLine.Count2Qty == -poLine.Qty) {
           poLine.QtyToReceive = 0;
@@ -403,7 +412,7 @@ export class PurchaseLinePage implements OnInit {
         return false;
       } else {
         poLine.QtyToReceive -= -poLine.inputQty;
-        poLine.QtyReceived = poLine.QtyReceived -poLine.inputQty;
+        poLine.QtyReceived = poLine.QtyReceived - poLine.inputQty;
         if (this.poHeader.CountNumber == "1") {
           poLine.updatableCount1Qty += poLine.inputQty;
           this.qtyList[len] = this.getQtyObj(this.poHeader.CountNumber, poLine.updatableCount1Qty);
@@ -591,10 +600,10 @@ export class PurchaseLinePage implements OnInit {
           text: 'No',
           handler: () => {
             console.log(this.poLineList);
-            this.poLineList.forEach(el =>{
+            this.poLineList.forEach(el => {
               el.isVisible = false;
               el.QtyReceived = el.QtyReceivedServer;
-          });
+            });
           }
         }
       ]

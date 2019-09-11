@@ -152,15 +152,27 @@ export class SalesLinePage implements OnInit {
     }, 100);
   }
   onPressEnter() {
-    this.searchBarcode(true);
-  }
-  searchBarcodeOninput(event:any){
-    this.barcode = event.target.value;
     this.searchBarcode();
   }
-  async searchBarcode(keyboardPressed = false) {
+  searchBarcodeOninput(event: any) {
+    let dataValue = event.detail.data || 0;
+    let targerValue = event.target.value
+    console.clear();
+    console.log("data value " + dataValue);
+    console.log("targer value " + targerValue);
+    console.log(event);
+    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
+      this.barcode = targerValue;
+      if (this.barcode != null) {
+        this.searchBarcode();
+      }
+    } else if (targerValue != null && dataValue.toString().length == 1) {
+      console.log("keyboard input");
+    }
+  }
+  async searchBarcode() {
     if (this.barcode != null && this.barcode.length > 1) {
-     
+
       this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
         var flag = false;
         this.count++;
@@ -194,11 +206,8 @@ export class SalesLinePage implements OnInit {
           }, 150);
         } else {
           this.salesDetails.isVisible = false;
-          if (keyboardPressed) {
-            this.barcode = "";
-            this.setBarcodeFocus();
-            this.presentError("This item barcode not in order list");
-          }
+          this.setBarcodeFocus();
+          this.presentError("This item barcode not in order list");
         }
       }, error => {
         this.salesDetails.isVisible = false;
