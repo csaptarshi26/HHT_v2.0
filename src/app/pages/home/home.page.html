@@ -33,7 +33,7 @@
       <p text-wrap text-left>Transfer</p>
     </ion-label>
 
-    <ion-label [routerLink]="['/stock-count']" *ngIf="userRole.Admin || userRole.StockCount">
+    <ion-label [routerLink]="['/stock-count/in']" *ngIf="userRole.Admin || userRole.StockCount">
       <img src="./assets/imgs/stockCount.jpg">
       <p>Stock Count</p>
     </ion-label>
@@ -46,11 +46,10 @@
       <p>Inventory Adj</p>
     </ion-label>
 
-    <ion-label [routerLink]="['/item-information']">
+    <ion-label [routerLink]="['/stock-count/out']">
       <img src="./assets/imgs/Inventory Adjustment.jpg">
       <p>Stock Out</p>
     </ion-label>
 
   </ion-item>
-
 </ion-content>

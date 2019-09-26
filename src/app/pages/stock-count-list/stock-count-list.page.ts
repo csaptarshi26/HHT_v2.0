@@ -27,19 +27,20 @@ export class StockCountListPage implements OnInit {
   valueUpdated: boolean = false;
   index: any = 0;
   errMsg: any = "";
-  countNumber:any;
-
+  countNumber: any;
+  pageType: any = "";
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
     public paramService: ParameterService, public storageService: StorageService, public loadingController: LoadingController,
     public router: Router, public alertController: AlertController, public events: Events,
-    public modalController: ModalController) {
+    public modalController: ModalController, private activateRoute: ActivatedRoute) {
 
+    this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
   }
 
   ngOnInit() {
-   this.user = this.paramService.userId
+    this.user = this.paramService.userId
     //this.getItemsFromStorage()
     this.getItemList();
   }
@@ -107,7 +108,7 @@ export class StockCountListPage implements OnInit {
     await alert.present();
   }
 
- 
+
   async saveItem() {
     var lineNum = 1;
 
@@ -115,7 +116,7 @@ export class StockCountListPage implements OnInit {
       var dataTable = {} as STPLogSyncDetailsModel;
       if (el.isSaved && !el.dataSavedToList) {
         dataTable.BarCode = el.BarCode;
-        dataTable.DeviceId =  this.paramService.deviceID;
+        dataTable.DeviceId = this.paramService.deviceID;
         dataTable.DocumentDate = new Date();//this.poHeader.OrderDate;
         dataTable.ItemId = el.ItemId;
         dataTable.DocumentType = 7;
@@ -128,7 +129,12 @@ export class StockCountListPage implements OnInit {
           this.presentAlert("Qty can't be blank");
           return false;
         }
-        dataTable.Quantity = el.quantity;
+        if (this.pageType == "out") {
+          dataTable.Quantity = - el.quantity;
+        } else {
+          dataTable.Quantity = el.quantity;
+        }
+
         dataTable.TransactionType = 5;
         dataTable.UnitId = el.Unit;
         dataTable.User = this.user;
@@ -183,7 +189,7 @@ export class StockCountListPage implements OnInit {
       this.paramService.itemUpdated = false;
       //this.storageService.setItemList(this.itemList);
     }
-    
+
   }
 
   deleteLine(item: ItemModel, i) {
@@ -233,5 +239,5 @@ export class StockCountListPage implements OnInit {
       $('.ui.modal').modal('hide');
     }
   }
-  
+
 }

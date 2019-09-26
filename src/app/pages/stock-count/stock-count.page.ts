@@ -15,6 +15,7 @@ import { ItemModel } from 'src/app/models/STPItem.model';
 import { Network } from '@ionic-native/network/ngx';
 import { StorageService } from 'src/app/providers/storageService/storage.service';
 import { ZoneModel } from 'src/app/models/STPZone.model';
+import * as math from 'mathjs';
 declare var $: any;
 
 @Component({
@@ -43,7 +44,7 @@ export class StockCountPage implements OnInit {
   exitingPage: boolean;
   zoneList: ZoneModel[] = [];
   keyPress: boolean = false;
-  pageType:any="";
+  pageType: any = "";
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
@@ -51,11 +52,11 @@ export class StockCountPage implements OnInit {
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService,
     public alertController: AlertController, public events: Events,
     public toastController: ToastController, public axService: AxService, private keyboard: Keyboard,
-    public paramService: ParameterService, private router: Router,private activateRoute: ActivatedRoute,
+    public paramService: ParameterService, private router: Router, private activateRoute: ActivatedRoute,
     public loadingController: LoadingController, public storageServ: StorageService,
     public changeDetectorref: ChangeDetectorRef, private network: Network) {
 
-      this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
+    this.pageType = this.activateRoute.snapshot.paramMap.get('pageName');
     let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
       console.log('network was disconnected :-(');
       this.storageServ.setItemList(this.itemList);
@@ -319,7 +320,7 @@ export class StockCountPage implements OnInit {
     const toast = await this.toastController.create({
       message: msg,
       duration: 2000,
-      position:'top'
+      position: 'top'
     });
     toast.present();
   }
@@ -340,7 +341,38 @@ export class StockCountPage implements OnInit {
         this.presentAlertForError("Qty cann't be greater than 9999");
         item.quantity = 0;
         return false;
+      } else if (item.quantity < 0) {
+        this.presentAlertForError("Qty cann't be lesser than 0");
+        item.quantity = 0;
+        return false;
+
       } else {
+        var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+        var format = /[\+\-\*\/]/;
+        if (allSpecialChar.test(item.quantity)) {
+          if (format.test(item.quantity)) {
+            let rs = math.evaluate(item.quantity);
+            if (rs.toString().includes("Infinity")) {
+              this.presentAlertForError("Can't divide by 0");
+              item.quantity = 0;
+              return;
+            } else if (Number(rs) > 9999) {
+              this.presentAlertForError("Qty cann't be greater than 9999");
+              item.quantity = 0;
+              return false;
+            } else if (Number(rs) < 0) {
+              this.presentAlertForError("Qty cann't be greater than 9999");
+              item.quantity = 0;
+              return false;
+            } else {
+              item.quantity = Math.floor(rs);
+              console.log(item.quantity);
+            }
+          } else {
+            this.presentAlertForError("Invalid Expression");
+            return;
+          }
+        }
         item.isSaved = true;
       }
     }
@@ -375,7 +407,7 @@ export class StockCountPage implements OnInit {
     } else {
       this.dataServ.setItemList(this.itemList);
       this.dataServ.setStockCountNumber(this.CountNumber);
-      this.router.navigateByUrl('/stock-count-list');
+      this.router.navigateByUrl('/stock-count-list/' + this.pageType);
     }
 
   }

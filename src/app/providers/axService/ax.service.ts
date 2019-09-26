@@ -17,10 +17,10 @@ export class AxService {
   //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
 
   //NAIVAS AFZ DEV URL
-  public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
+  //public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
 
   //NAIVAS DEV URL
-  //public baseAddress: string = "http://192.168.100.144:1060/api/ax/";
+  public baseAddress: string = "http://192.168.100.145:1060/api/ax/";
 
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
