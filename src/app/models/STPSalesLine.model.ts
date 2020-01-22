@@ -18,7 +18,7 @@ export class SalesLineModel {
     Count2Qty:any;
 
     QtyReceivedServer: any;
-    inputQty: number;
+    inputQty: any;
 
     qtyDesc: any;
     BarCode: any;

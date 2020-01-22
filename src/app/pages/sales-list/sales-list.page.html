@@ -39,7 +39,7 @@
 
           <ion-item lines="none" class="ionItemInput" *ngIf="pageType == 'Sales-Order'">
             <ion-label text-left class="ion-text-wrap">Qty To Ship</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput
+            <ion-input type="tel" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput
               id="Recinput" (keyup.enter)="onEnter(salesDetails)" (click)="clearQtyToRec(salesDetails)" [min]="0"
               (ionChange)="valueChanged(salesDetails)">
             </ion-input>
@@ -56,7 +56,7 @@
 
           <ion-item lines="none" class="ionItemInput" *ngIf="pageType =='Sales-Return'">
             <ion-label text-left class="ion-text-wrap">Qty To Receive</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput
+            <ion-input type="tel" style="text-align:left;" [(ngModel)]="salesDetails.inputQty" #Recinput
               id="Recinput" (keyup.enter)="onEnter(salesDetails)" (click)="clearQtyToRec(salesDetails)" [min]="0"
               (ionChange)="valueChanged(salesDetails)">
             </ion-input>

@@ -9,6 +9,7 @@ import { ToastController, LoadingController, AlertController } from '@ionic/angu
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { PurchTableModel } from 'src/app/models/STPPurchTable.model';
 import { RoleModel } from 'src/app/models/STPRole.model';
+import * as math from 'mathjs';
 
 @Component({
   selector: 'app-purchase-list',
@@ -33,8 +34,8 @@ export class PurchaseListPage implements OnInit {
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
 
   poItemSotrageList: any = [];
-  role:RoleModel = {} as RoleModel;
-  
+  role: RoleModel = {} as RoleModel;
+
   constructor(public dataServ: DataService, private activateRoute: ActivatedRoute,
     public toastController: ToastController, public axService: AxService,
     public paramService: ParameterService, public loadingController: LoadingController,
@@ -96,7 +97,7 @@ export class PurchaseListPage implements OnInit {
 
     await alert.present();
   }
- 
+
   async savePO() {
     console.log(this.poLineList)
     this.poLineList.forEach(el => {
@@ -257,6 +258,35 @@ export class PurchaseListPage implements OnInit {
   }
   qtyRecCheck(poLine: PurchLineModel) {
     poLine.isSaved = false;
+
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(poLine.inputQty)) {
+      if (format.test(poLine.inputQty)) {
+        let rs = math.evaluate(poLine.inputQty);
+        if (rs.toString().includes("Infinity")) {
+          this.presentError("Can't divide by 0");
+          poLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) > 9999) {
+          this.presentError("Qty cann't be greater than 9999");
+          poLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentError("Qty cann't be greater than 9999");
+          poLine.inputQty = 0;
+          return false;
+        } else {
+          poLine.inputQty = Math.floor(rs);
+          console.log(poLine.inputQty);
+        }
+      } else {
+        this.presentError("Invalid Expression");
+        return false;
+      }
+    }
+
+
     if (this.pageType == "Receive") {
       if (this.poHeader.CountNumber == "1") {
         if ((poLine.QtyReceived + poLine.inputQty - poLine.updatableCount1Qty) > poLine.Qty) {
@@ -323,19 +353,19 @@ export class PurchaseListPage implements OnInit {
           handler: () => {
             if (this.pageType == "Receive") {
               if (this.poHeader.CountNumber == "1") {
-                poLine.QtyReceived -= poLine.updatableCount1Qty;
-                poLine.QtyToReceive += poLine.updatableCount1Qty;
+                poLine.QtyReceived -= Number(poLine.updatableCount1Qty);
+                poLine.QtyToReceive += Number(poLine.updatableCount1Qty);
               } else if (this.poHeader.CountNumber == "2") {
-                poLine.QtyReceived -= poLine.updatableCount2Qty;
-                poLine.QtyToReceive += poLine.updatableCount2Qty;
+                poLine.QtyReceived -= Number(poLine.updatableCount2Qty);
+                poLine.QtyToReceive += Number(poLine.updatableCount2Qty);
               }
             } else {
               if (this.poHeader.CountNumber == "1") {
-                poLine.QtyReceived -= -poLine.updatableCount1Qty;
-                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+                poLine.QtyReceived -= Number(-poLine.updatableCount1Qty);
+                poLine.QtyToReceive -= Number(poLine.updatableCount1Qty);
               } else if (this.poHeader.CountNumber == "2") {
-                poLine.QtyReceived -= -poLine.updatableCount1Qty;
-                poLine.QtyToReceive -= poLine.updatableCount1Qty;
+                poLine.QtyReceived -= Number(-poLine.updatableCount1Qty);
+                poLine.QtyToReceive -= Number(poLine.updatableCount1Qty);
               }
             }
             if (this.poHeader.CountNumber == "1") {
@@ -363,9 +393,9 @@ export class PurchaseListPage implements OnInit {
   valueChanged(poLine: PurchLineModel) {
     poLine.isSaved = false;
   }
-  mod(n:any){
-    if(n==0) return 0;
-    else if(n > 0) return n;
+  mod(n: any) {
+    if (n == 0) return 0;
+    else if (n > 0) return n;
     else return -n;
   }
 }

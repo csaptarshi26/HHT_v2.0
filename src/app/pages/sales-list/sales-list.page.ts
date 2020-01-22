@@ -1,3 +1,4 @@
+import * as math from 'mathjs';
 import { AxService } from './../../providers/axService/ax.service';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
 import { Keyboard } from '@ionic-native/keyboard/ngx';
@@ -228,7 +229,9 @@ export class SalesListPage implements OnInit {
 
     await alert.present();
   }
-
+  onEnter(soLine: SalesLineModel) {
+    this.saveLine(soLine);
+  }
   saveLine(soLine: SalesLineModel) {
     if (soLine.Quantity == 0) {
       soLine.isSaved = false;
@@ -250,6 +253,34 @@ export class SalesListPage implements OnInit {
     soLine.isSaved = false;
   }
   qtyRecCheck(soLine: SalesLineModel) {
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(soLine.inputQty)) {
+      if (format.test(soLine.inputQty)) {
+        let rs = math.evaluate(soLine.inputQty);
+        if (rs.toString().includes("Infinity")) {
+          this.presentError("Can't divide by 0");
+          soLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) > 9999) {
+          this.presentError("Qty cann't be greater than 9999");
+          soLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentError("Qty cann't be greater than 9999");
+          soLine.inputQty = 0;
+          return false;
+        } else {
+          soLine.inputQty = Math.floor(rs);
+          console.log(soLine.inputQty);
+        }
+      } else {
+        this.presentError("Invalid Expression");
+        return false;
+      }
+    }
+
+
     if (this.pageType == "Sales-Order") {
       if (this.soHeader.CountNumber == "1") {
         if ((soLine.QtyShipped + soLine.inputQty - soLine.updatableCount1Qty) > soLine.Quantity) {

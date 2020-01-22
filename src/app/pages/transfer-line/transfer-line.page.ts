@@ -1,3 +1,4 @@
+import * as math from 'mathjs';
 import { IqtyList } from './../../models/IQtyModel';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TransferOrderModel } from './../../models/STPTransferOrder.model';
@@ -367,6 +368,34 @@ export class TransferLinePage implements OnInit {
       this.presentError("Qty Cann't be Negative");
       return false;
     }
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(toLine.inputQty)) {
+      if (format.test(toLine.inputQty)) {
+        let rs = math.evaluate(toLine.inputQty);
+        if (rs.toString().includes("Infinity")) {
+          this.presentError("Can't divide by 0");
+          toLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) > 9999) {
+          this.presentError("Qty cann't be greater than 9999");
+          toLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentError("Qty cann't be greater than 9999");
+          toLine.inputQty = 0;
+          return false;
+        } else {
+          toLine.inputQty = Math.floor(rs);
+          console.log(toLine.inputQty);
+        }
+      } else {
+        this.presentError("Invalid Expression");
+        return false;
+      }
+    }
+
+
     if (this.pageType == "Transfer-out") {
       if ((toLine.QtyShipped + toLine.inputQty) > toLine.Quantity) {
         this.presentError("Rec item cannot be greater than Qty");

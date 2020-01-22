@@ -55,7 +55,7 @@
       <div *ngIf="pageType == 'Receive'">
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left class="ion-text-wrap">Qty To Receive</ion-label>
-          <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
+          <ion-input type="tel" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
             [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
           </ion-input>
         </ion-item>
@@ -82,7 +82,7 @@
       <div *ngIf="pageType == 'Return'">
         <ion-item lines="none" class="ionItemInput">
           <ion-label text-left class="ion-text-wrap">Qty To Return</ion-label>
-          <ion-input type="number" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
+          <ion-input type="tel" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
             [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
           </ion-input>
         </ion-item>

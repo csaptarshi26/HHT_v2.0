@@ -3,7 +3,8 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>Stock Count List</ion-title>
+    <ion-title *ngIf="pageType == 'out'">Stock Pick List</ion-title>
+    <ion-title *ngIf="pageType == 'in'">Stock Count List</ion-title>
     <ion-buttons slot="end">
       <ion-button color="light" (click)="saveItem()" [disabled]="!itemList.length">
         Upload

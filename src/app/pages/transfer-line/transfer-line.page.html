@@ -22,7 +22,7 @@
         Barcode Not Found,Scan barcode
       </span> -->
       <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="valueChange($event)" #input id="barcodeInput"
-        (click)="clearBarcode()" (search)="onPressEnter()"></ion-searchbar>
+        (click)="clearBarcode()" (keyup.enter)="onPressEnter()"></ion-searchbar>
       <span *ngIf="toHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
       <span *ngIf="toHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>
     </ion-card-content>
@@ -53,7 +53,7 @@
         <div *ngIf="pageType == 'Transfer-out'">
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left class="ion-text-wrap">Qty To Ship</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" #Recinput id="Recinput"
+            <ion-input type="tel" style="text-align:left;" [(ngModel)]="toLine.inputQty" #Recinput id="Recinput"
               (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)" [min]="0">
             </ion-input>
           </ion-item>
@@ -72,12 +72,18 @@
             <ion-label text-left class="ion-text-wrap">Balance</ion-label>
             <ion-label text-left> {{toLine.QtyToShip}} </ion-label>
           </ion-item>
+
+          <ion-item lines="none" class="ionItemInput">
+            <ion-label text-left class="ion-text-wrap">Excess Qty</ion-label>
+            <ion-input type="tel" style="text-align:left;" [(ngModel)]="toLine.excesQty">
+            </ion-input>
+          </ion-item>
         </div>
 
         <div *ngIf="pageType =='Transfer-in'">
           <ion-item lines="none" class="ionItemInput">
             <ion-label text-left class="ion-text-wrap">Qty To Receive</ion-label>
-            <ion-input type="number" style="text-align:left;" [(ngModel)]="toLine.inputQty" #Recinput id="Recinput"
+            <ion-input type="tel" style="text-align:left;" [(ngModel)]="toLine.inputQty" #Recinput id="Recinput"
               (keyup.enter)="onEnter(toLine)" (click)="clearQtyToRec(toLine)" [min]="0">
             </ion-input>
           </ion-item>
@@ -95,6 +101,12 @@
           <ion-item lines="none" class="ionItemInput" *ngIf="role.BalanceQty">
             <ion-label text-left class="ion-text-wrap">Balance</ion-label>
             <ion-label text-left> {{toLine.QtyToReceive}} </ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="ionItemInput">
+            <ion-label text-left class="ion-text-wrap">Excess Qty</ion-label>
+            <ion-input type="tel" style="text-align:left;" [(ngModel)]="toLine.excesQty">
+            </ion-input>
           </ion-item>
         </div>
 

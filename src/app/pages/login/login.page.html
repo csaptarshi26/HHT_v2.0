@@ -16,7 +16,7 @@
         <ion-label>
           <ion-icon name="lock"></ion-icon>
         </ion-label>
-        <ion-input type="password"  placeholder="Password" [(ngModel)]="password"></ion-input>
+        <ion-input type="password" placeholder="Password" [(ngModel)]="password"></ion-input>
       </ion-item>
 
 
@@ -31,7 +31,7 @@
 
       <ion-item lines="none" class="ionItemInput inputMargin">
         <ion-label position="stacked">Warehouse</ion-label>
-        <ionic-selectable [(ngModel)]="selectedWarehouse" [items]="warehouseList" itemValueField="LocationId"
+        <ionic-selectable [(ngModel)]="selectedWarehouse" [items]="userWarehouseList" itemValueField="LocationId"
           itemTextField="Name" [canSearch]="true">
         </ionic-selectable>
       </ion-item>

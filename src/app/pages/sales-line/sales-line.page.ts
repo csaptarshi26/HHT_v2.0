@@ -12,6 +12,7 @@ import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ToastController, AlertController, IonInput, LoadingController, IonSearchbar } from '@ionic/angular';
+import * as math from 'mathjs';
 declare var $: any;
 @Component({
   selector: 'app-sales-line',
@@ -311,14 +312,7 @@ export class SalesLinePage implements OnInit {
     const alert = await this.alertController.create({
       header: 'Error',
       message: msg,
-      buttons: [
-        {
-          text: 'Okay',
-          handler: () => {
-
-          }
-        }
-      ]
+      buttons: ['Okay']
     });
 
     await alert.present();
@@ -366,6 +360,33 @@ export class SalesLinePage implements OnInit {
       this.presentError("Qty Cann't be Negative");
       return false;
     }
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(soLine.inputQty)) {
+      if (format.test(soLine.inputQty)) {
+        let rs = math.evaluate(soLine.inputQty);
+        if (rs.toString().includes("Infinity")) {
+          this.presentError("Can't divide by 0");
+          soLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) > 9999) {
+          this.presentError("Qty cann't be greater than 9999");
+          soLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentError("Qty cann't be greater than 9999");
+          soLine.inputQty = 0;
+          return false;
+        } else {
+          soLine.inputQty = Math.floor(rs);
+          console.log(soLine.inputQty);
+        }
+      } else {
+        this.presentError("Invalid Expression");
+        return false;
+      }
+    }
+
     if (this.pageType == "Sales-Order") {
       if ((soLine.QtyShipped + soLine.inputQty) > soLine.Quantity) {
         this.presentError("Rec item cannot be greater than Qty");

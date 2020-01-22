@@ -12,7 +12,7 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { ToastController, LoadingController, AlertController, IonInput, IonSearchbar } from '@ionic/angular';
 import { ParameterService } from 'src/app/providers/parameterService/parameter.service';
 import { RoleModel } from 'src/app/models/STPRole.model';
-
+import * as math from 'mathjs';
 declare var $: any;
 @Component({
   selector: 'app-purchase-line',
@@ -387,6 +387,36 @@ export class PurchaseLinePage implements OnInit {
       this.presentError("Qty Cann't be Blank");
       return false;
     }
+    // 
+    // 
+    // 
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(poLine.inputQty)) {
+      if (format.test(poLine.inputQty)) {
+        let rs = math.evaluate(poLine.inputQty);
+        if (rs.toString().includes("Infinity")) {
+          this.presentError("Can't divide by 0");
+          poLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) > 9999) {
+          this.presentError("Qty cann't be greater than 9999");
+          poLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentError("Qty cann't be greater than 9999");
+          poLine.inputQty = 0;
+          return false;
+        } else {
+          poLine.inputQty = Math.floor(rs);
+          console.log(poLine.inputQty);
+        }
+      } else {
+        this.presentError("Invalid Expression");
+        return false;
+      }
+    }
+
     if (this.pageType == "Receive") {
       if ((poLine.QtyReceived + poLine.inputQty) > poLine.Qty) {
         this.presentError("Rec item cannot be greater than Qty");

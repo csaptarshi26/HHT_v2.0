@@ -22,7 +22,7 @@ export class TransferOrderLine {
     Count1Qty:any;
     Count2Qty:any;
     
-    inputQty:number;
+    inputQty:any;
 
     isVisible: boolean;
     isSaved: boolean;
@@ -30,4 +30,5 @@ export class TransferOrderLine {
     dataSavedToList: boolean;
 
     btnDisable: boolean = true;
+    excesQty:any;
 }

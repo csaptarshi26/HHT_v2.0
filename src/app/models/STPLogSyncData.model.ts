@@ -25,6 +25,7 @@ export class STPLogSyncDetailsModel {
 	ToWMSLocationId: any;
 	CountNumber:any;
 	zone:any;
+	Excessquantity:any;
 	constructor() {
 
 	}

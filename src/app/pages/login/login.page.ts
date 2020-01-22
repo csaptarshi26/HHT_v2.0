@@ -27,6 +27,7 @@ export class LoginPage implements OnInit {
   selectedWarehouse: InventLocationLineModel;
 
   warehouseList: InventLocationLineModel[] = [];
+  userWarehouseList: InventLocationLineModel[] = [];
 
   inventList: InventLocationModel[] = [];
   currentDate: Date;
@@ -46,12 +47,12 @@ export class LoginPage implements OnInit {
     this.setDeviceId();
     this.expirationDate = new Date('07-31-2019');
     console.log(this.expirationDate);
-    this.getCurrentDate();
+    //this.getCurrentDate();
     this.getStorageData();
     this.getInventoryLocation();
     this.menuCtrl.enable(false);
   }
-  
+
   ionViewWillEnter() {
     this.checkUser = {} as CheckUser;
     this.userId = "";
@@ -128,24 +129,40 @@ export class LoginPage implements OnInit {
   }
 
   defineRole(role: RoleModel) {
-    // if(role)
-    // role.forEach(el => {
-    //   if (el == "Administrator") this.roleList.Administrator = true;
-    //   if (el == "InvenoryAdj") this.roleList.InvenoryAdj = true;
-    //   if (el == "Purchase") this.roleList.Purchase = true;
-    //   if (el == "Sales") this.roleList.Sales = true;
-    //   if (el == "StockCount") this.roleList.StockCount = true;
-    //   if (el == "Transfer") this.roleList.Transfer = true;
-    // })
     this.storageService.setRole(role);
     this.navigatingToHome();
   }
   legalEntitySelected() {
     this.selectedWarehouse = {} as InventLocationLineModel;
     this.warehouseList = this.selectedInventory.InventLocations;
-    this.paramService.wareHouseList = this.warehouseList;
+    this.paramService.wareHouseList = this.selectedInventory.InventLocations;
+    if (this.selectedInventory.DataAreaId) {
+      if (this.userId) {
+        this.getUserWarehouse();
+      } else {
+        this.presentAlertForError("User name cann't be blank");
+        this.selectedInventory = {} as InventLocationModel;
+      }
+    }
   }
+  async presentAlertForError(msg) {
+    const alert = await this.alertController.create({
+      header: 'Information',
+      message: msg,
+      buttons: ['Okay']
+    });
 
+    await alert.present();
+  }
+  getUserWarehouse() {
+    this.axService.getUserWarehouse(this.userId, this.selectedInventory.DataAreaId).subscribe(res => {
+      console.log(res);
+      if (!res.length) {
+        this.presentAlertForError("Warehouse is not deffined for this user and legal entity");
+      }
+      this.userWarehouseList = res;
+    })
+  }
   getInventoryLocation() {
     if (this.paramService.inventLocationList == null || this.paramService.inventLocationList.length == 0) {
       this.axService.getInventoryLocation().subscribe(res => {

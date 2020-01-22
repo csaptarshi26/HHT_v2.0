@@ -3,7 +3,8 @@
     <ion-buttons slot="start">
       <ion-back-button (click)="backBtn()"></ion-back-button>
     </ion-buttons>
-    <ion-title>Stock Count</ion-title>
+    <ion-title *ngIf="pageType == 'out'">Stock Pick</ion-title>
+    <ion-title *ngIf="pageType == 'in'">Stock Count</ion-title>
     <ion-buttons slot="end">
       <ion-button color="light" (click)="scanByCamera()">
         <ion-icon name="camera"></ion-icon>
@@ -30,7 +31,7 @@
         <ion-label>Count Number</ion-label>
         <ion-select interface="action-sheet" [(ngModel)]="CountNumber" (ionChange)="countNumberChanged()">
           <ion-select-option value="1" selected>First</ion-select-option>
-          <ion-select-option value="2">Second</ion-select-option>
+          <ion-select-option value="2" *ngIf="zone.ZoneMandatory">Second</ion-select-option>
         </ion-select>
       </ion-item>
 

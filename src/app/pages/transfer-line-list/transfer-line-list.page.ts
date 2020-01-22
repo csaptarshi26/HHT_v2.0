@@ -9,7 +9,7 @@ import { TransferOrderModel } from 'src/app/models/STPTransferOrder.model';
 import { TransferOrderLine } from 'src/app/models/STPTransferOrderLine.Model';
 import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 import { RoleModel } from 'src/app/models/STPRole.model';
-
+import * as math from 'mathjs';
 @Component({
   selector: 'app-transfer-line-list',
   templateUrl: './transfer-line-list.page.html',
@@ -31,7 +31,7 @@ export class TransferLineListPage implements OnInit {
 
   dataTable: STPLogSyncDetailsModel = {} as STPLogSyncDetailsModel;
   toSotrageItemList: any = [];
-  role:RoleModel = {} as RoleModel;
+  role: RoleModel = {} as RoleModel;
   constructor(public dataServ: DataService, public toastController: ToastController, public axService: AxService,
     public paramService: ParameterService, public storageServ: StorageService, public loadingController: LoadingController,
     public router: Router, private activateRoute: ActivatedRoute, public alertController: AlertController) {
@@ -69,6 +69,23 @@ export class TransferLineListPage implements OnInit {
         el.inputQty = el.updatableCount2Qty;
       }
     })
+  }
+
+  async presentMsg(msg) {
+    const alert = await this.alertController.create({
+      header: 'Success',
+      message: msg,
+      buttons: [
+        {
+          text: 'Okay',
+          handler: () => {
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   async presentError(msg) {
@@ -113,6 +130,7 @@ export class TransferLineListPage implements OnInit {
         } else {
           dataTable.DocumentType = 3;
         }
+        dataTable.Excessquantity = el.excesQty;
         dataTable.ItemLocation = this.paramService.Location.LocationId;
         dataTable.UserLocation = this.paramService.Location.LocationId;
         dataTable.LineNum = el.LineNo;
@@ -139,7 +157,6 @@ export class TransferLineListPage implements OnInit {
       console.log(this.updateDataTableList);
       this.axService.updateStagingTable(this.updateDataTableList).subscribe(res => {
         if (res) {
-          this.presentError("Line Updated successfully");
           this.updateDataTableList = [];
           this.toLineList = [];
           this.dataUpdatedToServer = true;
@@ -163,10 +180,38 @@ export class TransferLineListPage implements OnInit {
     toLine.isSaved = false;
   }
   qtyRecCheck(toLine: TransferOrderLine) {
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(toLine.inputQty)) {
+      if (format.test(toLine.inputQty)) {
+        let rs = math.evaluate(toLine.inputQty);
+        if (rs.toString().includes("Infinity")) {
+          this.presentError("Can't divide by 0");
+          toLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) > 9999) {
+          this.presentError("Qty cann't be greater than 9999");
+          toLine.inputQty = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentError("Qty cann't be greater than 9999");
+          toLine.inputQty = 0;
+          return false;
+        } else {
+          toLine.inputQty = Math.floor(rs);
+          console.log(toLine.inputQty);
+        }
+      } else {
+        this.presentError("Invalid Expression");
+        return false;
+      }
+    }
+
+
     if (this.toHeader.CountNumber == "1") {
       if (this.pageType == "Transfer-out") {
-        if ((toLine.QtyShipped + toLine.inputQty - toLine.updatableCount1Qty) > toLine.Quantity || 
-        (toLine.inputQty - toLine.updatableCount1Qty) > toLine.QtyToShip) {
+        if ((toLine.QtyShipped + toLine.inputQty - toLine.updatableCount1Qty) > toLine.Quantity ||
+          (toLine.inputQty - toLine.updatableCount1Qty) > toLine.QtyToShip) {
           this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
@@ -177,7 +222,7 @@ export class TransferLineListPage implements OnInit {
         }
       } else {
         if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableCount1Qty) > toLine.Quantity ||
-         (toLine.inputQty - toLine.updatableCount1Qty) > toLine.QtyToReceive) {
+          (toLine.inputQty - toLine.updatableCount1Qty) > toLine.QtyToReceive) {
           this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
@@ -189,8 +234,8 @@ export class TransferLineListPage implements OnInit {
       }
     } else if (this.toHeader.CountNumber == "2") {
       if (this.pageType == "Transfer-out") {
-        if ((toLine.QtyShipped + toLine.inputQty - toLine.updatableCount2Qty) > toLine.Quantity || 
-        (toLine.inputQty - toLine.updatableCount2Qty) > toLine.QtyToShip) {
+        if ((toLine.QtyShipped + toLine.inputQty - toLine.updatableCount2Qty) > toLine.Quantity ||
+          (toLine.inputQty - toLine.updatableCount2Qty) > toLine.QtyToShip) {
           this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
@@ -201,7 +246,7 @@ export class TransferLineListPage implements OnInit {
         }
       } else {
         if ((toLine.QtyReceived + toLine.inputQty - toLine.updatableCount2Qty) > toLine.Quantity ||
-        (toLine.inputQty - toLine.updatableCount2Qty) > toLine.QtyToReceive) {
+          (toLine.inputQty - toLine.updatableCount2Qty) > toLine.QtyToReceive) {
           this.presentError("Rec item cannot be greater than Qty");
           return false;
         } else {
@@ -296,9 +341,9 @@ export class TransferLineListPage implements OnInit {
         var flag = 0;
         this.toSotrageItemList.forEach(el => {
           if (el.poNo == this.toHeader.JournalId) {
-            el.type= this.pageType,
-            el.toNo= this.toHeader.JournalId,
-            el.toHeader= this.toHeader
+            el.type = this.pageType,
+              el.toNo = this.toHeader.JournalId,
+              el.toHeader = this.toHeader
             flag = 1;
           }
         });

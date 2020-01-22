@@ -45,6 +45,8 @@ export class StockCountPage implements OnInit {
   zoneList: ZoneModel[] = [];
   keyPress: boolean = false;
   pageType: any = "";
+
+  showSecondCount:boolean = true;
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("qtyInput") qtyInput: IonInput;
 
@@ -61,7 +63,7 @@ export class StockCountPage implements OnInit {
       console.log('network was disconnected :-(');
       this.storageServ.setItemList(this.itemList);
     });
-
+   
     // stop disconnect watch
     disconnectSubscription.unsubscribe();
 
@@ -468,6 +470,7 @@ export class StockCountPage implements OnInit {
   getZoneList() {
     this.axService.getZoneList().subscribe(res => {
       this.zoneList = res;
+      console.log(res);
     }, error => {
       console.log(error);
     })

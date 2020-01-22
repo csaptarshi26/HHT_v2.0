@@ -17,10 +17,10 @@ export class AxService {
   //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
 
   //NAIVAS AFZ DEV URL
-  //public baseAddress: string = "http://192.168.0.190:1060/AX/api/ax/";
+  //public baseAddress: string = "http://192.168.0.190:1061/api/ax/";
 
-  //NAIVAS DEV URL
-  public baseAddress: string = "http://192.168.100.145:1060/api/ax/";
+  //NAIVAS UAT URL
+  public baseAddress: string = "http://192.168.100.145:1061/api/ax/";
 
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
@@ -36,6 +36,19 @@ export class AxService {
     };
     return this.http.post(url, body, httpOptions);
   }
+  getUserWarehouse(userId,dataAreaId): Observable<any> {
+    let url = this.baseAddress + "getUserWarehouse";
+    let body = {
+      "dataAreaId": dataAreaId,
+      "UserId": userId
+    };
+    let httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post(url, body, httpOptions);
+  }
 
   checkUser(userId: string, password: string): Observable<any> {
     let url = this.baseAddress + "checkuser";
@@ -43,7 +56,6 @@ export class AxService {
       "UserId": userId,
       "Password": password
     };
-    console.log(body);
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -203,6 +215,8 @@ export class AxService {
       "DataAreaId": this.paramService.dataAreaId,
       "ContractList": dataTable
     };
+
+    console.log(JSON.stringify(body));
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -240,12 +254,12 @@ export class AxService {
   }
 
 
-  getCustomerList(forReturn:boolean): Observable<any> {
+  getCustomerList(forReturn: boolean): Observable<any> {
     let url = this.baseAddress + "readCustomers";
     let body = {
       "DataAreaId": this.paramService.dataAreaId,
       "LocationId": "",//this.paramService.Location.LocationId,
-      "forReturn":forReturn
+      "forReturn": forReturn
     };
     let httpOptions = {
       headers: new HttpHeaders({
