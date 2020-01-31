@@ -49,7 +49,7 @@
       <ion-item lines="none" class="ionItemInput">
         <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
         <ion-input type="number" style="text-align:left;" [(ngModel)]="item.quantity" #qtyInput id="qtyInput"
-          min="0" max="9999" (keyup.enter)="onEnterConfirm(item)">
+          min="0" max="999999" (keyup.enter)="onEnterConfirm(item)">
         </ion-input>
       </ion-item>
     </ion-card-content>

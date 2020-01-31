@@ -73,9 +73,9 @@ export class StockCountListPage implements OnInit {
 
   }
   qtyCheck(item: ItemModel) {
-    if (item.quantity > 9999) {
-      this.errMsg = "Qty cann't be greater than 9999";
-      //this.presentToast("Qty cann't be greater than 9999");
+    if (item.quantity > 999999) {
+      this.errMsg = "Qty cann't be greater than 999999";
+      //this.presentToast("Qty cann't be greater than 999999");
       return false;
     } else if (!item.quantity || item.quantity < 0) {
       this.errMsg = "Qty cann't be blank";
@@ -96,12 +96,12 @@ export class StockCountListPage implements OnInit {
             this.errMsg = "Can't divide by 0";
             item.quantity = 0;
             return;
-          } else if (Number(rs) > 9999) {
-            this.errMsg="Qty cann't be greater than 9999";
+          } else if (Number(rs) > 999999) {
+            this.errMsg="Qty cann't be greater than 999999";
             item.quantity = 0;
             return false;
           } else if (Number(rs) < 0) {
-            this.errMsg = "Qty cann't be greater than 9999";
+            this.errMsg = "Qty cann't be greater than 999999";
             item.quantity = 0;
             return false;
           } else {

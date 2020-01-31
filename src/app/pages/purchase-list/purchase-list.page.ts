@@ -268,12 +268,12 @@ export class PurchaseListPage implements OnInit {
           this.presentError("Can't divide by 0");
           poLine.inputQty = 0;
           return false;
-        } else if (Number(rs) > 9999) {
-          this.presentError("Qty cann't be greater than 9999");
+        } else if (Number(rs) > 999999) {
+          this.presentError("Qty cann't be greater than 999999");
           poLine.inputQty = 0;
           return false;
         } else if (Number(rs) < 0) {
-          this.presentError("Qty cann't be greater than 9999");
+          this.presentError("Qty cann't be greater than 999999");
           poLine.inputQty = 0;
           return false;
         } else {

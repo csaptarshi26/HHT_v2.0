@@ -11,16 +11,8 @@ import { STPLogSyncDetailsModel } from 'src/app/models/STPLogSyncData.model';
 })
 export class AxService {
 
-  //public baseAddress: string = "http://192.168.0.182:1060/AX/api/ax/";
-
-  //MASSKAR URL
-  //public baseAddress: string = "http://192.168.1.105:1060/ax/api/ax/";
-
-  //NAIVAS AFZ DEV URL
-  //public baseAddress: string = "http://192.168.0.190:1061/api/ax/";
-
   //NAIVAS UAT URL
-  public baseAddress: string = "http://192.168.100.145:1061/api/ax/";
+  public baseAddress: string = "http://192.168.148.212:1061/api/ax/";
 
   constructor(public paramService: ParameterService, public hTTP: HTTP, public http: HttpClient) {
 
@@ -81,6 +73,7 @@ export class AxService {
       "LocationId": this.paramService.Location.LocationId,
       "DataAreaId": this.paramService.dataAreaId
     };
+    console.log(JSON.stringify(body));
     let httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'

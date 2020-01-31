@@ -339,8 +339,8 @@ export class StockCountPage implements OnInit {
     if (item.quantity == 0 || item.quantity == null) {
       item.isSaved = false;
     } else {
-      if (item.quantity > 9999) {
-        this.presentAlertForError("Qty cann't be greater than 9999");
+      if (item.quantity > 999999) {
+        this.presentAlertForError("Qty cann't be greater than 999999");
         item.quantity = 0;
         return false;
       } else if (item.quantity < 0) {
@@ -358,12 +358,12 @@ export class StockCountPage implements OnInit {
               this.presentAlertForError("Can't divide by 0");
               item.quantity = 0;
               return;
-            } else if (Number(rs) > 9999) {
-              this.presentAlertForError("Qty cann't be greater than 9999");
+            } else if (Number(rs) > 999999) {
+              this.presentAlertForError("Qty cann't be greater than 999999");
               item.quantity = 0;
               return false;
             } else if (Number(rs) < 0) {
-              this.presentAlertForError("Qty cann't be greater than 9999");
+              this.presentAlertForError("Qty cann't be greater than 999999");
               item.quantity = 0;
               return false;
             } else {

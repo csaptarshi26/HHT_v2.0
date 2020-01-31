@@ -234,8 +234,8 @@ export class InventoryHeaderPage implements OnInit {
       item.isSaved = false;
       return false;
     } else {
-      if (item.quantity > 9999) {
-        this.presentAlertForError("Qty cann't be greater than 9999");
+      if (item.quantity > 999999) {
+        this.presentAlertForError("Qty cann't be greater than 999999");
         item.quantity = "";
         return false;
       } else {
