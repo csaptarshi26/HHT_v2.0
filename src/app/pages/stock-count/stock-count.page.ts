@@ -46,9 +46,15 @@ export class StockCountPage implements OnInit {
   keyPress: boolean = false;
   pageType: any = "";
 
-  showSecondCount:boolean = true;
+  zoneMandetory: any;
+
+  showSecondCount: boolean = true;
   @ViewChild("input") barcodeInput: IonSearchbar;
   @ViewChild("qtyInput") qtyInput: IonInput;
+  countNumberList: any[] = [
+    { value: "1", visible: true, label: "First" },
+    { value: "2", visible: false, label: "Second" }
+  ]
 
 
   constructor(public barcodeScanner: BarcodeScanner, public dataServ: DataService,
@@ -63,7 +69,7 @@ export class StockCountPage implements OnInit {
       console.log('network was disconnected :-(');
       this.storageServ.setItemList(this.itemList);
     });
-   
+
     // stop disconnect watch
     disconnectSubscription.unsubscribe();
 
@@ -131,6 +137,7 @@ export class StockCountPage implements OnInit {
     });
   }
   ngOnInit() {
+    $('.ui.dropdown').dropdown({ fullTextSearch: true });
     this.getZoneList();
     this.count = -1;
     this.getStorageData();
@@ -148,7 +155,16 @@ export class StockCountPage implements OnInit {
       this.keyboard.show();
     }, 100);
   }
-
+  zoneSelected(zones: ZoneModel) {
+    console.clear();
+    this.zone = zones;
+    if (this.zone.ZoneMandatory) {
+      this.zoneMandetory = true;
+    } else {
+      this.zoneMandetory = false;
+    }
+    console.log(this.zoneMandetory)
+  }
   ionViewWillEnter() {
     this.setBarcodeFocus();
     if (this.paramService.itemUpdated) {
@@ -255,20 +271,23 @@ export class StockCountPage implements OnInit {
     console.log("data value " + dataValue);
     console.log("targer value " + targerValue);
     console.log(event);
-    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
-      this.barcode = targerValue;
-      if (this.barcode != null) {
-        if (!this.CountNumber) {
-          this.presentAlertForError("Please Select Count Number ");
-        } else if (!this.zone.ZoneName) {
-          this.presentAlertForError("Please Select Zone ");
-        } else {
-          this.searchBarcode();
+    if (dataValue && targerValue.length != 1) {
+      if (targerValue && targerValue == dataValue && event.detail.inputType != "deleteContentBackward") {
+        this.barcode = targerValue;
+        if (this.barcode != null) {
+          if (!this.CountNumber) {
+            this.presentAlertForError("Please Select Count Number ");
+          } else if (!this.zone.ZoneName) {
+            this.presentAlertForError("Please Select Zone ");
+          } else {
+            this.searchBarcode();
+          }
         }
+      } else if (targerValue != null && dataValue.toString().length == 1) {
+        console.log("keyboard input");
       }
-    } else if (targerValue != null && dataValue.toString().length == 1) {
-      console.log("keyboard input");
     }
+
   }
 
   async searchBarcode() {
@@ -336,48 +355,39 @@ export class StockCountPage implements OnInit {
     if (item.BarCode == "") {
       return false;
     }
-    if (item.quantity == 0 || item.quantity == null) {
-      item.isSaved = false;
-    } else {
-      if (item.quantity > 999999) {
-        this.presentAlertForError("Qty cann't be greater than 999999");
-        item.quantity = 0;
-        return false;
-      } else if (item.quantity < 0) {
-        this.presentAlertForError("Qty cann't be lesser than 0");
-        item.quantity = 0;
-        return false;
 
-      } else {
-        var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
-        var format = /[\+\-\*\/]/;
-        if (allSpecialChar.test(item.quantity)) {
-          if (format.test(item.quantity)) {
-            let rs = math.evaluate(item.quantity);
-            if (rs.toString().includes("Infinity")) {
-              this.presentAlertForError("Can't divide by 0");
-              item.quantity = 0;
-              return;
-            } else if (Number(rs) > 999999) {
-              this.presentAlertForError("Qty cann't be greater than 999999");
-              item.quantity = 0;
-              return false;
-            } else if (Number(rs) < 0) {
-              this.presentAlertForError("Qty cann't be greater than 999999");
-              item.quantity = 0;
-              return false;
-            } else {
-              item.quantity = Math.floor(rs);
-              console.log(item.quantity);
-            }
-          } else {
-            this.presentAlertForError("Invalid Expression");
-            return;
-          }
+    var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+    var format = /[\+\-\*\/]/;
+    if (allSpecialChar.test(item.quantity)) {
+      if (format.test(item.quantity)) {
+        let rs = math.evaluate(item.quantity);
+        if (rs.toString().includes("Infinity")) {
+          this.presentAlertForError("Can't divide by 0");
+          item.quantity = 0;
+          return;
+        } else if (Number(rs) > 999999) {
+          this.presentAlertForError("Qty cann't be greater than 999999");
+          item.quantity = 0;
+          return false;
+        } else if (Number(rs) < 0) {
+          this.presentAlertForError("Qty cann't be lesser than 0");
+          item.quantity = 0;
+          return false;
+        } else {
+          item.quantity = Math.floor(rs);
+          console.log(item.quantity);
         }
-        item.isSaved = true;
+      } else {
+        this.presentAlertForError("Invalid Expression");
+        item.quantity = 0;
+        return;
       }
+    }else{
+      this.presentAlertForError("Invalid Expression");
+      item.quantity = 0;
+      return;
     }
+    item.isSaved = true;
     var len = this.itemList.length - 1
     if (this.item.quantity == "") {
       let obj = {} as IqtyList;

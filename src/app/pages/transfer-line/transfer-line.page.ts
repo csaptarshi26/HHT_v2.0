@@ -157,15 +157,18 @@ export class TransferLinePage implements OnInit {
     console.log("data value " + dataValue);
     console.log("targer value " + targerValue);
     console.log(event);
-    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
-      this.barcode = targerValue;
-      if (this.barcode != null) {
-        this.barcodeScan();
+    if (dataValue && targerValue.length != 1) {
+      if (targerValue && targerValue == dataValue && event.detail.inputType != "deleteContentBackward") {
+        this.barcode = targerValue;
+        if (this.barcode != null) {
+          this.barcodeScan();
+        }
+      } else if (targerValue != null && dataValue.toString().length == 1) {
+        console.log("keyboard input");
       }
-    } else if (targerValue != null && dataValue.toString().length == 1) {
-      console.log("keyboard input");
     }
   }
+
   async barcodeScan() {
     if (this.barcode != null && this.barcode.length > 1) {
       this.axService.getItemFromBarcodeWithOUM(this.barcode).subscribe(res => {
@@ -364,10 +367,6 @@ export class TransferLinePage implements OnInit {
   }
   qtyRecCheck(toLine: TransferOrderLine) {
     var len = this.getVisibleItemScannedQty(this.toHeader.JournalLine)
-    if (toLine.inputQty < 0) {
-      this.presentError("Qty Cann't be Negative");
-      return false;
-    }
     var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
     var format = /[\+\-\*\/]/;
     if (allSpecialChar.test(toLine.inputQty)) {
@@ -382,7 +381,7 @@ export class TransferLinePage implements OnInit {
           toLine.inputQty = 0;
           return false;
         } else if (Number(rs) < 0) {
-          this.presentError("Qty cann't be greater than 999999");
+          this.presentError("Qty cann't be lesser than 0");
           toLine.inputQty = 0;
           return false;
         } else {

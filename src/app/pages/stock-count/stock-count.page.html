@@ -18,29 +18,51 @@
   <ion-card class="scanCard">
     <ion-card-content class="padding">
 
-      <ion-item lines="none" class="barcode">
+      <!-- <ion-item lines="none" class="barcode">
         <ion-label>Zone</ion-label>
         <ion-select interface="action-sheet" [(ngModel)]="zone">
           <ion-select-option *ngFor="let zones of zoneList" [value]="zones">
             {{zones.ZoneName}}
           </ion-select-option>
         </ion-select>
-      </ion-item>
+      </ion-item> -->
 
-      <ion-item lines="none" class="barcode">
-        <ion-label>Count Number</ion-label>
-        <ion-select interface="action-sheet" [(ngModel)]="CountNumber" (ionChange)="countNumberChanged()">
-          <ion-select-option value="1" selected>First</ion-select-option>
-          <ion-select-option value="2" *ngIf="zone.ZoneMandatory">Second</ion-select-option>
-        </ion-select>
-      </ion-item>
+      <div class="ui fluid search selection dropdown">
+        <input type="hidden" name="country">
+        <i class="dropdown icon"></i>
+        <div class="default text">Zone</div>
+        <div class="menu" id="idDropDown">
+          <ng-container *ngFor="let zones of zoneList">
+            <div class="item" data-value="zones" (click)="zoneSelected(zones)">
+              <b>{{zones.ZoneId}} </b>- {{zones.ZoneName}}</div>
+          </ng-container>
+        </div>
+      </div>
+
+      <ng-container *ngIf="zoneMandetory;else notMandetory">
+        <ion-item lines="none" class="barcode">
+          <ion-label>Count Number</ion-label>
+
+          <ion-select interface="action-sheet" [(ngModel)]="CountNumber" (ionChange)="countNumberChanged()">
+            <ion-select-option value="1" selected>First</ion-select-option>
+            <ion-select-option value="2">Second</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ng-container>
+
+      <ng-template #notMandetory>
+        <ion-item lines="none" class="barcode">
+          <ion-label>Count Number</ion-label>
+          
+          <ion-select interface="action-sheet" [(ngModel)]="CountNumber" (ionChange)="countNumberChanged()">
+            <ion-select-option value="1" selected>First</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ng-template>
 
 
-      <!-- <span *ngIf="count >= 0 && !item.visible" class="error">
-        Barcode Not Found,Scan barcode
-      </span> -->
-      <ion-searchbar type="tel" [(ngModel)]="barcode" #input id="barcodeInput"
-        (click)="clearBarcode()" (ionInput)="valueChange($event)" (keyup.enter)="onPressEnter()"></ion-searchbar>
+      <ion-searchbar type="tel" [(ngModel)]="barcode" #input id="barcodeInput" (click)="clearBarcode()"
+        (ionInput)="valueChange($event)" (keyup.enter)="onPressEnter()"></ion-searchbar>
 
       <ion-item lines="none" class="twoItems item-text-wrap">
         <ion-label *ngIf="CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</ion-label>
@@ -76,8 +98,7 @@
       <ion-item lines="none" class="ionItemInput">
         <ion-label text-left class="ion-text-wrap">Quantity</ion-label>
         <ion-input type="tel" style="text-align:left;" [(ngModel)]="item.quantity" #qtyInput id="qtyInput"
-          [readonly]="!item.isEditable" min="0" max="999999" 
-          (keyup.enter)="onEnterConfirm(item)">
+          [readonly]="!item.isEditable" min="0" max="999999" (keyup.enter)="onEnterConfirm(item)">
         </ion-input>
       </ion-item>
     </ion-card-content>

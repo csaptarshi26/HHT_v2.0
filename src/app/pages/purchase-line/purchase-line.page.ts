@@ -146,14 +146,17 @@ export class PurchaseLinePage implements OnInit {
     console.log("data value " + dataValue);
     console.log("targer value " + targerValue);
     console.log(event);
-    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
-      this.barcode = targerValue;
-      if (this.barcode != null) {
-        this.searchBarcode();
+    if(dataValue && targerValue.length!=1){
+      if (targerValue && targerValue == dataValue && event.detail.inputType != "deleteContentBackward") {
+        this.barcode = targerValue;
+        if (this.barcode != null) {
+          this.searchBarcode();
+        }
+      } else if (targerValue != null && dataValue.toString().length == 1) {
+        console.log("keyboard input");
       }
-    } else if (targerValue != null && dataValue.toString().length == 1) {
-      console.log("keyboard input");
     }
+   
   }
   searchBarcode() {
     if (this.barcode != null && this.barcode.length > 1) {
@@ -379,17 +382,6 @@ export class PurchaseLinePage implements OnInit {
   qtyRecCheck(poLine: PurchLineModel) {
     poLine.isSaved = false;
     var len = this.getVisibleItemScannedQty(this.poHeader.PurchLines)
-    if (poLine.inputQty < 0) {
-      this.presentError("Qty Cann't be Negative");
-      return false;
-    }
-    if (poLine.inputQty == "") {
-      this.presentError("Qty Cann't be Blank");
-      return false;
-    }
-    // 
-    // 
-    // 
     var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
     var format = /[\+\-\*\/]/;
     if (allSpecialChar.test(poLine.inputQty)) {
@@ -398,13 +390,13 @@ export class PurchaseLinePage implements OnInit {
         if (rs.toString().includes("Infinity")) {
           this.presentError("Can't divide by 0");
           poLine.inputQty = 0;
-          return false;
+          return;
         } else if (Number(rs) > 999999) {
           this.presentError("Qty cann't be greater than 999999");
           poLine.inputQty = 0;
           return false;
         } else if (Number(rs) < 0) {
-          this.presentError("Qty cann't be greater than 999999");
+          this.presentError("Qty cann't be lesser than 0");
           poLine.inputQty = 0;
           return false;
         } else {
@@ -413,8 +405,13 @@ export class PurchaseLinePage implements OnInit {
         }
       } else {
         this.presentError("Invalid Expression");
-        return false;
+        poLine.inputQty= 0;
+        return;
       }
+    }else{
+      this.presentError("Invalid Expression");
+      poLine.inputQty = 0;
+      return;
     }
 
     if (this.pageType == "Receive") {

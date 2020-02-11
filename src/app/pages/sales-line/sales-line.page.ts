@@ -162,13 +162,15 @@ export class SalesLinePage implements OnInit {
     console.log("data value " + dataValue);
     console.log("targer value " + targerValue);
     console.log(event);
-    if (targerValue && !dataValue && event.detail.inputType != "deleteContentBackward") {
-      this.barcode = targerValue;
-      if (this.barcode != null) {
-        this.searchBarcode();
+    if(dataValue && targerValue.length!=1){
+      if (targerValue && targerValue == dataValue && event.detail.inputType != "deleteContentBackward") {
+        this.barcode = targerValue;
+        if (this.barcode != null) {
+          this.searchBarcode();
+        }
+      } else if (targerValue != null && dataValue.toString().length == 1) {
+        console.log("keyboard input");
       }
-    } else if (targerValue != null && dataValue.toString().length == 1) {
-      console.log("keyboard input");
     }
   }
   async searchBarcode() {
@@ -356,10 +358,6 @@ export class SalesLinePage implements OnInit {
   }
   qtyRecCheck(soLine: SalesLineModel) {
     var len = this.getVisibleItemScannedQty(this.soHeader.SalesLine);
-    if (soLine.inputQty < 0) {
-      this.presentError("Qty Cann't be Negative");
-      return false;
-    }
     var allSpecialChar = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
     var format = /[\+\-\*\/]/;
     if (allSpecialChar.test(soLine.inputQty)) {
@@ -374,7 +372,7 @@ export class SalesLinePage implements OnInit {
           soLine.inputQty = 0;
           return false;
         } else if (Number(rs) < 0) {
-          this.presentError("Qty cann't be greater than 999999");
+          this.presentError("Qty cann't be lesser than 0");
           soLine.inputQty = 0;
           return false;
         } else {

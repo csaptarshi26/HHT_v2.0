@@ -16,17 +16,9 @@
 
   <ion-card class="scanCard">
     <ion-card-content class="padding">
-      <!-- <span *ngIf="count >= 0 && !poLine.isVisible" class="error">
-        Barcode Not Found,Scan barcode
-      </span> -->
       <ion-searchbar type="tel" [(ngModel)]="barcode" (ionInput)="valueChange($event)" #input id="barcodeInput"
         (click)="clearBarcode()" (keyup.enter)="onPressEnter()"></ion-searchbar>
 
-      <!-- <ion-item lines="none" class="ionItemInput">
-        <ion-input type="text" hideKeyboard #input id="barcodeInput"  placeholder="Scan" 
-          [(ngModel)]="barcode" (ionChange)="searchBarcode()" (click)="clearBarcode()" >
-        </ion-input>
-      </ion-item> -->
       <span *ngIf="poHeader.CountNumber == '1'">Total Scan Qty: {{scannedQty1}}</span>
       <span *ngIf="poHeader.CountNumber == '2'">Total Scan Qty: {{scannedQty2}}</span>
     </ion-card-content>
@@ -58,7 +50,7 @@
           <ion-input type="tel" style="text-align:left;" [(ngModel)]="poLine.inputQty" #Recinput id="Recinput"
             [max]="poLine.Qty" (keyup.enter)="onEnter(poLine)" (click)="clearQtyToRec(poLine)" [min]="0">
           </ion-input>
-        </ion-item>
+        </ion-item> 
 
         <ion-item lines="none" class="ionItemInput" *ngIf="role.OrderedQty">
           <ion-label text-left class="ion-text-wrap">Ordered Qty</ion-label>
