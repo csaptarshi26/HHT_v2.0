@@ -55,7 +55,7 @@
     "core-js": "^2.5.4",
     "hide-keyboard": "^0.2.1",
     "ionic-selectable": "^4.4.0",
-    "mathjs": "^6.2.2",
+    "mathjs": "^7.5.1",
     "phonegap-plugin-barcodescanner": "8.0.1",
     "primeicons": "^1.0.0",
     "primeng": "^7.1.3",
